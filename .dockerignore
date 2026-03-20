@@ -1,0 +1,9 @@
+.git
+.next
+node_modules
+uploads
+npm-debug.log
+Dockerfile
+.env
+.env.local
+.env.production
