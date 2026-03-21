@@ -81,31 +81,34 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
   return (
     <div className="relative min-h-screen">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="absolute left-[-8rem] top-20 h-72 w-72 rounded-full bg-emerald-200/30 blur-3xl" />
-        <div className="absolute right-[-6rem] top-10 h-80 w-80 rounded-full bg-amber-200/30 blur-3xl" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-emerald-100/40 blur-3xl" />
+        <div className="hero-orb absolute left-[-9rem] top-12 h-72 w-72 rounded-full bg-sky-400/10 blur-3xl" />
+        <div className="hero-orb absolute right-[-7rem] top-6 h-[22rem] w-[22rem] rounded-full bg-amber-300/[0.08] blur-3xl [animation-delay:1.2s]" />
+        <div className="hero-orb absolute bottom-[-3rem] left-1/3 h-64 w-64 rounded-full bg-cyan-300/[0.08] blur-3xl [animation-delay:2.3s]" />
       </div>
-      <div className="mx-auto grid min-h-screen max-w-[1680px] gap-6 px-4 py-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:px-6">
-        <aside className="panel sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden px-6 py-7">
-          <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-br from-primary/10 via-transparent to-accent/30" />
+      <div className="mx-auto grid min-h-screen max-w-[1680px] gap-5 px-4 py-4 lg:grid-cols-[292px_minmax(0,1fr)] lg:px-6">
+        <aside className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[1.65rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(7,11,18,0.97),rgba(8,13,22,0.98),rgba(8,17,27,0.94))] px-5 py-6 text-white shadow-aura backdrop-blur-2xl">
+          <div className="absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_top_left,rgba(122,183,255,0.18),transparent_42%),radial-gradient(circle_at_88%_12%,rgba(255,191,118,0.1),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent)]" />
+          <div className="absolute inset-x-0 top-0 h-32 grid-fade opacity-24" />
           <Link href="/dashboard" className="relative flex items-center gap-3">
-            <div className="rounded-2xl bg-primary p-2.5 text-primary-foreground shadow-[0_16px_36px_rgba(25,72,51,0.24)]">
+            <div className="rounded-[1rem] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(102,170,255,0.18),rgba(12,23,38,0.88))] p-2.5 text-sky-100 shadow-[0_16px_38px_rgba(0,0,0,0.3)] backdrop-blur-xl">
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-display text-xl font-semibold">HireFlow AI</p>
-              <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Internal Operations OS</p>
+              <p className="font-display text-xl font-semibold tracking-[-0.03em] text-white">HireFlow AI</p>
+              <p className="text-[11px] uppercase tracking-[0.24em] text-white/44">Operational Intelligence OS</p>
             </div>
           </Link>
 
-          <div className="relative mt-8 rounded-[1.35rem] border border-white/60 bg-white/55 p-4 shadow-soft backdrop-blur">
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-2 text-secondary-foreground">
+          <div className="relative mt-8 rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] p-4 shadow-[0_18px_36px_rgba(4,8,18,0.2)] backdrop-blur-xl">
+            <div className="flex items-start gap-3">
+              <div className="rounded-[0.95rem] border border-white/10 bg-white/[0.06] p-2 text-sky-100">
                 <WandSparkles className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold">AI internal ops cockpit</p>
-                <p className="text-xs text-muted-foreground">People ops, service desk, knowledge e copiloto em uma superficie unica</p>
+                <p className="text-sm font-semibold text-white">Operational intelligence layer</p>
+                <p className="text-xs leading-5 text-white/56">
+                  People ops, approvals, service desk e conhecimento em um workspace governado.
+                </p>
               </div>
             </div>
           </div>
@@ -115,14 +118,14 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
           </div>
 
           {user.memberships.length > 1 ? (
-            <div className="mt-6 rounded-[1.4rem] border border-white/70 bg-white/65 p-4 shadow-soft backdrop-blur">
-              <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Workspace ativo</p>
-              <p className="mt-2 text-sm font-semibold">{user.organizationName}</p>
+            <div className="mt-6 rounded-[1.3rem] border border-white/[0.08] bg-white/[0.03] p-4 shadow-[0_18px_36px_rgba(4,8,18,0.2)] backdrop-blur-xl">
+              <p className="text-xs uppercase tracking-[0.24em] text-white/42">Workspace ativo</p>
+              <p className="mt-2 text-sm font-semibold text-white">{user.organizationName}</p>
               <form action={switchOrganization} className="mt-3 flex gap-2">
                 <select
                   name="organizationId"
                   defaultValue={user.organizationId}
-                  className="h-11 min-w-0 flex-1 rounded-2xl border border-border bg-white px-4 py-2 text-sm"
+                  className="h-11 min-w-0 flex-1 rounded-[0.95rem] border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm text-white shadow-none"
                 >
                   {user.memberships.map((membership) => (
                     <option key={membership.organizationId} value={membership.organizationId}>
@@ -132,7 +135,7 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
                 </select>
                 <button
                   type="submit"
-                  className="inline-flex h-11 items-center justify-center rounded-full border border-border bg-white px-4 text-sm font-semibold transition hover:-translate-y-0.5 hover:shadow-soft"
+                  className="inline-flex h-11 items-center justify-center rounded-[0.95rem] border border-white/[0.08] bg-white/[0.06] px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-primary/18 hover:bg-white/[0.1]"
                 >
                   Trocar
                 </button>
@@ -140,15 +143,17 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
             </div>
           ) : null}
 
-          <div className="mt-auto rounded-[1.6rem] border border-white/70 bg-white/65 p-5 shadow-soft backdrop-blur">
-            <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Workspace</p>
+          <div className="mt-auto rounded-[1.35rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-5 shadow-[0_20px_40px_rgba(5,9,18,0.24)] backdrop-blur-xl">
+            <p className="text-xs uppercase tracking-[0.24em] text-white/42">Workspace</p>
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{user.organizationName}</p>
-                <p className="text-sm font-semibold">{user.name}</p>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-white/42">{user.organizationName}</p>
+                <p className="text-sm font-semibold text-white">{user.name}</p>
+                <p className="text-sm text-white/56">{user.email}</p>
               </div>
-              <Badge variant="outline">{user.role}</Badge>
+              <Badge className="border-white/[0.08] bg-white/[0.06] text-white" variant="outline">
+                {user.role}
+              </Badge>
             </div>
           </div>
 
@@ -159,13 +164,13 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
 
         <main className="min-w-0">
           {showBillingBanner && billing && billingPlan ? (
-            <div className="panel mb-4 flex flex-col gap-4 border-primary/15 bg-[linear-gradient(135deg,rgba(22,59,43,0.96),rgba(37,92,66,0.92),rgba(144,164,98,0.78))] px-5 py-5 text-primary-foreground lg:flex-row lg:items-center lg:justify-between lg:px-6">
+            <div className="panel mb-4 flex flex-col gap-4 border-white/[0.08] bg-[linear-gradient(135deg,rgba(9,16,28,0.98),rgba(12,27,43,0.96),rgba(10,43,59,0.92))] px-5 py-5 text-primary-foreground lg:flex-row lg:items-center lg:justify-between lg:px-6">
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge className="bg-white/15 text-primary-foreground" variant="outline">
+                  <Badge className="bg-white/10 text-primary-foreground" variant="outline">
                     {billingPlan.label}
                   </Badge>
-                  <Badge className="bg-white/15 text-primary-foreground" variant="outline">
+                  <Badge className="bg-white/10 text-primary-foreground" variant="outline">
                     {BILLING_STATUS_LABELS[billing.status]}
                   </Badge>
                 </div>
@@ -188,14 +193,14 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
               <div className="flex flex-wrap items-center gap-3">
                 <Link
                   href="/settings/billing"
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-white px-5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:shadow-soft"
+                  className="inline-flex h-11 items-center justify-center rounded-[1rem] bg-white px-5 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-soft"
                 >
                   Abrir billing
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
                   href="/pricing"
-                  className="inline-flex h-11 items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-white/15"
+                  className="inline-flex h-11 items-center justify-center rounded-[1rem] border border-white/[0.14] bg-white/[0.08] px-5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-1 hover:bg-white/[0.12]"
                 >
                   Ver planos
                 </Link>
@@ -203,18 +208,21 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
             </div>
           ) : null}
 
-          <div className="panel mb-6 flex items-center justify-between gap-4 px-5 py-4 lg:px-6">
-            <div className="flex min-w-0 items-center gap-3 rounded-full border border-border/70 bg-white/75 px-4 py-3 shadow-sm">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <span className="truncate text-sm text-muted-foreground">Operacao interna de pessoas, processos e conhecimento com copiloto corporativo</span>
+          <div className="panel mb-6 flex items-center justify-between gap-4 bg-[linear-gradient(180deg,rgba(10,15,25,0.88),rgba(8,12,20,0.78))] px-5 py-4 lg:px-6">
+            <div className="glass-strip flex min-w-0 items-center gap-3 rounded-[1rem] border border-white/[0.08] px-4 py-3 shadow-soft">
+              <span className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_18px_rgba(87,214,255,0.55)]" />
+              <Search className="h-4 w-4 text-primary" />
+              <span className="truncate text-sm text-foreground/72">
+                Workspace operacional com IA, governanca, solicitacoes internas e conhecimento unificado
+              </span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="hidden rounded-full border border-border/70 bg-white/75 px-4 py-2 text-xs font-medium text-muted-foreground md:block">
-                People & Internal Operations OS
+              <div className="hidden rounded-[0.95rem] border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/54 shadow-soft md:block">
+                People operations intelligence
               </div>
               <button
                 type="button"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/70 bg-white/75 text-muted-foreground shadow-sm hover:-translate-y-0.5 hover:text-foreground"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] border border-white/[0.08] bg-white/[0.04] text-foreground/68 shadow-soft hover:-translate-y-1 hover:border-primary/18 hover:text-foreground"
               >
                 <Bell className="h-4 w-4" />
               </button>

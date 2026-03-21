@@ -60,7 +60,7 @@ export function MainNav({ role, canViewRevenueOps = false }: MainNavProps) {
     : visibleNavigation;
 
   return (
-    <nav className="space-y-2">
+    <nav className="space-y-2.5">
       {completeNavigation.map((item) => {
         const Icon = item.icon;
         const isActive = !item.disabled
@@ -85,10 +85,10 @@ export function MainNav({ role, canViewRevenueOps = false }: MainNavProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "group flex items-center justify-between rounded-[1.1rem] border px-4 py-3 text-sm font-medium transition duration-300",
+                "group relative flex items-center justify-between overflow-hidden rounded-[1rem] border px-4 py-3 text-sm font-medium transition duration-300",
                 isActive
-                  ? "border-primary/30 bg-primary text-primary-foreground shadow-[0_14px_34px_rgba(25,72,51,0.24)]"
-                  : "border-transparent bg-white/20 text-muted-foreground hover:-translate-y-0.5 hover:border-white/70 hover:bg-white/70 hover:text-secondary-foreground"
+                  ? "border-primary/16 bg-[linear-gradient(135deg,rgba(11,18,31,0.98),rgba(12,28,43,0.96),rgba(12,45,66,0.92))] text-white shadow-[0_18px_44px_rgba(7,12,24,0.34)] before:absolute before:bottom-3 before:left-2 before:top-3 before:w-px before:bg-[linear-gradient(180deg,transparent,rgba(112,211,255,0.95),transparent)]"
+                  : "border-white/[0.06] bg-white/[0.02] text-white/64 hover:-translate-y-0.5 hover:border-primary/12 hover:bg-white/[0.05] hover:text-white"
               )}
             >
               {content}
@@ -100,9 +100,9 @@ export function MainNav({ role, canViewRevenueOps = false }: MainNavProps) {
           <div
             key={item.label}
             className={cn(
-              "flex items-center justify-between rounded-[1.1rem] border border-transparent bg-white/20 px-4 py-3 text-sm font-medium transition",
+              "flex items-center justify-between rounded-[1rem] border border-white/[0.06] bg-white/[0.02] px-4 py-3 text-sm font-medium transition",
               item.disabled && "cursor-not-allowed opacity-50",
-              "text-muted-foreground"
+              "text-white/55"
             )}
           >
             {content}

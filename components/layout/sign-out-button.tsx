@@ -14,7 +14,11 @@ export function SignOutButton() {
 
   return (
     <form action={handleSignOut}>
-      <Button type="submit" variant="ghost" className="w-full justify-between rounded-2xl">
+      <Button
+        type="submit"
+        variant="outline"
+        className="w-full justify-between rounded-[1rem] border-white/[0.08] bg-white/[0.03] text-white/82 hover:border-primary/18 hover:bg-white/[0.07] hover:text-white"
+      >
         Sair
         <LogOut className="h-4 w-4" />
       </Button>

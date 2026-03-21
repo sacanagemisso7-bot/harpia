@@ -83,6 +83,7 @@ Copy `.env.example` to `.env.local` or `.env` and adjust:
 
 ```bash
 DATABASE_URL="postgresql://hireflow:hireflow123@127.0.0.1:5434/hireflow_ai?schema=public"
+DIRECT_URL="postgresql://hireflow:hireflow123@127.0.0.1:5434/hireflow_ai?schema=public"
 AUTH_SECRET="replace-with-a-long-random-secret"
 NEXTAUTH_URL="http://localhost:3000"
 AI_PROVIDER="openai"
@@ -144,12 +145,14 @@ Supabase fits this codebase well because the app already uses Prisma over Postgr
 Recommended setup for this repo:
 
 ```bash
-# long-lived app server / local-like deployments
+# app runtime with pooling
 DATABASE_URL="postgresql://prisma.<project-ref>:<password>@<region>.pooler.supabase.com:5432/postgres"
 
-# serverless deployments can use transaction mode instead
-# DATABASE_URL="postgresql://postgres.<project-ref>:<password>@<region>.pooler.supabase.com:6543/postgres"
+# migrations / admin connection
+DIRECT_URL="postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres"
 ```
+
+If your runtime is serverless, you can switch `DATABASE_URL` to the transaction pooler on port `6543`, but keep `DIRECT_URL` pointing at the direct database host for migrations when your environment supports it.
 
 I kept the project database-agnostic at the Prisma/Postgres layer, so switching to Supabase is mostly an environment change rather than an app rewrite.
 

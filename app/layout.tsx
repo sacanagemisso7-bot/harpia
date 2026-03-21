@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, Manrope } from "next/font/google";
+import { Manrope, Sora } from "next/font/google";
 
 import "@/app/globals.css";
 
@@ -8,7 +8,7 @@ const manrope = Manrope({
   variable: "--font-sans"
 });
 
-const fraunces = Fraunces({
+const sora = Sora({
   subsets: ["latin"],
   variable: "--font-display"
 });
@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${manrope.variable} ${fraunces.variable}`}>{children}</body>
+      <body className={`${manrope.variable} ${sora.variable}`}>{children}</body>
     </html>
   );
 }

@@ -114,7 +114,7 @@ const planPreview = [
     price: "R$ 1.290",
     cadence: "/mes",
     audience: "Para RHs que ja operam multiplas vagas e precisam padrao real.",
-    features: ["Ate 12 vagas ativas", "Automações e analytics", "Templates de email", "8 membros do time"],
+    features: ["Ate 12 vagas ativas", "Automacoes e analytics", "Templates de email", "8 membros do time"],
     highlight: true
   },
   {
@@ -155,15 +155,15 @@ export default async function MarketingPage() {
     <SiteChrome>
       <section className="relative overflow-hidden px-5 py-10 lg:px-8 lg:py-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="hero-orb absolute left-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-emerald-200/35 blur-3xl" />
-          <div className="hero-orb absolute right-[-4rem] top-10 h-72 w-72 rounded-full bg-amber-200/30 blur-3xl [animation-delay:1.2s]" />
-          <div className="hero-orb absolute bottom-[-5rem] left-1/3 h-64 w-64 rounded-full bg-emerald-100/40 blur-3xl [animation-delay:2.1s]" />
+          <div className="hero-orb absolute left-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-sky-300/[0.16] blur-3xl" />
+          <div className="hero-orb absolute right-[-4rem] top-10 h-72 w-72 rounded-full bg-amber-200/[0.14] blur-3xl [animation-delay:1.2s]" />
+          <div className="hero-orb absolute bottom-[-5rem] left-1/3 h-64 w-64 rounded-full bg-cyan-300/[0.14] blur-3xl [animation-delay:2.1s]" />
           <div className="grid-fade absolute inset-x-0 top-0 h-[620px]" />
         </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.1fr)_470px] lg:items-center">
           <div className="space-y-8">
-            <div className="inline-flex rounded-full border border-white/80 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground shadow-soft">
+            <div className="inline-flex rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground shadow-soft">
               Recruiting OS para startups e SMBs que precisam contratar melhor
             </div>
 
@@ -196,7 +196,7 @@ export default async function MarketingPage() {
               {pains.map((item) => (
                 <div
                   key={item}
-                  className="spotlight-card inline-flex items-start gap-3 rounded-[1.3rem] border border-white/70 bg-white/75 px-4 py-4 text-sm leading-6 shadow-soft"
+                  className="spotlight-card inline-flex items-start gap-3 rounded-[1.15rem] border border-white/[0.08] bg-white/[0.04] px-4 py-4 text-sm leading-6 shadow-soft"
                 >
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
                   <span>{item}</span>
@@ -205,14 +205,14 @@ export default async function MarketingPage() {
             </div>
           </div>
 
-          <Card className="aurora border-white/80">
+          <Card className="aurora border-white/[0.08]">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">Product cockpit</p>
-                  <CardTitle className="mt-2">Visao de produto, nao so uma vitrine bonita</CardTitle>
+                  <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">Operational view</p>
+                  <CardTitle className="mt-2">Produto com peso visual e leitura de plataforma real</CardTitle>
                 </div>
-                <div className="rounded-2xl bg-primary p-3 text-primary-foreground shadow-[0_16px_36px_rgba(25,72,51,0.24)]">
+                <div className="rounded-[1rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(102,170,255,0.18),rgba(12,23,38,0.88))] p-3 text-sky-100 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
                   <Sparkles className="h-5 w-5" />
                 </div>
               </div>
@@ -379,7 +379,7 @@ export default async function MarketingPage() {
             {planPreview.map((plan) => (
               <Card
                 key={plan.name}
-                className={`panel-hover spotlight-card ${plan.highlight ? "border-primary/25 shadow-[0_26px_70px_rgba(25,72,51,0.16)]" : ""}`}
+                className={`panel-hover spotlight-card ${plan.highlight ? "border-primary/25 shadow-[0_26px_70px_rgba(22,72,122,0.22)]" : ""}`}
               >
                 <CardHeader>
                   <div className="flex items-center justify-between gap-4">
@@ -436,7 +436,7 @@ export default async function MarketingPage() {
         <div className="mx-auto max-w-7xl">
           <Card className="overflow-hidden">
             <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_440px]">
-              <div className="bg-[linear-gradient(135deg,rgba(21,58,42,0.98),rgba(31,88,61,0.92),rgba(131,151,87,0.82))] p-8 text-primary-foreground lg:p-10">
+              <div className="bg-[linear-gradient(135deg,rgba(8,13,22,0.98),rgba(10,27,42,0.96),rgba(9,43,58,0.9))] p-8 text-primary-foreground lg:p-10">
                 <p className="section-intro text-primary-foreground/72">Pronto para demo comercial</p>
                 <h2 className="mt-3 max-w-2xl font-display text-4xl font-semibold">
                   Mostre um recruiting OS que chama atencao logo na primeira apresentacao.
