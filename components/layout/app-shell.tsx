@@ -1,6 +1,6 @@
 import { BillingPlan, BillingStatus } from "@prisma/client";
 import Link from "next/link";
-import { ArrowRight, Bell, Search, Sparkles, WandSparkles } from "lucide-react";
+import { ArrowRight, Bell, Layers3 } from "lucide-react";
 
 import { BILLING_LIMIT_LABELS, BILLING_STATUS_LABELS, getPlanDefinition } from "@/lib/billing/plans";
 import { MainNav } from "@/components/layout/main-nav";
@@ -81,51 +81,47 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
   return (
     <div className="relative min-h-screen">
       <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-        <div className="hero-orb absolute left-[-9rem] top-12 h-72 w-72 rounded-full bg-sky-400/10 blur-3xl" />
-        <div className="hero-orb absolute right-[-7rem] top-6 h-[22rem] w-[22rem] rounded-full bg-amber-300/[0.08] blur-3xl [animation-delay:1.2s]" />
-        <div className="hero-orb absolute bottom-[-3rem] left-1/3 h-64 w-64 rounded-full bg-cyan-300/[0.08] blur-3xl [animation-delay:2.3s]" />
+        <div className="hero-orb absolute left-[-9rem] top-12 h-72 w-72 rounded-full bg-white/[0.03] blur-3xl" />
       </div>
-      <div className="mx-auto grid min-h-screen max-w-[1680px] gap-5 px-4 py-4 lg:grid-cols-[292px_minmax(0,1fr)] lg:px-6">
-        <aside className="sticky top-4 flex h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[1.65rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(7,11,18,0.97),rgba(8,13,22,0.98),rgba(8,17,27,0.94))] px-5 py-6 text-white shadow-aura backdrop-blur-2xl">
-          <div className="absolute inset-x-0 top-0 h-44 bg-[radial-gradient(circle_at_top_left,rgba(122,183,255,0.18),transparent_42%),radial-gradient(circle_at_88%_12%,rgba(255,191,118,0.1),transparent_26%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent)]" />
-          <div className="absolute inset-x-0 top-0 h-32 grid-fade opacity-24" />
+      <div className="mx-auto grid min-h-screen max-w-[1760px] gap-5 px-4 py-4 lg:grid-cols-[308px_minmax(0,1fr)] lg:px-5">
+        <aside className="panel sticky top-4 flex h-[calc(100vh-2rem)] flex-col px-4 py-5 text-white lg:px-5">
           <Link href="/dashboard" className="relative flex items-center gap-3">
-            <div className="rounded-[1rem] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(102,170,255,0.18),rgba(12,23,38,0.88))] p-2.5 text-sky-100 shadow-[0_16px_38px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-              <Sparkles className="h-5 w-5" />
+            <div className="brand-mark text-slate-100">
+              <Layers3 className="h-5 w-5" />
             </div>
             <div>
               <p className="font-display text-xl font-semibold tracking-[-0.03em] text-white">HireFlow AI</p>
-              <p className="text-[11px] uppercase tracking-[0.24em] text-white/44">Operational Intelligence OS</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white/42">Operations workspace</p>
             </div>
           </Link>
 
-          <div className="relative mt-8 rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] p-4 shadow-[0_18px_36px_rgba(4,8,18,0.2)] backdrop-blur-xl">
+          <div className="shell-card relative mt-6 p-4">
             <div className="flex items-start gap-3">
-              <div className="rounded-[0.95rem] border border-white/10 bg-white/[0.06] p-2 text-sky-100">
-                <WandSparkles className="h-4 w-4" />
+              <div className="nav-item-icon">
+                <Layers3 className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white">Operational intelligence layer</p>
-                <p className="text-xs leading-5 text-white/56">
-                  People ops, approvals, service desk e conhecimento em um workspace governado.
+                <p className="text-sm font-semibold text-white">Operational workspace</p>
+                <p className="text-xs leading-5 text-white/54">
+                  Pessoas, solicitacoes, conhecimento e governanca em uma interface unica.
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-6 min-h-0 flex-1 overflow-y-auto pr-1">
             <MainNav role={user.role} canViewRevenueOps={canViewRevenueOps} />
           </div>
 
           {user.memberships.length > 1 ? (
-            <div className="mt-6 rounded-[1.3rem] border border-white/[0.08] bg-white/[0.03] p-4 shadow-[0_18px_36px_rgba(4,8,18,0.2)] backdrop-blur-xl">
-              <p className="text-xs uppercase tracking-[0.24em] text-white/42">Workspace ativo</p>
+            <div className="shell-card mt-5 p-4">
+              <p className="nav-section-label">Workspace ativo</p>
               <p className="mt-2 text-sm font-semibold text-white">{user.organizationName}</p>
               <form action={switchOrganization} className="mt-3 flex gap-2">
                 <select
                   name="organizationId"
                   defaultValue={user.organizationId}
-                  className="h-11 min-w-0 flex-1 rounded-[0.95rem] border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-sm text-white shadow-none"
+                  className="field-shell h-11 min-w-0 flex-1 rounded-[0.95rem] px-4 py-2 text-sm text-white shadow-none"
                 >
                   {user.memberships.map((membership) => (
                     <option key={membership.organizationId} value={membership.organizationId}>
@@ -135,7 +131,7 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
                 </select>
                 <button
                   type="submit"
-                  className="inline-flex h-11 items-center justify-center rounded-[0.95rem] border border-white/[0.08] bg-white/[0.06] px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-primary/18 hover:bg-white/[0.1]"
+                  className="inline-flex h-11 items-center justify-center rounded-[0.95rem] border border-white/[0.08] bg-white/[0.04] px-4 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/[0.14] hover:bg-white/[0.08]"
                 >
                   Trocar
                 </button>
@@ -143,11 +139,11 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
             </div>
           ) : null}
 
-          <div className="mt-auto rounded-[1.35rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] p-5 shadow-[0_20px_40px_rgba(5,9,18,0.24)] backdrop-blur-xl">
-            <p className="text-xs uppercase tracking-[0.24em] text-white/42">Workspace</p>
+          <div className="shell-card mt-5 p-5">
+            <p className="nav-section-label">Workspace</p>
             <div className="mt-4 flex items-start justify-between gap-4">
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-white/42">{user.organizationName}</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/42">{user.organizationName}</p>
                 <p className="text-sm font-semibold text-white">{user.name}</p>
                 <p className="text-sm text-white/56">{user.email}</p>
               </div>
@@ -164,7 +160,7 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
 
         <main className="min-w-0">
           {showBillingBanner && billing && billingPlan ? (
-            <div className="panel mb-4 flex flex-col gap-4 border-white/[0.08] bg-[linear-gradient(135deg,rgba(9,16,28,0.98),rgba(12,27,43,0.96),rgba(10,43,59,0.92))] px-5 py-5 text-primary-foreground lg:flex-row lg:items-center lg:justify-between lg:px-6">
+            <div className="panel mb-4 flex flex-col gap-4 border-primary/14 bg-[linear-gradient(135deg,rgba(16,20,29,0.98),rgba(19,25,36,0.96),rgba(23,32,47,0.94))] px-5 py-5 text-primary-foreground lg:flex-row lg:items-center lg:justify-between lg:px-6">
               <div className="space-y-2">
                 <div className="flex flex-wrap items-center gap-3">
                   <Badge className="bg-white/10 text-primary-foreground" variant="outline">
@@ -193,14 +189,14 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
               <div className="flex flex-wrap items-center gap-3">
                 <Link
                   href="/settings/billing"
-                  className="inline-flex h-11 items-center justify-center rounded-[1rem] bg-white px-5 text-sm font-semibold text-foreground transition hover:-translate-y-1 hover:shadow-soft"
+                  className="inline-flex h-11 items-center justify-center rounded-[1rem] bg-white px-5 text-sm font-semibold text-foreground transition hover:-translate-y-0.5 hover:shadow-soft"
                 >
                   Abrir billing
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
                 <Link
                   href="/pricing"
-                  className="inline-flex h-11 items-center justify-center rounded-[1rem] border border-white/[0.14] bg-white/[0.08] px-5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-1 hover:bg-white/[0.12]"
+                  className="inline-flex h-11 items-center justify-center rounded-[1rem] border border-white/[0.14] bg-white/[0.08] px-5 text-sm font-semibold text-primary-foreground transition hover:-translate-y-0.5 hover:bg-white/[0.12]"
                 >
                   Ver planos
                 </Link>
@@ -208,27 +204,21 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
             </div>
           ) : null}
 
-          <div className="panel mb-6 flex items-center justify-between gap-4 bg-[linear-gradient(180deg,rgba(10,15,25,0.88),rgba(8,12,20,0.78))] px-5 py-4 lg:px-6">
-            <div className="glass-strip flex min-w-0 items-center gap-3 rounded-[1rem] border border-white/[0.08] px-4 py-3 shadow-soft">
-              <span className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_18px_rgba(87,214,255,0.55)]" />
-              <Search className="h-4 w-4 text-primary" />
-              <span className="truncate text-sm text-foreground/72">
-                Workspace operacional com IA, governanca, solicitacoes internas e conhecimento unificado
-              </span>
+          <div className="shell-topbar mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="min-w-0 space-y-2">
+              <p className="nav-section-label">Workspace</p>
+              <p className="text-sm text-foreground/76">Ambiente operacional centralizado para people ops, atendimento interno e conhecimento corporativo.</p>
             </div>
             <div className="flex items-center gap-3">
-              <div className="hidden rounded-[0.95rem] border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/54 shadow-soft md:block">
-                People operations intelligence
+              <div className="shell-topbar-chip hidden md:inline-flex">
+                {user.organizationName}
               </div>
-              <button
-                type="button"
-                className="inline-flex h-11 w-11 items-center justify-center rounded-[1rem] border border-white/[0.08] bg-white/[0.04] text-foreground/68 shadow-soft hover:-translate-y-1 hover:border-primary/18 hover:text-foreground"
-              >
+              <button type="button" className="shell-topbar-action">
                 <Bell className="h-4 w-4" />
               </button>
             </div>
           </div>
-          <div className="space-y-6 pb-6">{children}</div>
+          <div className="page-stage space-y-6 pb-8">{children}</div>
         </main>
       </div>
     </div>

@@ -1139,7 +1139,7 @@ export function App() {
                         <div className="proposal-stack">
                           <div className="proposal-card">
                             <strong>{metadata.policyDraft.summary}</strong>
-                            <span>{formatEnumLabel(metadata.policyDraft.confidence)} Â· resposta ancorada em knowledge base</span>
+                            <span>{formatEnumLabel(metadata.policyDraft.confidence)} - resposta ancorada em knowledge base</span>
                             <span>{metadata.policyDraft.response}</span>
                           </div>
                         </div>
@@ -1149,7 +1149,7 @@ export function App() {
                           <div className="proposal-card">
                             <strong>{metadata.policyOperations.summary}</strong>
                             <span>
-                              {metadata.policyOperations.pendingAcknowledgements} pendentes Â· {metadata.policyOperations.overdueAcknowledgements} atrasados
+                              {metadata.policyOperations.pendingAcknowledgements} pendentes - {metadata.policyOperations.overdueAcknowledgements} atrasados
                             </span>
                           </div>
                         </div>

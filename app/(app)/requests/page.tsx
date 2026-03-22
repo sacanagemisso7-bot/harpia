@@ -5,6 +5,9 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
 import { getTeamMembers } from "@/lib/team/queries";
 import { listEmployeesForSelect } from "@/modules/employees/queries";
@@ -20,33 +23,33 @@ export default async function RequestsPage() {
   const canManage = hasPermission(user.role, "manage_hr_requests");
 
   return (
-    <div className="space-y-6">
+    <div className="page-stage space-y-7">
       <PageHeader
         eyebrow="Internal RH service desk"
         title="Fila interna de solicitacoes"
         description="Centralize demandas de ferias, beneficios, documentos, politicas e suporte interno com status, SLA, responsavel e historico."
       />
 
-      <section className="grid gap-5 xl:grid-cols-4">
-        <Card className="panel-hover">
+      <section className="stagger-grid grid gap-5 xl:grid-cols-4">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">Abertas</p>
             <p className="mt-3 text-3xl font-semibold">{queue.metrics.open}</p>
           </CardContent>
         </Card>
-        <Card className="panel-hover">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">SLA em risco</p>
             <p className="mt-3 text-3xl font-semibold">{queue.metrics.atRisk}</p>
           </CardContent>
         </Card>
-        <Card className="panel-hover">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">SLA estourado</p>
             <p className="mt-3 text-3xl font-semibold">{queue.metrics.breached}</p>
           </CardContent>
         </Card>
-        <Card className="panel-hover">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">Resolucao media</p>
             <p className="mt-3 text-3xl font-semibold">{queue.metrics.avgResolutionHours}h</p>
@@ -61,39 +64,39 @@ export default async function RequestsPage() {
         </CardHeader>
         <CardContent>
           <form action={createHrRequestAction} className="grid gap-4 lg:grid-cols-2">
-            <input name="title" required placeholder="Titulo da solicitacao" className="h-11 rounded-2xl border border-border bg-white px-4" />
-            <select name="category" defaultValue={HrRequestCategory.GENERAL_SUPPORT} className="h-11 rounded-2xl border border-border bg-white px-4">
+            <Input name="title" required placeholder="Titulo da solicitacao" />
+            <Select name="category" defaultValue={HrRequestCategory.GENERAL_SUPPORT}>
               {Object.values(HrRequestCategory).map((category) => (
                 <option key={category} value={category}>
                   {category}
                 </option>
               ))}
-            </select>
-            <select name="priority" defaultValue={PeopleTaskPriority.MEDIUM} className="h-11 rounded-2xl border border-border bg-white px-4">
+            </Select>
+            <Select name="priority" defaultValue={PeopleTaskPriority.MEDIUM}>
               {Object.values(PeopleTaskPriority).map((priority) => (
                 <option key={priority} value={priority}>
                   {priority}
                 </option>
               ))}
-            </select>
-            <input name="dueAt" type="date" className="h-11 rounded-2xl border border-border bg-white px-4" />
-            <select name="requesterEmployeeId" defaultValue="" className="h-11 rounded-2xl border border-border bg-white px-4">
+            </Select>
+            <Input name="dueAt" type="date" />
+            <Select name="requesterEmployeeId" defaultValue="">
               <option value="">Solicitante sem colaborador vinculado</option>
               {employees.map((employee) => (
                 <option key={employee.id} value={employee.id}>
                   {employee.fullName} - {employee.title}
                 </option>
               ))}
-            </select>
-            <select name="assigneeUserId" defaultValue="" className="h-11 rounded-2xl border border-border bg-white px-4">
+            </Select>
+            <Select name="assigneeUserId" defaultValue="">
               <option value="">Sem responsavel inicial</option>
               {teamMembers.map((member) => (
                 <option key={member.id} value={member.id}>
                   {member.name} - {member.role}
                 </option>
               ))}
-            </select>
-            <textarea name="description" required placeholder="Descricao detalhada da solicitacao" className="min-h-28 rounded-[1.25rem] border border-border bg-white px-4 py-3 lg:col-span-2" />
+            </Select>
+            <Textarea name="description" required placeholder="Descricao detalhada da solicitacao" className="min-h-28 lg:col-span-2" />
             <div className="lg:col-span-2">
               <Button type="submit">Criar solicitacao</Button>
             </div>
@@ -106,10 +109,10 @@ export default async function RequestsPage() {
           <CardTitle>Fila operacional</CardTitle>
           <CardDescription>Solicitacoes com status, SLA e historico curto da conversa.</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="data-stack">
           {queue.requests.length ? (
             queue.requests.map((request) => (
-              <div key={request.id} className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
+              <div key={request.id} className="data-row p-5">
                 <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                   <div className="space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
@@ -128,13 +131,13 @@ export default async function RequestsPage() {
                   {canManage ? (
                     <form action={updateHrRequestStatusAction} className="flex gap-2">
                       <input type="hidden" name="requestId" value={request.id} />
-                      <select name="status" defaultValue={request.status} className="h-11 rounded-2xl border border-border bg-white px-4">
+                      <Select name="status" defaultValue={request.status}>
                         {Object.values(HrRequestStatus).map((status) => (
                           <option key={status} value={status}>
                             {status}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                       <Button type="submit" variant="outline">
                         Atualizar
                       </Button>
@@ -143,9 +146,9 @@ export default async function RequestsPage() {
                 </div>
 
                 {request.comments.length ? (
-                  <div className="mt-4 space-y-2">
+                  <div className="mt-4 data-stack">
                     {request.comments.map((comment) => (
-                      <div key={comment.id} className="rounded-[1rem] border border-border/70 bg-white p-3 text-sm text-muted-foreground">
+                      <div key={comment.id} className="data-row p-3 text-sm text-muted-foreground">
                         <strong>{comment.author?.name ?? "Sistema"}:</strong> {comment.message}
                       </div>
                     ))}
@@ -154,7 +157,7 @@ export default async function RequestsPage() {
 
                 <form action={addHrRequestCommentAction} className="mt-4 flex gap-2">
                   <input type="hidden" name="requestId" value={request.id} />
-                  <input name="message" required placeholder="Adicionar comentario" className="h-11 flex-1 rounded-2xl border border-border bg-white px-4" />
+                  <Input name="message" required placeholder="Adicionar comentario" className="flex-1" />
                   <Button type="submit" variant="outline">
                     Comentar
                   </Button>
@@ -162,7 +165,7 @@ export default async function RequestsPage() {
               </div>
             ))
           ) : (
-            <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
+            <div className="data-row data-row-muted p-5 text-sm text-muted-foreground">
               Nenhuma solicitacao interna aberta agora.
             </div>
           )}

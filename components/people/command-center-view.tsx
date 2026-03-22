@@ -79,8 +79,8 @@ function getProgress(steps: Array<{ status: string }>) {
 
 export function CommandCenterView({ data }: CommandCenterViewProps) {
   return (
-    <div className="space-y-6">
-      <section className="grid gap-5 xl:grid-cols-4">
+    <div className="page-stage space-y-7">
+      <section className="stagger-grid grid gap-5 xl:grid-cols-4">
         <KpiCard title="Colaboradores" value={String(data.metrics.employees)} description="Base ativa de pessoas dentro da operacao." icon={UsersRound} />
         <KpiCard
           title="Solicitacoes abertas"
@@ -103,10 +103,10 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Alertas operacionais</CardTitle>
             <CardDescription>Leitura unica do que pode travar a operacao de pessoas no dia a dia.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="data-stack">
             {data.alerts.length ? (
               data.alerts.map((alert) => (
-                <Link key={`${alert.type}-${alert.title}`} href={alert.href as Route} className="block rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
+                <Link key={`${alert.type}-${alert.title}`} href={alert.href as Route} className="data-row block">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold">{alert.title}</p>
@@ -119,7 +119,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 </Link>
               ))
             ) : (
-              <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
+              <div className="data-row data-row-muted p-5 text-sm text-muted-foreground">
                 Nenhum alerta critico no momento. A operacao interna esta sob controle.
               </div>
             )}
@@ -131,20 +131,20 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Resumo do dia</CardTitle>
             <CardDescription>O que merece abertura imediata na rotina do time.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
+          <CardContent className="stagger-grid grid gap-3 sm:grid-cols-2">
+            <div className="data-row p-4">
               <p className="section-intro">Onboarding ativo</p>
               <p className="mt-3 text-3xl font-semibold">{data.metrics.onboardingActive}</p>
             </div>
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
+            <div className="data-row p-4">
               <p className="section-intro">Offboarding ativo</p>
               <p className="mt-3 text-3xl font-semibold">{data.metrics.offboardingActive}</p>
             </div>
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
+            <div className="data-row p-4">
               <p className="section-intro">Eventos hoje</p>
               <p className="mt-3 text-3xl font-semibold">{data.metrics.eventsToday}</p>
             </div>
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
+            <div className="data-row p-4">
               <p className="section-intro">SLAs em risco</p>
               <p className="mt-3 text-3xl font-semibold">{data.metrics.requestsAtRisk}</p>
             </div>
@@ -158,10 +158,10 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Service desk interno</CardTitle>
             <CardDescription>Solicitacoes recentes com visibilidade operacional e dono claro.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="data-stack">
             {data.requests.length ? (
               data.requests.map((request) => (
-                <div key={request.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                <div key={request.id} className="data-row">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold">{request.title}</p>
@@ -179,7 +179,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 </div>
               ))
             ) : (
-              <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
                 Nenhuma solicitacao aberta agora.
               </div>
             )}
@@ -191,10 +191,10 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Tarefas e eventos</CardTitle>
             <CardDescription>Pendencias de execucao e marcos do calendario operacional.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="data-stack">
             {data.overdueTasks.length ? (
               data.overdueTasks.map((task) => (
-                <div key={task.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                <div key={task.id} className="data-row">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold">{task.title}</p>
@@ -207,15 +207,15 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 </div>
               ))
             ) : (
-              <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
                 Nenhuma tarefa vencida agora.
               </div>
             )}
 
             {data.events.length ? (
-              <div className="space-y-3">
+              <div className="data-stack">
                 {data.events.map((event) => (
-                  <div key={event.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                  <div key={event.id} className="data-row">
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-semibold">{event.title}</p>
@@ -234,16 +234,16 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
         </Card>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-3">
+      <section className="stagger-grid grid gap-6 xl:grid-cols-3">
         <Card className="panel-hover">
           <CardHeader>
             <CardTitle>Onboarding</CardTitle>
             <CardDescription>Fluxos de entrada ativos.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="data-stack">
             {data.onboarding.length ? (
               data.onboarding.map((run) => (
-                <div key={run.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                <div key={run.id} className="data-row">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold">{run.employee.fullName}</p>
@@ -254,7 +254,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 </div>
               ))
             ) : (
-              <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
                 Nenhum onboarding ativo.
               </div>
             )}
@@ -266,10 +266,10 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Offboarding</CardTitle>
             <CardDescription>Saidas com acompanhamento operacional.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="data-stack">
             {data.offboarding.length ? (
               data.offboarding.map((run) => (
-                <div key={run.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                <div key={run.id} className="data-row">
                   <div className="flex items-center justify-between gap-3">
                     <div>
                       <p className="font-semibold">{run.employee.fullName}</p>
@@ -280,7 +280,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 </div>
               ))
             ) : (
-              <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
                 Nenhum offboarding ativo.
               </div>
             )}
@@ -292,16 +292,16 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Hiring module</CardTitle>
             <CardDescription>Recrutamento preservado como modulo complementar da plataforma.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+          <CardContent className="grid gap-3">
+            <div className="data-row p-4">
               <p className="section-intro">Vagas</p>
               <p className="mt-3 text-3xl font-semibold">{data.hiring.jobCount}</p>
             </div>
-            <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+            <div className="data-row p-4">
               <p className="section-intro">Aplicacoes</p>
               <p className="mt-3 text-3xl font-semibold">{data.hiring.applicationCount}</p>
             </div>
-            <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+            <div className="data-row p-4">
               <p className="section-intro">Alertas do hiring</p>
               <p className="mt-3 text-3xl font-semibold">{data.hiring.slaAlerts}</p>
             </div>
@@ -319,10 +319,10 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Compliance leve</CardTitle>
             <CardDescription>Itens obrigatorios ainda em aberto na operacao.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="data-stack">
             {data.compliance.length ? (
               data.compliance.map((item) => (
-                <div key={item.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                <div key={item.id} className="data-row">
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <p className="font-semibold">{item.title}</p>
@@ -335,7 +335,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 </div>
               ))
             ) : (
-              <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
                 Nenhum item de compliance pendente.
               </div>
             )}
@@ -347,20 +347,20 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <CardTitle>Proximos movimentos</CardTitle>
             <CardDescription>Atalhos para manter a operacao rodando sem friccao.</CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-3 sm:grid-cols-2">
-            <Link href="/employees" className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4 text-sm font-semibold transition hover:-translate-y-0.5">
+          <CardContent className="stagger-grid grid gap-3 sm:grid-cols-2">
+            <Link href="/employees" className="command-link text-sm font-semibold">
               <UsersRound className="mb-3 h-4 w-4 text-primary" />
               Cadastrar colaborador
             </Link>
-            <Link href="/requests" className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4 text-sm font-semibold transition hover:-translate-y-0.5">
+            <Link href="/requests" className="command-link text-sm font-semibold">
               <BellRing className="mb-3 h-4 w-4 text-primary" />
               Abrir solicitacao interna
             </Link>
-            <Link href="/people/tasks" className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4 text-sm font-semibold transition hover:-translate-y-0.5">
+            <Link href="/people/tasks" className="command-link text-sm font-semibold">
               <ClipboardList className="mb-3 h-4 w-4 text-primary" />
               Criar tarefa operacional
             </Link>
-            <Link href="/chat" className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4 text-sm font-semibold transition hover:-translate-y-0.5">
+            <Link href="/chat" className="command-link text-sm font-semibold">
               <CheckCircle2 className="mb-3 h-4 w-4 text-primary" />
               Operar com o company chat
             </Link>

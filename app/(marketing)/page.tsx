@@ -10,7 +10,6 @@ import {
   Layers3,
   MailCheck,
   ShieldCheck,
-  Sparkles,
   UsersRound,
   Waypoints
 } from "lucide-react";
@@ -155,20 +154,19 @@ export default async function MarketingPage() {
     <SiteChrome>
       <section className="relative overflow-hidden px-5 py-10 lg:px-8 lg:py-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="hero-orb absolute left-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-sky-300/[0.16] blur-3xl" />
-          <div className="hero-orb absolute right-[-4rem] top-10 h-72 w-72 rounded-full bg-amber-200/[0.14] blur-3xl [animation-delay:1.2s]" />
-          <div className="hero-orb absolute bottom-[-5rem] left-1/3 h-64 w-64 rounded-full bg-cyan-300/[0.14] blur-3xl [animation-delay:2.1s]" />
-          <div className="grid-fade absolute inset-x-0 top-0 h-[620px]" />
+          <div className="hero-orb absolute left-[-4rem] top-[-2rem] h-56 w-56 rounded-full bg-blue-300/[0.08] blur-3xl" />
+          <div className="hero-orb absolute right-[-4rem] top-12 h-72 w-72 rounded-full bg-indigo-200/[0.08] blur-3xl [animation-delay:1.2s]" />
+          <div className="grid-fade absolute inset-x-0 top-0 h-[560px]" />
         </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-8 lg:grid-cols-[minmax(0,1.1fr)_470px] lg:items-center">
           <div className="space-y-8">
-            <div className="inline-flex rounded-full border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-muted-foreground shadow-soft">
-              Recruiting OS para startups e SMBs que precisam contratar melhor
+            <div className="inline-flex rounded-[0.78rem] border border-white/[0.08] bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground shadow-soft">
+              Recruiting OS para times que querem operar com clareza
             </div>
 
             <div className="space-y-5">
-              <h1 className="max-w-5xl font-display text-5xl font-semibold leading-[0.94] text-foreground lg:text-7xl">
+              <h1 className="max-w-5xl font-display text-[3.35rem] font-semibold leading-[0.96] text-foreground lg:text-[5.3rem]">
                 Contrate com mais criterio, menos caos e muito menos trabalho manual.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-muted-foreground lg:text-xl">
@@ -194,10 +192,7 @@ export default async function MarketingPage() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               {pains.map((item) => (
-                <div
-                  key={item}
-                  className="spotlight-card inline-flex items-start gap-3 rounded-[1.15rem] border border-white/[0.08] bg-white/[0.04] px-4 py-4 text-sm leading-6 shadow-soft"
-                >
+                <div key={item} className="marketing-grid-card inline-flex items-start gap-3 px-4 py-4 text-sm leading-6">
                   <CheckCircle2 className="mt-1 h-4 w-4 shrink-0 text-primary" />
                   <span>{item}</span>
                 </div>
@@ -205,15 +200,15 @@ export default async function MarketingPage() {
             </div>
           </div>
 
-          <Card className="aurora border-white/[0.08]">
+          <Card className="hero-panel border-white/[0.08]">
             <CardHeader className="pb-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-xs uppercase tracking-[0.28em] text-muted-foreground">Operational view</p>
-                  <CardTitle className="mt-2">Produto com peso visual e leitura de plataforma real</CardTitle>
+                  <CardTitle className="mt-2">Uma interface com leitura de sistema, nao de template</CardTitle>
                 </div>
-                <div className="rounded-[1rem] border border-white/[0.08] bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(102,170,255,0.18),rgba(12,23,38,0.88))] p-3 text-sky-100 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
-                  <Sparkles className="h-5 w-5" />
+                <div className="brand-mark h-12 w-12 text-slate-100">
+                  <Layers3 className="h-5 w-5" />
                 </div>
               </div>
               <CardDescription>
@@ -222,12 +217,12 @@ export default async function MarketingPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
-                <div className="rounded-[1.35rem] border border-white/75 bg-white/80 p-5 shadow-soft">
+                <div className="hero-signal p-5">
                   <p className="section-intro">Pipeline ativo</p>
                   <p className="mt-3 text-3xl font-semibold text-gradient">42 candidatos</p>
                   <p className="mt-2 text-sm text-muted-foreground">Ranking, score e movimento por etapa sem planilha paralela.</p>
                 </div>
-                <div className="rounded-[1.35rem] border border-white/75 bg-white/80 p-5 shadow-soft">
+                <div className="hero-signal p-5">
                   <p className="section-intro">SLA operacional</p>
                   <p className="mt-3 text-3xl font-semibold text-gradient">6 alertas</p>
                   <p className="mt-2 text-sm text-muted-foreground">O time sabe onde agir antes de perder candidato forte.</p>
@@ -240,10 +235,7 @@ export default async function MarketingPage() {
                   "Aplicacao com score explicavel, gaps e perguntas sugeridas",
                   "Entrevista com feedback estruturado e scorecard por vaga"
                 ].map((item) => (
-                  <div
-                    key={item}
-                    className="inline-flex items-center gap-3 rounded-[1.2rem] border border-white/75 bg-white/78 px-4 py-3 text-sm shadow-soft"
-                  >
+                  <div key={item} className="hero-signal inline-flex items-center gap-3 px-4 py-3 text-sm">
                     <CheckCircle2 className="h-4 w-4 text-primary" />
                     <span>{item}</span>
                   </div>

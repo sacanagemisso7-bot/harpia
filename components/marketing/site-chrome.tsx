@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Layers3 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -9,46 +9,46 @@ type SiteChromeProps = {
 
 export function SiteChrome({ children }: SiteChromeProps) {
   return (
-    <main className="min-h-screen px-4 py-4 lg:px-6">
-      <div className="mx-auto max-w-[1580px] rounded-[1.75rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(8,12,20,0.96),rgba(9,14,24,0.94))] shadow-aura backdrop-blur-xl">
+    <main className="min-h-screen px-4 py-4 lg:px-5">
+      <div className="site-frame mx-auto max-w-[1580px]">
         <div className="glass-strip border-b border-white/[0.08] px-5 py-3 lg:px-8">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
             <p className="inline-flex items-center gap-2">
               <CheckCircle2 className="h-4 w-4 text-primary" />
-              Triagem com IA, pipeline, entrevistas e analytics em um unico fluxo
+              Plataforma de recrutamento com linguagem visual mais limpa e executiva
             </p>
-            <Link href="/pricing" className="font-semibold text-foreground hover:text-primary">
+            <Link href="/pricing" className="font-semibold text-foreground hover:text-white">
               Ver planos
             </Link>
           </div>
         </div>
 
-        <header className="sticky top-0 z-20 border-b border-white/[0.08] bg-[linear-gradient(180deg,rgba(8,12,20,0.92),rgba(8,12,20,0.8))] px-5 py-4 backdrop-blur-xl lg:px-8">
+        <header className="sticky top-0 z-20 border-b border-white/[0.08] bg-[linear-gradient(180deg,rgba(12,15,22,0.94),rgba(12,15,22,0.82))] px-5 py-4 backdrop-blur-xl lg:px-8">
           <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-3">
-              <div className="rounded-[1rem] border border-white/10 bg-[linear-gradient(135deg,rgba(255,255,255,0.08),rgba(102,170,255,0.18),rgba(12,23,38,0.88))] p-2.5 text-sky-100 shadow-[0_16px_36px_rgba(0,0,0,0.28)]">
-                <Sparkles className="h-5 w-5" />
+              <div className="brand-mark text-slate-100">
+                <Layers3 className="h-5 w-5" />
               </div>
               <div>
                 <p className="font-display text-xl font-semibold">HireFlow AI</p>
-                <p className="text-xs uppercase tracking-[0.26em] text-muted-foreground">Talent Operating System</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Talent operations</p>
               </div>
             </Link>
 
             <nav className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
-              <Link href="/#produto" className="hover:text-foreground">
+              <Link href="/#produto" className="site-nav-link">
                 Produto
               </Link>
-              <Link href="/#como-funciona" className="hover:text-foreground">
+              <Link href="/#como-funciona" className="site-nav-link">
                 Como funciona
               </Link>
-              <Link href="/pricing" className="hover:text-foreground">
+              <Link href="/pricing" className="site-nav-link">
                 Planos
               </Link>
-              <Link href="/book-demo" className="hover:text-foreground">
+              <Link href="/book-demo" className="site-nav-link">
                 Agendar demo
               </Link>
-              <Link href="/careers/hireflow-demo" className="hover:text-foreground">
+              <Link href="/careers/hireflow-demo" className="site-nav-link">
                 Careers demo
               </Link>
             </nav>

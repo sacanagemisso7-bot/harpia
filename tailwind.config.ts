@@ -32,6 +32,7 @@ const config: Config = {
         ring: "hsl(var(--ring))",
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
+        info: "hsl(var(--info))",
         shell: "hsl(var(--shell))",
         "shell-foreground": "hsl(var(--shell-foreground))"
       },
@@ -41,18 +42,19 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)"
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(102, 168, 230, 0.12), 0 22px 60px rgba(0, 0, 0, 0.42), 0 0 34px rgba(87, 214, 255, 0.12)",
-        soft: "0 18px 44px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-        float: "0 28px 76px rgba(0, 0, 0, 0.48), 0 0 0 1px rgba(102, 168, 230, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-        aura: "0 30px 82px rgba(0, 0, 0, 0.52), 0 0 0 1px rgba(102, 168, 230, 0.08) inset"
+        glow: "0 0 0 1px rgba(122, 133, 155, 0.14), 0 14px 28px rgba(0, 0, 0, 0.22)",
+        soft: "0 12px 24px rgba(0, 0, 0, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.035)",
+        float: "0 18px 36px rgba(0, 0, 0, 0.24), 0 0 0 1px rgba(124, 132, 148, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.035)",
+        aura: "0 20px 42px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(124, 132, 148, 0.06) inset"
       },
       backgroundImage: {
         mesh:
-          "radial-gradient(circle at 12% 14%, rgba(87, 214, 255, 0.14), transparent 24%), radial-gradient(circle at 88% 10%, rgba(255, 184, 82, 0.1), transparent 18%), radial-gradient(circle at 78% 80%, rgba(105, 120, 255, 0.1), transparent 22%), linear-gradient(160deg, rgba(4, 7, 13, 0.98), rgba(7, 12, 21, 1))"
+          "radial-gradient(circle at 50% -10%, rgba(101, 118, 156, 0.12), transparent 30%), linear-gradient(180deg, rgba(8, 10, 14, 1), rgba(11, 14, 18, 1), rgba(14, 17, 22, 1))"
       },
       fontFamily: {
         sans: ["var(--font-sans)"],
-        display: ["var(--font-display)"]
+        display: ["var(--font-display)"],
+        mono: ["var(--font-mono)"]
       },
       keyframes: {
         float: {
@@ -68,8 +70,8 @@ const config: Config = {
           "100%": { opacity: "1", transform: "translateY(0px)" }
         },
         pulseGlow: {
-          "0%, 100%": { boxShadow: "0 0 0 rgba(87, 214, 255, 0)" },
-          "50%": { boxShadow: "0 0 60px rgba(87, 214, 255, 0.22)" }
+          "0%, 100%": { boxShadow: "0 0 0 rgba(89, 158, 255, 0)" },
+          "50%": { boxShadow: "0 0 56px rgba(89, 158, 255, 0.22)" }
         },
         drift: {
           "0%, 100%": { transform: "translate3d(0, 0, 0)" },
@@ -78,6 +80,10 @@ const config: Config = {
         halo: {
           "0%, 100%": { opacity: "0.7", transform: "scale(0.98)" },
           "50%": { opacity: "1", transform: "scale(1.02)" }
+        },
+        panelIn: {
+          "0%": { opacity: "0", transform: "translateY(10px) scale(0.992)" },
+          "100%": { opacity: "1", transform: "translateY(0px) scale(1)" }
         }
       },
       animation: {
@@ -86,7 +92,8 @@ const config: Config = {
         rise: "rise 0.55s ease-out both",
         pulseGlow: "pulseGlow 4s ease-in-out infinite",
         drift: "drift 8s ease-in-out infinite",
-        halo: "halo 5s ease-in-out infinite"
+        halo: "halo 5s ease-in-out infinite",
+        panelIn: "panelIn 0.45s ease-out both"
       }
     }
   },

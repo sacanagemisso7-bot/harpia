@@ -24,7 +24,7 @@ export function CompanyChatProposalForm({ action, threadId, proposal }: CompanyC
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="rounded-[1.15rem] border border-border/70 bg-white/75 p-4">
+    <form action={formAction} className="data-row p-4">
       <input type="hidden" name="threadId" value={threadId} />
       <input type="hidden" name="actionType" value={proposal.type} />
       <input type="hidden" name="payload" value={JSON.stringify(proposal.payload)} />
@@ -39,7 +39,7 @@ export function CompanyChatProposalForm({ action, threadId, proposal }: CompanyC
         </div>
         <FormMessage message={state.error} />
         {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
-        <Button type="submit" variant="outline" disabled={pending}>
+        <Button type="submit" variant="secondary" disabled={pending}>
           {pending ? "Aplicando..." : "Confirmar acao"}
         </Button>
       </div>

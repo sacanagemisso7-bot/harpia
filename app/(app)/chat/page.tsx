@@ -182,7 +182,7 @@ export default async function CompanyChatPage({
   const latestAssistantMetadata = latestAssistantMessage ? parseMessageMetadata(latestAssistantMessage.metadata) : null;
 
   return (
-    <div className="space-y-6">
+    <div className="page-stage space-y-7">
       <PageHeader
         eyebrow="Company chat"
         title="Copiloto operacional da empresa"
@@ -195,14 +195,14 @@ export default async function CompanyChatPage({
             <CardTitle>Threads</CardTitle>
             <CardDescription>Historico do seu contexto operacional.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="data-stack">
             {workspace.threads.length ? (
               workspace.threads.map((thread) => (
                 <Link
                   key={thread.id}
                   href={`/chat?threadId=${thread.id}`}
-                  className={`block rounded-[1.2rem] border p-4 transition hover:-translate-y-0.5 hover:shadow-soft ${
-                    workspace.activeThread?.id === thread.id ? "border-primary/25 bg-primary/5" : "border-border/70 bg-white/75"
+                  className={`chat-rail-item ${
+                    workspace.activeThread?.id === thread.id ? "chat-rail-item-active" : ""
                   }`}
                 >
                   <div className="space-y-2">
@@ -215,7 +215,7 @@ export default async function CompanyChatPage({
                 </Link>
               ))
             ) : (
-              <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+              <div className="empty-state-shell p-4 text-sm text-muted-foreground">
                 Sua primeira conversa vira um thread automaticamente.
               </div>
             )}
@@ -237,7 +237,7 @@ export default async function CompanyChatPage({
           <CardContent className="space-y-5">
             <CompanyChatComposer action={sendCompanyChatMessage} threadId={workspace.activeThread?.id} />
 
-            <div className="space-y-4">
+            <div className="data-stack">
               {workspace.activeThread?.messages.length ? (
                 workspace.activeThread.messages.map((message) => {
                   const metadata = parseMessageMetadata(message.metadata);
@@ -246,8 +246,8 @@ export default async function CompanyChatPage({
                   return (
                     <div
                       key={message.id}
-                      className={`rounded-[1.35rem] border p-5 ${
-                        isAssistant ? "border-primary/15 bg-primary/5" : "border-border/70 bg-white/75"
+                      className={`chat-message-shell ${
+                        isAssistant ? "assistant-message" : message.role === "USER" ? "user-message" : "system-message"
                       }`}
                     >
                       <div className="flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
@@ -257,7 +257,7 @@ export default async function CompanyChatPage({
                       <div className="mt-3 whitespace-pre-wrap text-sm leading-7">{message.content}</div>
 
                       {metadata.agentExecution ? (
-                        <div className="mt-4 rounded-[1.15rem] border border-border/70 bg-white/80 p-4">
+                        <div className="data-row mt-4 p-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.status)}</Badge>
                             <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.riskLevel)}</Badge>
@@ -287,10 +287,7 @@ export default async function CompanyChatPage({
                       {metadata.toolTraces.length ? (
                         <div className="mt-4 flex flex-wrap gap-2">
                           {metadata.toolTraces.map((trace) => (
-                            <div
-                              key={`${message.id}-${trace.tool}`}
-                              className="rounded-full border border-border/70 bg-white px-3 py-2 text-xs font-medium text-muted-foreground"
-                            >
+                            <div key={`${message.id}-${trace.tool}`} className="trace-pill">
                               {trace.tool}: {trace.summary}
                             </div>
                           ))}
@@ -298,7 +295,7 @@ export default async function CompanyChatPage({
                       ) : null}
 
                       {metadata.policyDraft ? (
-                        <div className="mt-4 rounded-[1.15rem] border border-emerald-200/70 bg-emerald-50/70 p-4">
+                        <div className="data-row mt-4 p-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="outline">Policy assistant</Badge>
                             <Badge variant="outline">{formatEnumLabel(metadata.policyDraft.confidence)}</Badge>
@@ -309,7 +306,7 @@ export default async function CompanyChatPage({
                       ) : null}
 
                       {metadata.policyOperations ? (
-                        <div className="mt-4 rounded-[1.15rem] border border-amber-200/70 bg-amber-50/70 p-4">
+                        <div className="data-row mt-4 p-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <Badge variant="outline">Compliance operacional</Badge>
                             <Badge variant="outline">{metadata.policyOperations.pendingAcknowledgements} pendentes</Badge>
@@ -322,12 +319,12 @@ export default async function CompanyChatPage({
                       ) : null}
 
                       {metadata.citations.length ? (
-                        <div className="mt-4 grid gap-3">
+                        <div className="mt-4 data-stack">
                           {metadata.citations.map((citation) => (
                             <a
                               key={`${message.id}-${citation.id}`}
                               href={citation.href ?? "/knowledge"}
-                              className="rounded-[1.15rem] border border-border/70 bg-white/85 p-4 transition hover:-translate-y-0.5 hover:shadow-soft"
+                              className="command-link p-4"
                             >
                               <div className="flex items-center justify-between gap-3">
                                 <p className="font-semibold">{citation.title}</p>
@@ -348,7 +345,7 @@ export default async function CompanyChatPage({
                               <a
                                 key={`${message.id}-${entity.id}`}
                                 href={entity.href}
-                                className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white px-3 py-2 text-xs font-medium text-muted-foreground"
+                                className="interactive-chip text-xs text-muted-foreground"
                               >
                                 <Link2 className="h-3.5 w-3.5" />
                                 {entity.label}
@@ -374,7 +371,7 @@ export default async function CompanyChatPage({
                       {metadata.suggestedPrompts.length ? (
                         <div className="mt-4 flex flex-wrap gap-2">
                           {metadata.suggestedPrompts.map((prompt) => (
-                            <div key={`${message.id}-${prompt}`} className="rounded-full border border-border/70 bg-white px-3 py-2 text-xs text-muted-foreground">
+                            <div key={`${message.id}-${prompt}`} className="interactive-chip text-xs text-muted-foreground">
                               {prompt}
                             </div>
                           ))}
@@ -384,7 +381,7 @@ export default async function CompanyChatPage({
                   );
                 })
               ) : (
-                <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
+                <div className="empty-state-shell p-5 text-sm text-muted-foreground">
                   Pergunte algo como &quot;quais tarefas do RH estao vencidas?&quot;, &quot;resuma o backlog de solicitacoes internas&quot; ou &quot;crie um onboarding para esse colaborador&quot;.
                 </div>
               )}
@@ -397,9 +394,9 @@ export default async function CompanyChatPage({
             <CardTitle>Contexto lateral</CardTitle>
             <CardDescription>Artifacts, trilha de tools e prompts para operar o chat como copiloto.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="data-stack">
             {latestAssistantMetadata?.emailDraft ? (
-              <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+              <div className="data-row p-4">
                 <p className="section-intro">Rascunho de email</p>
                 <p className="mt-3 font-semibold">{latestAssistantMetadata.emailDraft.subject}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{latestAssistantMetadata.emailDraft.to ?? "Sem destinatario sugerido"}</p>
@@ -410,11 +407,11 @@ export default async function CompanyChatPage({
             ) : null}
 
             {latestAssistantMetadata?.toolTraces.length ? (
-              <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+              <div className="data-row p-4">
                 <p className="section-intro">Toolchain usada</p>
-                <div className="mt-3 grid gap-3">
+                <div className="mt-3 data-stack">
                   {latestAssistantMetadata.toolTraces.map((trace) => (
-                    <div key={trace.tool} className="rounded-[1rem] border border-border/70 bg-white p-3">
+                    <div key={trace.tool} className="data-row p-3">
                       <p className="font-semibold">{trace.tool}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{trace.summary}</p>
                     </div>
@@ -424,7 +421,7 @@ export default async function CompanyChatPage({
             ) : null}
 
             {latestAssistantMetadata?.policyDraft ? (
-              <div className="rounded-[1.2rem] border border-emerald-200/70 bg-emerald-50/70 p-4">
+              <div className="data-row p-4">
                 <p className="section-intro">Policy assistant</p>
                 <p className="mt-3 font-semibold">{formatEnumLabel(latestAssistantMetadata.policyDraft.confidence)}</p>
                 <p className="mt-2 text-sm text-muted-foreground">{latestAssistantMetadata.policyDraft.summary}</p>
@@ -432,20 +429,20 @@ export default async function CompanyChatPage({
             ) : null}
 
             {latestAssistantMetadata?.policyOperations ? (
-              <div className="rounded-[1.2rem] border border-amber-200/70 bg-amber-50/70 p-4">
+              <div className="data-row p-4">
                 <p className="section-intro">Status operacional</p>
                 <p className="mt-3 font-semibold">{latestAssistantMetadata.policyOperations.summary}</p>
-                <div className="mt-3 grid gap-3">
+                <div className="mt-3 data-stack">
                   {latestAssistantMetadata.policyOperations.items.map((item) => (
                     <a
                       key={item.id}
                       href={item.href ?? "/people/compliance"}
-                      className="rounded-[1rem] border border-border/70 bg-white p-3 transition hover:-translate-y-0.5 hover:shadow-soft"
+                      className="command-link p-3"
                     >
                       <p className="font-semibold">{item.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">
                         {item.employeeName}
-                        {item.documentTitle ? ` · ${item.documentTitle}` : ""}
+                        {item.documentTitle ? ` - ${item.documentTitle}` : ""}
                       </p>
                     </a>
                   ))}
@@ -454,14 +451,14 @@ export default async function CompanyChatPage({
             ) : null}
 
             {latestAssistantMetadata?.citations.length ? (
-              <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+              <div className="data-row p-4">
                 <p className="section-intro">Fontes citadas</p>
-                <div className="mt-3 grid gap-3">
+                <div className="mt-3 data-stack">
                   {latestAssistantMetadata.citations.map((citation) => (
                     <a
                       key={citation.id}
                       href={citation.href ?? "/knowledge"}
-                      className="rounded-[1rem] border border-border/70 bg-white p-3 transition hover:-translate-y-0.5 hover:shadow-soft"
+                      className="command-link p-3"
                     >
                       <p className="font-semibold">{citation.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{citation.excerpt}</p>
@@ -472,14 +469,14 @@ export default async function CompanyChatPage({
             ) : null}
 
             {latestAssistantMetadata?.relatedEntities.length ? (
-              <div className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+              <div className="data-row p-4">
                 <p className="section-intro">Entidades relacionadas</p>
-                <div className="mt-3 grid gap-3">
+                <div className="mt-3 data-stack">
                   {latestAssistantMetadata.relatedEntities.map((entity) => (
                     <a
                       key={entity.id}
                       href={entity.href ?? "/chat"}
-                      className="rounded-[1rem] border border-border/70 bg-white p-3 transition hover:-translate-y-0.5 hover:shadow-soft"
+                      className="command-link p-3"
                     >
                       <p className="font-semibold">{entity.label}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{entity.type}</p>
@@ -489,14 +486,14 @@ export default async function CompanyChatPage({
               </div>
             ) : null}
 
-            <div className="space-y-3">
+            <div className="data-stack">
               {[
                 "Quais politicas internas devo citar para responder este caso?",
                 "Resuma as pendencias operacionais que estao em risco hoje.",
                 "Onde onboarding ou offboarding ficou travado?",
                 "Quais solicitacoes internas precisam de resposta agora?"
               ].map((prompt) => (
-                <div key={prompt} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4 text-sm text-muted-foreground">
+                <div key={prompt} className="data-row p-4 text-sm text-muted-foreground">
                   <div className="flex items-start gap-3">
                     <WandSparkles className="mt-0.5 h-4 w-4 text-primary" />
                     <span>{prompt}</span>

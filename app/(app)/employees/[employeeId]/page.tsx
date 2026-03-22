@@ -7,6 +7,9 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
 import { getEmployeeProfile } from "@/modules/employees/queries";
 
@@ -40,7 +43,7 @@ export default async function EmployeeProfilePage({
   const canManageCompliance = hasPermission(user.role, "manage_compliance");
 
   return (
-    <div className="space-y-6">
+    <div className="page-stage space-y-7">
       <PageHeader
         eyebrow="Employee profile"
         title={employee.fullName}
@@ -48,26 +51,26 @@ export default async function EmployeeProfilePage({
         actions={<Badge variant={getStatusVariant(employee.status)}>{employee.status}</Badge>}
       />
 
-      <section className="grid gap-5 xl:grid-cols-4">
-        <Card className="panel-hover">
+      <section className="stagger-grid grid gap-5 xl:grid-cols-4">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">Gestor</p>
             <p className="mt-3 text-lg font-semibold">{employee.manager?.fullName ?? "Sem gestor"}</p>
           </CardContent>
         </Card>
-        <Card className="panel-hover">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">Solicitacoes</p>
             <p className="mt-3 text-lg font-semibold">{employee.requestedHrRequests.length}</p>
           </CardContent>
         </Card>
-        <Card className="panel-hover">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">Tarefas</p>
             <p className="mt-3 text-lg font-semibold">{employee.relatedTasks.length}</p>
           </CardContent>
         </Card>
-        <Card className="panel-hover">
+        <Card className="metric-panel panel-hover">
           <CardContent className="p-5">
             <p className="section-intro">Compliance</p>
             <p className="mt-3 text-lg font-semibold">
@@ -85,14 +88,16 @@ export default async function EmployeeProfilePage({
               <CardTitle>Dados principais</CardTitle>
               <CardDescription>Fonte de verdade operacional para o colaborador.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>Cargo: {employee.title}</p>
-              <p>Time: {employee.department}</p>
-              <p>Localizacao: {employee.location || "Nao informada"}</p>
-              <p>Tipo de contratacao: {employee.employmentType || "Nao informado"}</p>
-              <p>Entrada: {employee.startDate ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(employee.startDate) : "Nao informada"}</p>
-              <p>Email: {employee.workEmail || "Nao informado"}</p>
-              <p>Observacoes: {employee.notes || "Sem notas iniciais"}</p>
+            <CardContent className="grid gap-3 text-sm text-muted-foreground">
+              <div className="data-row p-4">Cargo: {employee.title}</div>
+              <div className="data-row p-4">Time: {employee.department}</div>
+              <div className="data-row p-4">Localizacao: {employee.location || "Nao informada"}</div>
+              <div className="data-row p-4">Tipo de contratacao: {employee.employmentType || "Nao informado"}</div>
+              <div className="data-row p-4">
+                Entrada: {employee.startDate ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(employee.startDate) : "Nao informada"}
+              </div>
+              <div className="data-row p-4">Email: {employee.workEmail || "Nao informado"}</div>
+              <div className="data-row p-4">Observacoes: {employee.notes || "Sem notas iniciais"}</div>
             </CardContent>
           </Card>
 
@@ -130,16 +135,16 @@ export default async function EmployeeProfilePage({
               <CardContent>
                 <form action={createEmployeeCheckInAction} className="grid gap-4">
                   <input type="hidden" name="employeeId" value={employee.id} />
-                  <select name="type" defaultValue={EmployeeCheckInType.CHECK_IN} className="h-11 rounded-2xl border border-border bg-white px-4">
+                  <Select name="type" defaultValue={EmployeeCheckInType.CHECK_IN}>
                     {Object.values(EmployeeCheckInType).map((type) => (
                       <option key={type} value={type}>
                         {type}
                       </option>
                     ))}
-                  </select>
-                  <input name="title" required placeholder="Titulo do registro" className="h-11 rounded-2xl border border-border bg-white px-4" />
-                  <input name="followUpAt" type="date" className="h-11 rounded-2xl border border-border bg-white px-4" />
-                  <textarea name="summary" placeholder="Resumo do acompanhamento" className="min-h-28 rounded-[1.25rem] border border-border bg-white px-4 py-3" />
+                  </Select>
+                  <Input name="title" required placeholder="Titulo do registro" />
+                  <Input name="followUpAt" type="date" />
+                  <Textarea name="summary" placeholder="Resumo do acompanhamento" className="min-h-28" />
                   <Button type="submit">Salvar registro</Button>
                 </form>
               </CardContent>
@@ -153,10 +158,10 @@ export default async function EmployeeProfilePage({
               <CardTitle>Workflow history</CardTitle>
               <CardDescription>Onboarding, offboarding e progresso das etapas.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="data-stack">
               {employee.workflowRuns.length ? (
                 employee.workflowRuns.map((run) => (
-                  <div key={run.id} className="rounded-[1.2rem] border border-border/70 bg-white/75 p-4">
+                  <div key={run.id} className="data-row">
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="font-semibold">{run.title}</p>
@@ -164,9 +169,9 @@ export default async function EmployeeProfilePage({
                       </div>
                       <Badge variant={run.status === "COMPLETED" ? "success" : "outline"}>{run.status}</Badge>
                     </div>
-                    <div className="mt-4 grid gap-3">
+                    <div className="mt-4 data-stack">
                       {run.steps.map((step) => (
-                        <div key={step.id} className="rounded-[1rem] border border-border/70 bg-white p-3">
+                        <div key={step.id} className="data-row p-3">
                           <div className="flex items-center justify-between gap-3">
                             <div>
                               <p className="font-medium">{step.title}</p>
@@ -182,7 +187,7 @@ export default async function EmployeeProfilePage({
                   </div>
                 ))
               ) : (
-                <div className="rounded-[1.2rem] border border-dashed border-border bg-white/75 p-4 text-sm text-muted-foreground">
+                <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
                   Nenhum fluxo operacional registrado para este colaborador ainda.
                 </div>
               )}
@@ -199,13 +204,13 @@ export default async function EmployeeProfilePage({
                 <p className="section-intro">Solicitacoes</p>
                 {employee.requestedHrRequests.length ? (
                   employee.requestedHrRequests.map((request) => (
-                    <div key={request.id} className="rounded-[1rem] border border-border/70 bg-white/75 p-3">
+                    <div key={request.id} className="data-row p-3">
                       <p className="font-medium">{request.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{request.status}</p>
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[1rem] border border-dashed border-border bg-white/75 p-3 text-sm text-muted-foreground">
+                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
                     Sem solicitacoes para este colaborador.
                   </div>
                 )}
@@ -214,13 +219,13 @@ export default async function EmployeeProfilePage({
                 <p className="section-intro">Tarefas</p>
                 {employee.relatedTasks.length ? (
                   employee.relatedTasks.map((task) => (
-                    <div key={task.id} className="rounded-[1rem] border border-border/70 bg-white/75 p-3">
+                    <div key={task.id} className="data-row p-3">
                       <p className="font-medium">{task.title}</p>
                       <p className="mt-1 text-sm text-muted-foreground">{task.status}</p>
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[1rem] border border-dashed border-border bg-white/75 p-3 text-sm text-muted-foreground">
+                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
                     Sem tarefas vinculadas agora.
                   </div>
                 )}
@@ -232,12 +237,12 @@ export default async function EmployeeProfilePage({
             <Card className="panel-hover">
               <CardHeader>
                 <CardTitle>Compliance</CardTitle>
-              <CardDescription>Documentos e trilhas obrigatorias.</CardDescription>
+                <CardDescription>Documentos e trilhas obrigatorias.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="data-stack">
                 {employee.complianceRequirements.length ? (
                   employee.complianceRequirements.map((item) => (
-                    <div key={item.id} className="rounded-[1rem] border border-border/70 bg-white/75 p-3">
+                    <div key={item.id} className="data-row p-3">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="font-medium">{item.title}</p>
@@ -248,7 +253,7 @@ export default async function EmployeeProfilePage({
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[1rem] border border-dashed border-border bg-white/75 p-3 text-sm text-muted-foreground">
+                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
                     Nenhum item de compliance em aberto.
                   </div>
                 )}
@@ -260,17 +265,17 @@ export default async function EmployeeProfilePage({
                 <CardTitle>Policy acknowledgements</CardTitle>
                 <CardDescription>Aceites de politica e confirmacoes operacionais desta pessoa.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="data-stack">
                 {employee.policyAcknowledgements.length ? (
                   employee.policyAcknowledgements.map((item) => (
-                    <div key={item.id} className="rounded-[1rem] border border-border/70 bg-white/75 p-3">
+                    <div key={item.id} className="data-row p-3">
                       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                         <div>
                           <p className="font-medium">{item.title}</p>
                           <p className="text-sm text-muted-foreground">
                             {item.document?.title ?? "Politica interna"}
-                            {item.document?.versionLabel ? ` · ${item.document.versionLabel}` : ""}
-                            {item.dueAt ? ` · vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
+                            {item.document?.versionLabel ? ` - ${item.document.versionLabel}` : ""}
+                            {item.dueAt ? ` - vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
                           </p>
                           {item.document?.summary ? <p className="mt-2 text-sm text-muted-foreground">{item.document.summary}</p> : null}
                         </div>
@@ -299,7 +304,7 @@ export default async function EmployeeProfilePage({
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[1rem] border border-dashed border-border bg-white/75 p-3 text-sm text-muted-foreground">
+                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
                     Nenhum aceite de politica pendente para este colaborador.
                   </div>
                 )}
@@ -311,10 +316,10 @@ export default async function EmployeeProfilePage({
                 <CardTitle>Check-ins e notas</CardTitle>
                 <CardDescription>Acompanhamento humano e historico operacional.</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
+              <CardContent className="data-stack">
                 {employee.checkIns.length ? (
                   employee.checkIns.map((entry) => (
-                    <div key={entry.id} className="rounded-[1rem] border border-border/70 bg-white/75 p-3">
+                    <div key={entry.id} className="data-row p-3">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <p className="font-medium">{entry.title}</p>
@@ -326,7 +331,7 @@ export default async function EmployeeProfilePage({
                     </div>
                   ))
                 ) : (
-                  <div className="rounded-[1rem] border border-dashed border-border bg-white/75 p-3 text-sm text-muted-foreground">
+                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
                     Nenhum registro de acompanhamento ainda.
                   </div>
                 )}
