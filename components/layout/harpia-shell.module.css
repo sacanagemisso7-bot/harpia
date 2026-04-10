@@ -1,0 +1,1288 @@
+﻿.sidebar {
+  position: sticky;
+  top: 1rem;
+  align-self: start;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.rail {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 5.5rem;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  background:
+    linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(17, 17, 20, 0.94)),
+    radial-gradient(circle at 50% 0%, rgba(129, 155, 255, 0.14), transparent 32%);
+}
+
+.rail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.016), transparent 54%);
+  pointer-events: none;
+}
+
+.railGlow {
+  position: absolute;
+  left: 50%;
+  top: -24%;
+  width: 7rem;
+  height: 7rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 155, 255, 0.22), transparent 66%);
+  filter: blur(28px);
+  transform: translateX(-50%);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.railDust {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(129, 155, 255, 0.08) 0 1px, transparent 1px),
+    linear-gradient(180deg, rgba(129, 155, 255, 0.08), transparent 26%, transparent 74%, rgba(255, 255, 255, 0.04));
+  background-size: 12px 12px, 100% 100%;
+  opacity: 0.16;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 86%);
+  pointer-events: none;
+}
+
+.railTop {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1;
+}
+
+.railBrand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+.railSignals {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.railSignal {
+  display: grid;
+  justify-items: center;
+  gap: 0.34rem;
+}
+
+.railSignalCode,
+.railSignalLabel,
+.railFootLabel {
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.5);
+}
+
+.railSignalDot {
+  width: 0.44rem;
+  height: 0.44rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.railSignalDotActive {
+  background: rgba(129, 155, 255, 0.88);
+  box-shadow: 0 0 14px rgba(129, 155, 255, 0.42);
+}
+
+.railFoot {
+  display: none;
+}
+
+.railFootLine {
+  width: 1px;
+  height: 3.6rem;
+  background: linear-gradient(180deg, rgba(129, 155, 255, 0.4), transparent);
+}
+
+.deck {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 1rem;
+  border-radius: 1.9rem 2.5rem 1.88rem 1.18rem;
+  clip-path: polygon(0 0, calc(100% - 1.9rem) 0, 100% 1.9rem, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(16, 16, 18, 0.94)),
+    radial-gradient(circle at 82% 10%, rgba(129, 155, 255, 0.12), transparent 24%),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.024), transparent 44%);
+}
+
+.deck::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
+    linear-gradient(180deg, transparent 74%, rgba(0, 0, 0, 0.18));
+  pointer-events: none;
+}
+
+.sidebarGlow {
+  position: absolute;
+  left: -10%;
+  top: -6%;
+  width: 17rem;
+  height: 10rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 155, 255, 0.18), transparent 70%);
+  filter: blur(36px);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.sidebarDust {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  bottom: 1rem;
+  width: 7rem;
+  background:
+    radial-gradient(circle at center, rgba(129, 155, 255, 0.08) 0 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%, transparent 78%, rgba(129, 155, 255, 0.04));
+  background-size: 14px 14px, 100% 100%;
+  opacity: 0.18;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 88%);
+  pointer-events: none;
+}
+
+.brandStage {
+  position: relative;
+  min-height: 12.2rem;
+  overflow: hidden;
+  padding: 1.25rem 1.25rem 1.1rem;
+  border: 1px solid rgba(120, 129, 142, 0.1);
+  border-radius: 1.46rem 2rem 1.58rem 1.02rem;
+  clip-path: polygon(0 0, calc(100% - 1.35rem) 0, 100% 1.35rem, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.026), transparent 24%),
+    linear-gradient(180deg, rgba(28, 28, 31, 0.94), rgba(19, 19, 22, 0.92));
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.brandStage::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  bottom: 1rem;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(129, 155, 255, 0.42), transparent 84%);
+}
+
+.brandMeta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding-left: 0.9rem;
+}
+
+.brandMeta::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 0.42rem;
+  height: 0.42rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.84);
+  box-shadow: 0 0 14px rgba(129, 155, 255, 0.42);
+  transform: translateY(-50%);
+}
+
+.brandSerial,
+.brandSignal {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.5);
+}
+
+.brandLink {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-top: 1.15rem;
+  color: inherit;
+}
+
+.brandGhost {
+  position: absolute;
+  right: -0.8rem;
+  top: 2.2rem;
+  width: 8rem;
+  color: rgba(244, 241, 234, 0.055);
+  transform: rotate(-7deg);
+  pointer-events: none;
+}
+
+.brandCoordinates {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.58rem;
+  margin-top: 1.2rem;
+  padding-left: 0.9rem;
+}
+
+.brandCoordinates span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.46);
+}
+
+.brandCoordinates span::before {
+  content: "";
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.34);
+}
+
+.introSlot {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.1rem;
+  padding-top: 1rem;
+}
+
+.introSlot::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(129, 155, 255, 0.24), transparent);
+}
+
+.systemPlate {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.9rem;
+  padding: 1rem;
+  border: 1px solid rgba(120, 129, 142, 0.1);
+  border-radius: 1.04rem 1.44rem 1.12rem 0.9rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 28%),
+    linear-gradient(180deg, rgba(23, 23, 26, 0.92), rgba(18, 18, 21, 0.88));
+}
+
+.systemPlateMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.96rem;
+  border: 1px solid rgba(129, 155, 255, 0.16);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%),
+    rgba(255, 255, 255, 0.02);
+  color: rgba(244, 241, 234, 0.84);
+}
+
+.systemPlateEyebrow {
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.48);
+}
+
+.systemPlateTitle {
+  margin-top: 0.34rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+
+.systemPlateText {
+  margin-top: 0.38rem;
+  font-size: 0.76rem;
+  line-height: 1.7;
+  color: rgba(207, 202, 194, 0.62);
+}
+
+.navViewport {
+  position: relative;
+  z-index: 1;
+  margin-top: 1.2rem;
+  flex: 1;
+}
+
+.navViewport::before {
+  content: "";
+  position: absolute;
+  left: 0.4rem;
+  top: 5rem;
+  bottom: 1rem;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(129, 155, 255, 0.22), rgba(255, 255, 255, 0.05), transparent);
+  pointer-events: none;
+}
+
+.bottomStack {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.95rem;
+  margin-top: 1rem;
+}
+
+.sidebarCard {
+  border-radius: 1rem 1.36rem 1.14rem 0.94rem !important;
+  clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 1rem, 100% 100%, 0 100%) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent 28%),
+    linear-gradient(180deg, rgba(22, 22, 25, 0.92), rgba(18, 18, 21, 0.88)) !important;
+}
+
+.signOutButton {
+  border-radius: 1.02rem 1.42rem 1.18rem 0.96rem !important;
+  clip-path: polygon(0 0, calc(100% - 1rem) 0, 100% 1rem, 100% 100%, 0 100%) !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent 30%),
+    linear-gradient(180deg, rgba(24, 24, 27, 0.94), rgba(18, 18, 21, 0.9)) !important;
+  border-color: rgba(120, 129, 142, 0.12) !important;
+  box-shadow:
+    0 18px 30px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+}
+
+.navRoot {
+  position: relative;
+  display: grid;
+  gap: 1.15rem;
+  padding-left: 1.05rem;
+}
+
+.navCurrent {
+  position: relative;
+  overflow: hidden;
+  padding: 1.15rem 1.1rem 1.05rem;
+  border: 1px solid rgba(120, 129, 142, 0.1);
+  border-radius: 1.2rem 1.78rem 1.38rem 0.98rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent 24%),
+    linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(18, 18, 21, 0.92)),
+    radial-gradient(circle at 82% 18%, rgba(129, 155, 255, 0.12), transparent 30%);
+  box-shadow:
+    0 22px 46px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.navCurrentGhost {
+  position: absolute;
+  right: -0.2rem;
+  bottom: -0.5rem;
+  font-family: var(--font-display);
+  font-size: 5rem;
+  font-weight: 600;
+  letter-spacing: -0.08em;
+  line-height: 0.8;
+  color: rgba(244, 241, 234, 0.045);
+  pointer-events: none;
+}
+
+.navCurrentEyebrow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  z-index: 1;
+}
+
+.navCurrentCode,
+.navCurrentState {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.3rem;
+  padding: 0 0.56rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 129, 142, 0.14);
+  background: rgba(255, 255, 255, 0.024);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.54);
+}
+
+.navCurrentTitle {
+  position: relative;
+  z-index: 1;
+  margin-top: 0.9rem;
+  max-width: 8ch;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 4vw, 3.55rem);
+  font-weight: 500;
+  letter-spacing: -0.09em;
+  line-height: 0.9;
+  color: rgba(244, 241, 234, 0.96);
+}
+
+.navCurrentMeta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.navCurrentPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 129, 142, 0.12);
+  background: rgba(255, 255, 255, 0.022);
+  padding: 0.46rem 0.65rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.56);
+}
+
+.navCurrentPill::before {
+  content: "";
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.36);
+}
+
+.navCurrentTrail {
+  position: relative;
+  z-index: 1;
+  margin-top: 1rem;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(129, 155, 255, 0.28), transparent);
+}
+
+.navGroup {
+  position: relative;
+  display: grid;
+  gap: 0.7rem;
+}
+
+.navGroupHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-left: 0.3rem;
+}
+
+.navGroupCode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2rem;
+  height: 1.2rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 129, 142, 0.14);
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0 0.5rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.48);
+}
+
+.navGroupLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(129, 155, 255, 0.22), transparent);
+}
+
+.navGroupItems {
+  display: grid;
+  gap: 0.58rem;
+}
+
+.navItem {
+  position: relative;
+  overflow: visible;
+  min-height: 4.1rem;
+  padding: 1rem 1rem 0.95rem !important;
+  border-radius: 1rem 1.48rem 1.2rem 0.96rem !important;
+  clip-path: polygon(0 0, calc(100% - 0.9rem) 0, 100% 0.9rem, 100% 100%, 0 100%) !important;
+}
+
+.navItem::before {
+  content: "";
+  position: absolute;
+  left: -0.9rem;
+  top: 50%;
+  width: 0.72rem;
+  height: 1px;
+  background: rgba(129, 155, 255, 0.24);
+  transform: translateY(-50%);
+}
+
+.navItem::after {
+  content: "";
+  position: absolute;
+  left: 4rem;
+  right: 1rem;
+  bottom: 0.8rem;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(129, 155, 255, 0.24), transparent);
+  opacity: 0;
+  transition: opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.navItem:hover::after,
+.navItemActive::after {
+  opacity: 1;
+}
+
+.navItemActive {
+  transform: translateX(0.42rem);
+}
+
+.navItemActive::before {
+  background: rgba(129, 155, 255, 0.9);
+  box-shadow: 0 0 12px rgba(129, 155, 255, 0.38);
+}
+
+.navLead {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.navLabel {
+  display: grid;
+  min-width: 0;
+  gap: 0.32rem;
+}
+
+.navLabelText {
+  display: block;
+  min-width: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.navLabelSub {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.42);
+}
+
+.navLabelSub::before {
+  content: "";
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.28);
+}
+
+.navTrail {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.44);
+}
+
+.navTrail::before {
+  content: "";
+  width: 0.36rem;
+  height: 0.36rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.32);
+}
+
+.navItemActive .navTrail {
+  color: rgba(244, 241, 234, 0.82);
+}
+
+.navItemActive .navTrail::before {
+  background: rgba(129, 155, 255, 0.84);
+  box-shadow: 0 0 10px rgba(129, 155, 255, 0.42);
+}
+
+.horizon {
+  position: relative;
+  margin-bottom: 2.4rem;
+}
+
+.topbar {
+  position: relative;
+  overflow: hidden;
+  min-height: 14.8rem;
+  padding: 1.4rem 1.45rem 1.6rem;
+  border: 1px solid rgba(120, 129, 142, 0.12);
+  border-radius: 1.7rem 2.4rem 1.84rem 1.16rem;
+  clip-path: polygon(0 0, calc(100% - 1.9rem) 0, 100% 1.9rem, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    linear-gradient(180deg, rgba(24, 24, 27, 0.94), rgba(17, 17, 20, 0.9)),
+    radial-gradient(circle at 86% 18%, rgba(129, 155, 255, 0.12), transparent 24%);
+  box-shadow:
+    0 30px 68px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.topbarWithBanner {
+  min-height: 17.5rem;
+  padding-bottom: 4.8rem;
+}
+
+.topbar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.5rem;
+  bottom: 1.4rem;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(129, 155, 255, 0.44), transparent 84%);
+}
+
+.topbarGlow {
+  position: absolute;
+  right: -10%;
+  top: -10%;
+  width: 26rem;
+  height: 18rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 155, 255, 0.14), transparent 66%);
+  filter: blur(38px);
+  opacity: 0.74;
+  pointer-events: none;
+}
+
+.topbarGhost {
+  position: absolute;
+  right: 0.6rem;
+  bottom: -0.85rem;
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 19vw, 13rem);
+  font-weight: 600;
+  letter-spacing: -0.1em;
+  line-height: 0.78;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.042);
+  pointer-events: none;
+}
+
+.topbarGrid {
+  position: relative;
+  display: grid;
+  gap: 1.4rem;
+  min-height: 100%;
+}
+
+.topbarMain {
+  display: grid;
+  align-content: space-between;
+  gap: 1rem;
+  min-width: 0;
+  max-width: 48rem;
+}
+
+.topbarEyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.topbarStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 129, 142, 0.12);
+  background: rgba(255, 255, 255, 0.022);
+  padding: 0.42rem 0.66rem;
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.56);
+}
+
+.topbarStatus::before {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.84);
+  box-shadow: 0 0 12px rgba(129, 155, 255, 0.42);
+}
+
+.topbarTitle {
+  max-width: 10ch;
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 6vw, 5.65rem);
+  font-weight: 500;
+  letter-spacing: -0.09em;
+  line-height: 0.88;
+  color: rgba(244, 241, 234, 0.98);
+}
+
+.topbarText {
+  max-width: 30rem;
+  font-size: 0.94rem;
+  line-height: 1.8;
+  color: rgba(207, 202, 194, 0.66);
+}
+
+.topbarTrail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.56rem;
+}
+
+.topbarTrail span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  border: 1px solid rgba(120, 129, 142, 0.1);
+  background: rgba(255, 255, 255, 0.018);
+  padding: 0.46rem 0.7rem;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.52);
+}
+
+.topbarTrail span::before {
+  content: "";
+  width: 0.34rem;
+  height: 0.34rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.36);
+}
+
+.topbarDock {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.8rem;
+  justify-self: start;
+  padding: 0.45rem;
+  border: 1px solid rgba(120, 129, 142, 0.12);
+  border-radius: 1.18rem 1.72rem 1.36rem 0.98rem;
+  clip-path: polygon(0 0, calc(100% - 1.1rem) 0, 100% 1.1rem, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 22%),
+    linear-gradient(180deg, rgba(25, 25, 28, 0.96), rgba(18, 18, 21, 0.92));
+  box-shadow:
+    0 18px 34px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.topbarDock::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(129, 155, 255, 0.1), transparent 38%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.topbarUtilityGrid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.65rem;
+  justify-items: end;
+}
+
+.topbarActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  justify-content: flex-end;
+}
+
+.topbarChip {
+  display: inline-flex;
+  min-height: 2.9rem;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.9rem 1.18rem 0.98rem 0.82rem;
+  border: 1px solid rgba(120, 129, 142, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent 26%),
+    rgba(255, 255, 255, 0.018);
+  padding: 0.8rem 0.95rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.72);
+}
+
+.topbarChip::before {
+  content: "";
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: rgba(129, 155, 255, 0.84);
+  box-shadow: 0 0 10px rgba(129, 155, 255, 0.4);
+}
+
+.topbarRole {
+  min-height: 2.9rem;
+  border-color: rgba(120, 129, 142, 0.12) !important;
+  background: rgba(255, 255, 255, 0.024) !important;
+  color: rgba(244, 241, 234, 0.72) !important;
+}
+
+.topbarBell {
+  min-height: 2.9rem;
+}
+
+.bannerStack {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -4.2rem;
+  padding-left: clamp(0rem, 25vw, 19rem);
+}
+
+.banner {
+  position: relative;
+  overflow: hidden;
+  width: min(100%, 40rem);
+  padding: 1.15rem 1.2rem;
+  border: 1px solid rgba(120, 129, 142, 0.12);
+  border-radius: 1.38rem 1.86rem 1.54rem 1rem;
+  clip-path: polygon(0 0, calc(100% - 1.35rem) 0, 100% 1.35rem, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
+    linear-gradient(180deg, rgba(26, 26, 29, 0.96), rgba(18, 18, 21, 0.92)),
+    radial-gradient(circle at 88% 16%, rgba(129, 155, 255, 0.12), transparent 24%);
+  box-shadow:
+    0 24px 54px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.bannerGlow {
+  position: absolute;
+  right: -12%;
+  top: -20%;
+  width: 14rem;
+  height: 10rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 155, 255, 0.16), transparent 66%);
+  filter: blur(28px);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.bannerGrid {
+  position: relative;
+  display: grid;
+  gap: 0.95rem;
+}
+
+.bannerCopy {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.bannerEyebrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.bannerTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1.35vw, 1.45rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  color: rgba(244, 241, 234, 0.96);
+}
+
+.bannerText {
+  max-width: 34rem;
+  font-size: 0.9rem;
+  line-height: 1.75;
+  color: rgba(207, 202, 194, 0.68);
+}
+
+.bannerStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.bannerStat {
+  min-width: 7rem;
+  padding: 0.72rem 0.82rem;
+  border-radius: 0.9rem 1.2rem 1rem 0.82rem;
+  border: 1px solid rgba(120, 129, 142, 0.1);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent 28%),
+    rgba(255, 255, 255, 0.016);
+}
+
+.bannerStat span {
+  display: block;
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(207, 202, 194, 0.46);
+}
+
+.bannerStat strong {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.bannerActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.contentStage {
+  position: relative;
+  overflow: hidden;
+  padding: 1.2rem 1rem 0;
+  border: 1px solid rgba(120, 129, 142, 0.08);
+  border-radius: 1.85rem 2.5rem 1.96rem 1.22rem;
+  clip-path: polygon(0 0, calc(100% - 1.85rem) 0, 100% 1.85rem, 100% 100%, 0 100%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent 16%),
+    linear-gradient(180deg, rgba(18, 18, 21, 0.82), rgba(12, 12, 14, 0.7)),
+    radial-gradient(circle at 18% 0%, rgba(129, 155, 255, 0.08), transparent 24%);
+  box-shadow:
+    0 34px 76px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.032);
+  isolation: isolate;
+}
+
+.contentStage::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.026), transparent 18%),
+    linear-gradient(140deg, rgba(255, 255, 255, 0.018), transparent 52%);
+  pointer-events: none;
+}
+
+.contentGlow {
+  position: absolute;
+  left: -8%;
+  top: -12%;
+  width: 30rem;
+  height: 20rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(129, 155, 255, 0.12), transparent 70%);
+  filter: blur(42px);
+  opacity: 0.76;
+  pointer-events: none;
+}
+
+.contentDust {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, rgba(129, 155, 255, 0.065) 0 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
+  background-size: 14px 14px, 96px 96px, 96px 96px;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.92), transparent 86%);
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.contentScan {
+  position: absolute;
+  inset: -18% auto -20% -22%;
+  width: 34%;
+  background: linear-gradient(90deg, transparent, rgba(129, 155, 255, 0.12), rgba(244, 241, 234, 0.18), transparent);
+  opacity: 0.42;
+  transform: rotate(-11deg);
+  filter: blur(3px);
+  animation: contentScanDrift 19s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  pointer-events: none;
+}
+
+.contentGhost {
+  position: absolute;
+  right: -0.4rem;
+  top: 1rem;
+  font-family: var(--font-display);
+  font-size: clamp(5rem, 16vw, 12rem);
+  font-weight: 600;
+  letter-spacing: -0.11em;
+  line-height: 0.8;
+  color: rgba(244, 241, 234, 0.035);
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .rail {
+    min-height: calc(100vh - 2rem);
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.7rem;
+  }
+
+  .railTop {
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+
+  .railSignals {
+    display: grid;
+    gap: 0.82rem;
+  }
+
+  .railSignal:not(:last-child)::after {
+    content: "";
+    display: block;
+    justify-self: center;
+    width: 1px;
+    height: 2.2rem;
+    margin-top: 0.34rem;
+    background: linear-gradient(180deg, rgba(129, 155, 255, 0.34), transparent);
+  }
+
+  .railFoot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: center;
+    gap: 0.7rem;
+  }
+
+  .topbarGrid {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .topbarDock {
+    justify-self: end;
+  }
+}
+
+@media (max-width: 1023px) {
+  .horizon {
+    margin-bottom: 1.5rem;
+  }
+
+  .contentStage {
+    padding: 1rem 0.85rem 0;
+  }
+
+  .topbar {
+    min-height: 0;
+    padding-bottom: 1.45rem;
+  }
+
+  .topbarGhost {
+    font-size: 4.6rem;
+    right: 0.4rem;
+    bottom: -0.3rem;
+  }
+
+  .bannerStack {
+    margin-top: 1rem;
+    padding-left: 0;
+  }
+}
+
+:global(html.light) .rail,
+:global(html.light) .deck,
+:global(html.light) .brandStage,
+:global(html.light) .systemPlate,
+:global(html.light) .navCurrent,
+:global(html.light) .topbar,
+:global(html.light) .topbarDock,
+:global(html.light) .banner,
+:global(html.light) .sidebarCard,
+:global(html.light) .contentStage {
+  color: hsl(var(--foreground));
+}
+
+:global(html.light) .rail,
+:global(html.light) .deck {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.94)),
+    radial-gradient(circle at 82% 10%, rgba(129, 155, 255, 0.14), transparent 24%);
+  box-shadow:
+    0 20px 38px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+:global(html.light) .brandStage,
+:global(html.light) .systemPlate,
+:global(html.light) .navCurrent,
+:global(html.light) .topbar,
+:global(html.light) .topbarDock,
+:global(html.light) .banner,
+:global(html.light) .sidebarCard,
+:global(html.light) .contentStage {
+  border-color: rgba(208, 215, 222, 0.92);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.94)),
+    radial-gradient(circle at 84% 12%, rgba(129, 155, 255, 0.12), transparent 24%);
+  box-shadow:
+    0 18px 34px rgba(15, 23, 42, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+:global(html.light) .railGlow,
+:global(html.light) .sidebarGlow,
+:global(html.light) .topbarGlow,
+:global(html.light) .bannerGlow,
+:global(html.light) .contentGlow {
+  opacity: 0.46;
+}
+
+:global(html.light) .brandSerial,
+:global(html.light) .brandSignal,
+:global(html.light) .brandCoordinates span,
+:global(html.light) .railSignalCode,
+:global(html.light) .railSignalLabel,
+:global(html.light) .railFootLabel,
+:global(html.light) .systemPlateEyebrow,
+:global(html.light) .navCurrentCode,
+:global(html.light) .navCurrentState,
+:global(html.light) .navCurrentPill,
+:global(html.light) .navLabelSub,
+:global(html.light) .navTrail,
+:global(html.light) .topbarStatus,
+:global(html.light) .topbarTrail span,
+:global(html.light) .topbarChip,
+:global(html.light) .bannerText,
+:global(html.light) .bannerStat span {
+  color: rgba(87, 96, 106, 0.68);
+}
+
+:global(html.light) .brandGhost,
+:global(html.light) .navCurrentGhost,
+:global(html.light) .topbarGhost,
+:global(html.light) .contentGhost {
+  color: rgba(15, 23, 42, 0.05);
+}
+
+:global(html.light) .railSignalDot {
+  background: rgba(15, 23, 42, 0.16);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.06);
+}
+
+:global(html.light) .railSignalDotActive {
+  background: rgba(96, 122, 235, 0.82);
+  box-shadow: 0 0 12px rgba(96, 122, 235, 0.28);
+}
+
+:global(html.light) .navGroupCode,
+:global(html.light) .navCurrentCode,
+:global(html.light) .navCurrentState,
+:global(html.light) .navCurrentPill,
+:global(html.light) .topbarStatus,
+:global(html.light) .topbarTrail span,
+:global(html.light) .topbarChip,
+:global(html.light) .bannerStat,
+:global(html.light) .topbarRole {
+  border-color: rgba(208, 215, 222, 0.92) !important;
+  background: rgba(15, 23, 42, 0.03) !important;
+}
+
+:global(html.light) .navGroupLine,
+:global(html.light) .navViewport::before,
+:global(html.light) .railFootLine {
+  background: linear-gradient(180deg, rgba(96, 122, 235, 0.34), transparent);
+}
+
+:global(html.light) .navItem::before,
+:global(html.light) .navItem::after {
+  background: linear-gradient(90deg, rgba(96, 122, 235, 0.28), transparent);
+}
+
+@keyframes contentScanDrift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(-11deg);
+    opacity: 0;
+  }
+
+  15% {
+    opacity: 0.34;
+  }
+
+  55% {
+    opacity: 0.48;
+  }
+
+  100% {
+    transform: translate3d(260%, 0, 0) rotate(-11deg);
+    opacity: 0;
+  }
+}
+

@@ -29,8 +29,8 @@ export function BillingProfileForm({ action, defaultValues }: BillingProfileForm
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-5">
-      <div className="grid gap-4 md:grid-cols-2">
+    <form action={formAction} className="workspace-form">
+      <div className="workspace-form-grid">
         <div className="space-y-2">
           <Label htmlFor="billingLegalName">Razao social</Label>
           <Input id="billingLegalName" name="billingLegalName" defaultValue={defaultValues.billingLegalName} />
@@ -60,11 +60,13 @@ export function BillingProfileForm({ action, defaultValues }: BillingProfileForm
       </div>
 
       <FormMessage message={state.error} />
-      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
+      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
 
-      <Button type="submit" disabled={pending}>
-        {pending ? "Salvando..." : "Salvar perfil fiscal"}
-      </Button>
+      <div className="workspace-form-actions">
+        <Button type="submit" disabled={pending}>
+          {pending ? "Salvando..." : "Salvar perfil fiscal"}
+        </Button>
+      </div>
     </form>
   );
 }

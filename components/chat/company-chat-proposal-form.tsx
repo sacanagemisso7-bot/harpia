@@ -29,6 +29,7 @@ export function CompanyChatProposalForm({ action, threadId, proposal }: CompanyC
       <input type="hidden" name="actionType" value={proposal.type} />
       <input type="hidden" name="payload" value={JSON.stringify(proposal.payload)} />
       <div className="space-y-3">
+        <p className="section-intro">Action proposal</p>
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold">{proposal.label}</p>

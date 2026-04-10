@@ -1,4 +1,4 @@
-# HireFlow Desktop
+# Harpia Desktop
 
 Desktop client foundation for people ops, RH, managers, founders, and internal operations teams, with hiring preserved as a complementary module.
 
@@ -12,7 +12,7 @@ Desktop client foundation for people ops, RH, managers, founders, and internal o
 - people calendar and events
 - quick actions
 - company chat surface
-- desktop login against the HireFlow backend
+- desktop login against the Harpia backend
 - command palette scaffold
 - notification center scaffold
 - Tauri structure ready for future auto-update and notifications

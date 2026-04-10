@@ -1,0 +1,277 @@
+.workspace {
+  display: grid;
+  gap: 1rem;
+}
+
+.hero,
+.panel {
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 1.35rem;
+  background:
+    linear-gradient(180deg, hsl(var(--card) / 0.92), hsl(var(--secondary) / 0.72)),
+    radial-gradient(circle at top left, hsl(var(--primary) / 0.12), transparent 28%);
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(18px);
+}
+
+.hero {
+  display: grid;
+  gap: 1rem;
+  padding: 1.1rem;
+}
+
+.heroIntro,
+.panelHeader {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.eyebrow,
+.sectionLabel {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.heroTitle,
+.panelTitle {
+  margin: 0;
+  font-size: 1.16rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: hsl(var(--foreground));
+}
+
+.heroDescription,
+.panelDescription {
+  margin: 0;
+  max-width: 48rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: hsl(var(--muted-foreground));
+}
+
+.metricStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.metricTile {
+  display: grid;
+  gap: 0.35rem;
+  min-height: 7rem;
+  padding: 0.95rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.metricTile span {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
+}
+
+.metricTile strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  line-height: 0.92;
+  letter-spacing: -0.08em;
+  color: hsl(var(--foreground));
+}
+
+.metricTile p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: hsl(var(--muted-foreground));
+}
+
+.quickActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.quickLink,
+.inlineLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: hsl(var(--foreground));
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.quickLink:hover,
+.inlineLink:hover {
+  border-color: rgba(129, 155, 255, 0.24);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
+  gap: 1rem;
+}
+
+.primaryColumn,
+.secondaryColumn {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.panel {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.alertList,
+.queueList,
+.workflowList,
+.eventList,
+.complianceList,
+.snapshotList {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.alertItem,
+.queueItem,
+.workflowItem,
+.eventItem,
+.complianceItem,
+.snapshotItem {
+  display: grid;
+  gap: 0.32rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.alertItem {
+  text-decoration: none;
+  color: inherit;
+}
+
+.listRow,
+.sectionHeader,
+.snapshotItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.alertItem strong,
+.queueItem strong,
+.workflowItem strong,
+.eventItem strong,
+.complianceItem strong,
+.snapshotItem strong {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: hsl(var(--foreground));
+}
+
+.alertItem p,
+.queueItem p,
+.workflowItem p,
+.eventItem p,
+.complianceItem p,
+.snapshotItem p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: hsl(var(--muted-foreground));
+}
+
+.queueSection {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.workflowGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem;
+}
+
+.workflowPanel {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.workflowItem span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: hsl(var(--foreground));
+}
+
+.progressTrack {
+  position: relative;
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.progressFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(129, 155, 255, 0.88), rgba(96, 122, 235, 0.84));
+}
+
+.eventItem,
+.snapshotItem {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+}
+
+.emptyRow {
+  display: grid;
+  place-items: center;
+  min-height: 5rem;
+  border: 1px dashed rgba(148, 163, 184, 0.16);
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+}
+
+@media (max-width: 1180px) {
+  .metricStrip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .metricStrip,
+  .workflowGrid {
+    grid-template-columns: 1fr;
+  }
+}

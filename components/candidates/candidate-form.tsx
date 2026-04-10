@@ -5,6 +5,7 @@ import { CandidateSource } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 type CandidateFormProps = {
@@ -28,9 +29,9 @@ type CandidateFormProps = {
 
 export function CandidateForm({ action, submitLabel, defaultValues }: CandidateFormProps) {
   return (
-    <form action={action} className="space-y-8">
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2 md:col-span-2">
+    <form action={action} className="workspace-form">
+      <div className="workspace-form-grid">
+        <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="fullName">Nome completo</Label>
           <Input id="fullName" name="fullName" defaultValue={defaultValues?.fullName} required />
         </div>
@@ -75,17 +76,12 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
         </div>
         <div className="space-y-2">
           <Label htmlFor="source">Origem</Label>
-          <select
-            id="source"
-            name="source"
-            defaultValue={defaultValues?.source ?? CandidateSource.MANUAL_IMPORT}
-            className="flex h-11 w-full rounded-2xl border border-border bg-white px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          >
+          <Select id="source" name="source" defaultValue={defaultValues?.source ?? CandidateSource.MANUAL_IMPORT}>
             <option value={CandidateSource.MANUAL_IMPORT}>Importacao manual</option>
             <option value={CandidateSource.LINKEDIN}>LinkedIn</option>
             <option value={CandidateSource.REFERRAL}>Indicacao</option>
             <option value={CandidateSource.CAREERS_PAGE}>Pagina de carreiras</option>
-          </select>
+          </Select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="linkedinUrl">LinkedIn</Label>
@@ -96,7 +92,7 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
             defaultValue={defaultValues?.linkedinUrl ?? ""}
           />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="portfolioUrl">Portfolio / site pessoal</Label>
           <Input
             id="portfolioUrl"
@@ -105,7 +101,7 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
             defaultValue={defaultValues?.portfolioUrl ?? ""}
           />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="summary">Resumo</Label>
           <Textarea
             id="summary"
@@ -115,7 +111,7 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
           />
         </div>
       </div>
-      <div className="flex justify-end">
+      <div className="workspace-form-actions justify-end">
         <Button type="submit">{submitLabel}</Button>
       </div>
     </form>

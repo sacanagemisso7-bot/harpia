@@ -5,9 +5,10 @@ import { KnowledgeUploadForm } from "@/components/knowledge/knowledge-upload-for
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requirePermission } from "@/lib/auth/permissions";
 import { getKnowledgeOverview, getPolicyRolloutOverview, listPolicyDocumentsForSelect } from "@/modules/knowledge/queries";
+
+import styles from "../workspace-expansion.module.css";
 
 export default async function KnowledgePage() {
   const user = await requirePermission("manage_knowledge");
@@ -25,122 +26,107 @@ export default async function KnowledgePage() {
   }, new Map());
 
   return (
-    <div className="space-y-6">
+    <div className={styles.page}>
       <PageHeader
         eyebrow="Knowledge base"
         title="Memoria operacional da organizacao"
-        description="Centralize playbooks, politicas, templates e briefings em uma base preparada para retrieval, copiloto e operacao do time."
+        description="Playbooks, politicas, templates e briefings numa base preparada para retrieval, copiloto e operacao."
       />
 
-      <section className="grid gap-5 lg:grid-cols-4">
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Documentos</p>
-            <p className="mt-3 text-3xl font-semibold">{knowledge.metrics.totalDocuments}</p>
-          </CardContent>
-        </Card>
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Prontos</p>
-            <p className="mt-3 text-3xl font-semibold">{knowledge.metrics.readyCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Processando</p>
-            <p className="mt-3 text-3xl font-semibold">{knowledge.metrics.processingCount}</p>
-          </CardContent>
-        </Card>
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Chunks</p>
-            <p className="mt-3 text-3xl font-semibold">{knowledge.metrics.chunkCount}</p>
-          </CardContent>
-        </Card>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Documentos</span>
+          <strong className={styles.statValue}>{knowledge.metrics.totalDocuments}</strong>
+          <span className={styles.statHint}>Materiais registrados na base da organizacao.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Prontos</span>
+          <strong className={styles.statValue}>{knowledge.metrics.readyCount}</strong>
+          <span className={styles.statHint}>Ja processados e prontos para uso.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Processando</span>
+          <strong className={styles.statValue}>{knowledge.metrics.processingCount}</strong>
+          <span className={styles.statHint}>Arquivos ainda em ingestao ou indexacao.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Chunks</span>
+          <strong className={styles.statValue}>{knowledge.metrics.chunkCount}</strong>
+          <span className={styles.statHint}>Fragmentos disponiveis para busca semantica.</span>
+        </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                  <LibraryBig className="h-4 w-4" />
-                </div>
-                <div>
-                  <CardTitle>Novo material</CardTitle>
-                  <CardDescription>Upload com ingestao automatica e estrutura pronta para busca semantica.</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
+      <section className={styles.detailLayout}>
+        <div className={styles.column}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>New material</span>
+              <h2 className={styles.panelTitle}>Upload com ingestao automatica</h2>
+              <p className={styles.panelDescription}>Envie playbooks, policies e PDFs com estrutura pronta para retrieval.</p>
+            </div>
+            <div className={styles.surfaceMuted}>
               <KnowledgeUploadForm action={uploadKnowledgeDocument} />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Publicar versao de policy</CardTitle>
-              <CardDescription>Marque uma politica como publicada, registre a versao e conecte a cadeia de supersessao.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form action={publishPolicyDocumentVersionAction} className="grid gap-4">
-                <label className="grid gap-2 text-sm text-muted-foreground">
-                  <span>Documento de policy</span>
-                  <select name="documentId" required className="h-11 rounded-2xl border border-border bg-white px-4">
-                    <option value="">Selecione uma policy pronta</option>
-                    {policyDocuments.map((document) => (
-                      <option key={document.id} value={document.id}>
-                        {document.title}
-                        {document.versionLabel ? ` · ${document.versionLabel}` : ""}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="grid gap-2 text-sm text-muted-foreground">
-                  <span>Versao</span>
-                  <input name="versionLabel" placeholder="Ex.: v2.0" className="h-11 rounded-2xl border border-border bg-white px-4" />
-                </label>
-                <label className="grid gap-2 text-sm text-muted-foreground">
-                  <span>Supersede</span>
-                  <select name="supersedesDocumentId" className="h-11 rounded-2xl border border-border bg-white px-4">
-                    <option value="">Nao supersede outra versao</option>
-                    {policyDocuments.map((document) => (
-                      <option key={`supersede-${document.id}`} value={document.id}>
-                        {document.title}
-                        {document.versionLabel ? ` · ${document.versionLabel}` : ""}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label className="flex items-center gap-3 rounded-[1rem] border border-border/70 bg-white/75 px-4 py-3 text-sm text-muted-foreground">
-                  <input type="checkbox" name="requiresAcknowledgement" defaultChecked />
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Policy publishing</span>
+              <h2 className={styles.panelTitle}>Publicar versao de policy</h2>
+              <p className={styles.panelDescription}>Registre versao, supersessao e cadeia de aceite operacional.</p>
+            </div>
+            <form action={publishPolicyDocumentVersionAction} className={styles.actionCluster}>
+              <select name="documentId" required className={styles.select}>
+                <option value="">Selecione uma policy pronta</option>
+                {policyDocuments.map((document) => (
+                  <option key={document.id} value={document.id}>
+                    {document.title}
+                    {document.versionLabel ? ` · ${document.versionLabel}` : ""}
+                  </option>
+                ))}
+              </select>
+              <input name="versionLabel" placeholder="Ex.: v2.0" className={styles.field} />
+              <select name="supersedesDocumentId" className={styles.select}>
+                <option value="">Nao supersede outra versao</option>
+                {policyDocuments.map((document) => (
+                  <option key={`supersede-${document.id}`} value={document.id}>
+                    {document.title}
+                    {document.versionLabel ? ` · ${document.versionLabel}` : ""}
+                  </option>
+                ))}
+              </select>
+              <label className={styles.surfaceMuted}>
+                <span className={styles.itemDescription}>
+                  <input type="checkbox" name="requiresAcknowledgement" defaultChecked className="mr-3" />
                   Exigir aceite operacional desta versao
-                </label>
-                <Button type="submit" variant="outline">
-                  Publicar policy
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+                </span>
+              </label>
+              <Button type="submit" variant="outline">
+                Publicar policy
+              </Button>
+            </form>
+          </div>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Base da empresa</CardTitle>
-            <CardDescription>Documentos indexados por organizacao, com status de ingestao e resumo operacional.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Document ledger</span>
+              <h2 className={styles.panelTitle}>Base da empresa</h2>
+            </div>
             {knowledge.documents.length ? (
-              knowledge.documents.map((document) => {
-                const latestRollout = latestRolloutByDocumentId.get(document.id);
+              <div className={styles.list}>
+                {knowledge.documents.map((document) => {
+                  const latestRollout = latestRolloutByDocumentId.get(document.id);
 
-                return (
-                  <div key={document.id} className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                    <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="space-y-2">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <p className="font-semibold">{document.title}</p>
+                  return (
+                    <div key={document.id} className={styles.listItem}>
+                      <div className={styles.itemHeader}>
+                        <div className={styles.itemLead}>
+                          <strong className={styles.itemTitle}>{document.title}</strong>
+                          <span className={styles.itemSubtitle}>
+                            Criado por {document.createdBy.name} · {document._count.chunks} chunks
+                          </span>
+                        </div>
+                        <div className={styles.tagWrap}>
                           <Badge variant={document.status === "READY" ? "success" : document.status === "FAILED" ? "destructive" : "warning"}>
                             {document.status}
                           </Badge>
@@ -149,102 +135,101 @@ export default async function KnowledgePage() {
                           {document.publishedAt ? <Badge variant="outline">Published</Badge> : null}
                           {document.requiresAcknowledgement ? <Badge variant="outline">Requires ack</Badge> : null}
                         </div>
-                        {document.description ? <p className="text-sm text-muted-foreground">{document.description}</p> : null}
-                        <p className="text-sm text-muted-foreground">
-                          Criado por {document.createdBy.name} - {document._count.chunks} chunks
-                        </p>
-                        {document.supersedesDocument ? (
-                          <p className="text-sm text-muted-foreground">
-                            Supersede {document.supersedesDocument.title}
-                            {document.supersedesDocument.versionLabel ? ` · ${document.supersedesDocument.versionLabel}` : ""}
-                          </p>
-                        ) : null}
-                        {document.summary ? <p className="text-sm leading-6 text-muted-foreground">{document.summary}</p> : null}
-                        {latestRollout ? (
-                          <div className="mt-3 rounded-[1rem] border border-emerald-200/70 bg-emerald-50/70 p-3 text-sm">
-                            <p className="font-medium text-foreground">{latestRollout.title}</p>
-                            <p className="mt-1 text-muted-foreground">
-                              {latestRollout.metrics.acceptanceRate}% de aceite · {latestRollout.metrics.acknowledged}/{latestRollout.metrics.assigned} confirmados
-                            </p>
-                            <p className="mt-1 text-muted-foreground">
-                              {latestRollout.metrics.pending} pendentes
-                              {latestRollout.metrics.overdue ? ` · ${latestRollout.metrics.overdue} atrasados` : ""}
-                            </p>
-                          </div>
-                        ) : null}
-                        {document.lastError ? <p className="text-sm text-destructive">{document.lastError}</p> : null}
                       </div>
-                      <div className="grid gap-3 text-sm text-muted-foreground">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white px-3 py-2">
-                          <FileStack className="h-4 w-4" />
-                          {document.fileName ?? "Arquivo"}
+                      {document.description ? <span className={styles.itemDescription}>{document.description}</span> : null}
+                      {document.summary ? <span className={styles.itemDescription}>{document.summary}</span> : null}
+                      {document.supersedesDocument ? (
+                        <span className={styles.itemDescription}>
+                          Supersede {document.supersedesDocument.title}
+                          {document.supersedesDocument.versionLabel ? ` · ${document.supersedesDocument.versionLabel}` : ""}
+                        </span>
+                      ) : null}
+                      <div className={styles.subGrid2}>
+                        <div className={styles.surfaceMuted}>
+                          <span className={styles.itemDescription}>
+                            <FileStack className="mr-2 inline h-4 w-4" />
+                            {document.fileName ?? "Arquivo"}
+                          </span>
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-white px-3 py-2">
-                          {document.status === "PROCESSING" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ScanSearch className="h-4 w-4" />}
-                          {document.processedAt
-                            ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(document.processedAt)
-                            : "Ingestao em andamento"}
+                        <div className={styles.surfaceMuted}>
+                          <span className={styles.itemDescription}>
+                            {document.status === "PROCESSING" ? <LoaderCircle className="mr-2 inline h-4 w-4 animate-spin" /> : <ScanSearch className="mr-2 inline h-4 w-4" />}
+                            {document.processedAt
+                              ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(document.processedAt)
+                              : "Ingestao em andamento"}
+                          </span>
                         </div>
                       </div>
+                      {latestRollout ? (
+                        <div className={styles.surfaceMuted}>
+                          <strong className={styles.itemTitle}>{latestRollout.title}</strong>
+                          <span className={styles.itemDescription}>
+                            {latestRollout.metrics.acceptanceRate}% de aceite · {latestRollout.metrics.acknowledged}/{latestRollout.metrics.assigned} confirmados
+                          </span>
+                          <span className={styles.itemDescription}>
+                            {latestRollout.metrics.pending} pendentes
+                            {latestRollout.metrics.overdue ? ` · ${latestRollout.metrics.overdue} atrasados` : ""}
+                          </span>
+                        </div>
+                      ) : null}
+                      {document.lastError ? <span className={styles.itemDescription}>{document.lastError}</span> : null}
                     </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                Ainda nao ha materiais na knowledge base desta organizacao.
+                  );
+                })}
               </div>
+            ) : (
+              <div className={styles.emptyState}>Ainda nao ha materiais na knowledge base desta organizacao.</div>
             )}
-          </CardContent>
-        </Card>
-      </section>
+          </div>
+        </div>
 
-      <Card className="panel-hover">
-        <CardHeader>
-          <CardTitle>Policy rollouts</CardTitle>
-          <CardDescription>Campanhas de distribuicao e aceite das politicas mais recentes.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {policyRollouts.length ? (
-            policyRollouts.map((rollout) => (
-              <div key={rollout.id} className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <p className="font-semibold">{rollout.title}</p>
+        <aside className={styles.stickyAside}>
+          <div className={styles.spotlight}>
+            <span className={styles.panelEyebrow}>Knowledge</span>
+            <strong className={styles.spotlightValue}>{knowledge.metrics.readyCount}</strong>
+            <p className={styles.panelDescription}>Materiais prontos para retrieval e uso operacional.</p>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Policy rollouts</span>
+                <h3 className={styles.panelTitle}>Campanhas ativas</h3>
+              </div>
+              <span className={styles.iconLead}>
+                <LibraryBig className="h-4 w-4" />
+              </span>
+            </div>
+            {policyRollouts.length ? (
+              <div className={styles.list}>
+                {policyRollouts.map((rollout) => (
+                  <div key={rollout.id} className={styles.listItem}>
+                    <div className={styles.itemHeader}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{rollout.title}</strong>
+                        <span className={styles.itemSubtitle}>
+                          {rollout.document.title}
+                          {rollout.document.versionLabel ? ` · ${rollout.document.versionLabel}` : ""}
+                        </span>
+                      </div>
                       <Badge variant={rollout.status === "COMPLETED" ? "success" : "outline"}>{rollout.status}</Badge>
                     </div>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      {rollout.document.title}
-                      {rollout.document.versionLabel ? ` · ${rollout.document.versionLabel}` : ""}
-                      {rollout.document.supersedesDocumentTitle ? ` · supersede ${rollout.document.supersedesDocumentTitle}` : ""}
-                    </p>
-                    <p className="mt-2 text-sm text-muted-foreground">
+                    <span className={styles.itemDescription}>
                       {rollout.metrics.acceptanceRate}% de aceite · {rollout.metrics.acknowledged}/{rollout.metrics.assigned} confirmados
-                    </p>
-                  </div>
-                  <div className="grid gap-2 text-sm text-muted-foreground">
-                    <div className="rounded-full border border-border/70 bg-white px-3 py-2">
+                    </span>
+                    <span className={styles.itemDescription}>
                       Pendentes: {rollout.metrics.pending}
                       {rollout.metrics.overdue ? ` · Atrasados: ${rollout.metrics.overdue}` : ""}
-                    </div>
-                    <div className="rounded-full border border-border/70 bg-white px-3 py-2">
-                      Prazo:{" "}
-                      {rollout.dueAt
-                        ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(rollout.dueAt)
-                        : "Sem prazo"}
-                    </div>
+                    </span>
                   </div>
-                </div>
+                ))}
               </div>
-            ))
-          ) : (
-            <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-              Nenhum rollout de policy foi iniciado ainda.
-            </div>
-          )}
-        </CardContent>
-      </Card>
+            ) : (
+              <div className={styles.surfaceMuted}>Nenhum rollout de policy foi iniciado ainda.</div>
+            )}
+          </div>
+        </aside>
+      </section>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { EmployeeCheckInType, EmployeeStatus, PeopleWorkflowKind } from "@prisma/client";
+import { ClipboardCheck, ShieldCheck, UserRoundCog, Workflow } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { createEmployeeCheckInAction, startEmployeeWorkflowAction } from "@/app/(app)/employees/actions";
@@ -6,12 +7,13 @@ import { acknowledgePolicyAction } from "@/app/(app)/people/compliance/actions";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
 import { getEmployeeProfile } from "@/modules/employees/queries";
+
+import styles from "../../workspace-expansion.module.css";
 
 function getStatusVariant(status: EmployeeStatus) {
   if (status === EmployeeStatus.ACTIVE) {
@@ -41,304 +43,336 @@ export default async function EmployeeProfilePage({
   const canManageWorkflows = hasPermission(user.role, "manage_people_workflows");
   const canManageCheckins = hasPermission(user.role, "manage_checkins");
   const canManageCompliance = hasPermission(user.role, "manage_compliance");
+  const openComplianceCount =
+    employee.complianceRequirements.filter((item) => item.status === "PENDING").length +
+    employee.policyAcknowledgements.filter((item) => !item.acknowledgedAt).length;
+  const now = Date.now();
 
   return (
-    <div className="page-stage space-y-7">
+    <div className={styles.page}>
       <PageHeader
         eyebrow="Employee profile"
         title={employee.fullName}
-        description={`${employee.title} em ${employee.department}. Perfil operacional com historico, tarefas, solicitacoes, compliance e acompanhamento humano.`}
+        description={`${employee.title} em ${employee.department}. Perfil operacional com historico, tasks, requests e compliance.`}
         actions={<Badge variant={getStatusVariant(employee.status)}>{employee.status}</Badge>}
       />
 
-      <section className="stagger-grid grid gap-5 xl:grid-cols-4">
-        <Card className="metric-panel panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Gestor</p>
-            <p className="mt-3 text-lg font-semibold">{employee.manager?.fullName ?? "Sem gestor"}</p>
-          </CardContent>
-        </Card>
-        <Card className="metric-panel panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Solicitacoes</p>
-            <p className="mt-3 text-lg font-semibold">{employee.requestedHrRequests.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="metric-panel panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Tarefas</p>
-            <p className="mt-3 text-lg font-semibold">{employee.relatedTasks.length}</p>
-          </CardContent>
-        </Card>
-        <Card className="metric-panel panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Compliance</p>
-            <p className="mt-3 text-lg font-semibold">
-              {employee.complianceRequirements.filter((item) => item.status === "PENDING").length +
-                employee.policyAcknowledgements.filter((item) => !item.acknowledgedAt).length}
-            </p>
-          </CardContent>
-        </Card>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Gestor</span>
+          <strong className={styles.statValue}>{employee.manager?.fullName ?? "--"}</strong>
+          <span className={styles.statHint}>Owner humano principal desta pessoa.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Requests</span>
+          <strong className={styles.statValue}>{employee.requestedHrRequests.length}</strong>
+          <span className={styles.statHint}>Demandas abertas ou historicas ligadas ao colaborador.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Tasks</span>
+          <strong className={styles.statValue}>{employee.relatedTasks.length}</strong>
+          <span className={styles.statHint}>Carga operacional associada ao perfil.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Compliance</span>
+          <strong className={styles.statValue}>{openComplianceCount}</strong>
+          <span className={styles.statHint}>Itens que ainda exigem conclusao ou aceite.</span>
+        </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Dados principais</CardTitle>
-              <CardDescription>Fonte de verdade operacional para o colaborador.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 text-sm text-muted-foreground">
-              <div className="data-row p-4">Cargo: {employee.title}</div>
-              <div className="data-row p-4">Time: {employee.department}</div>
-              <div className="data-row p-4">Localizacao: {employee.location || "Nao informada"}</div>
-              <div className="data-row p-4">Tipo de contratacao: {employee.employmentType || "Nao informado"}</div>
-              <div className="data-row p-4">
-                Entrada: {employee.startDate ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(employee.startDate) : "Nao informada"}
+      <section className={styles.detailLayout}>
+        <div className={styles.column}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Core data</span>
+              <h2 className={styles.panelTitle}>Fonte de verdade operacional</h2>
+            </div>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoTile}>
+                <strong>Cargo</strong>
+                <span>{employee.title}</span>
               </div>
-              <div className="data-row p-4">Email: {employee.workEmail || "Nao informado"}</div>
-              <div className="data-row p-4">Observacoes: {employee.notes || "Sem notas iniciais"}</div>
-            </CardContent>
-          </Card>
+              <div className={styles.infoTile}>
+                <strong>Time</strong>
+                <span>{employee.department}</span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Localizacao</strong>
+                <span>{employee.location || "Nao informada"}</span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Tipo de contratacao</strong>
+                <span>{employee.employmentType || "Nao informado"}</span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Entrada</strong>
+                <span>
+                  {employee.startDate
+                    ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(employee.startDate)
+                    : "Nao informada"}
+                </span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Email</strong>
+                <span>{employee.workEmail || "Nao informado"}</span>
+              </div>
+            </div>
+            <div className={styles.surfaceMuted}>{employee.notes || "Sem notas iniciais registradas para este colaborador."}</div>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Workflow history</span>
+              <h2 className={styles.panelTitle}>Fluxos e progresso</h2>
+            </div>
+            {employee.workflowRuns.length ? (
+              <div className={styles.timeline}>
+                {employee.workflowRuns.map((run) => (
+                  <div key={run.id} className={styles.timelineItem}>
+                    <span className={styles.timelineDot} />
+                    <div className={styles.timelineBody}>
+                      <div className={styles.itemHeader}>
+                        <div className={styles.itemLead}>
+                          <strong className={styles.itemTitle}>{run.title}</strong>
+                          <span className={styles.itemSubtitle}>{run.kind}</span>
+                        </div>
+                        <Badge variant={run.status === "COMPLETED" ? "success" : "outline"}>{run.status}</Badge>
+                      </div>
+                      <div className={styles.list}>
+                        {run.steps.map((step) => (
+                          <div key={step.id} className={styles.listItem}>
+                            <div className={styles.itemHeader}>
+                              <div className={styles.itemLead}>
+                                <strong className={styles.itemTitle}>{step.title}</strong>
+                                <span className={styles.itemSubtitle}>{step.ownerLabel}</span>
+                              </div>
+                              <Badge variant={step.status === "DONE" ? "success" : step.status === "BLOCKED" ? "warning" : "outline"}>
+                                {step.status}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>Nenhum fluxo operacional registrado para este colaborador ainda.</div>
+            )}
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Load</span>
+              <h2 className={styles.panelTitle}>Requests e tasks</h2>
+              <p className={styles.panelDescription}>Visao resumida da carga operacional ligada a esta pessoa.</p>
+            </div>
+            <div className={styles.subGrid2}>
+              <div className={styles.column}>
+                <span className={styles.panelEyebrow}>Requests</span>
+                {employee.requestedHrRequests.length ? (
+                  <div className={styles.list}>
+                    {employee.requestedHrRequests.map((request) => (
+                      <div key={request.id} className={styles.listItem}>
+                        <strong className={styles.itemTitle}>{request.title}</strong>
+                        <span className={styles.itemDescription}>{request.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.surfaceMuted}>Sem solicitacoes para este colaborador.</div>
+                )}
+              </div>
+              <div className={styles.column}>
+                <span className={styles.panelEyebrow}>Tasks</span>
+                {employee.relatedTasks.length ? (
+                  <div className={styles.list}>
+                    {employee.relatedTasks.map((task) => (
+                      <div key={task.id} className={styles.listItem}>
+                        <strong className={styles.itemTitle}>{task.title}</strong>
+                        <span className={styles.itemDescription}>{task.status}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.surfaceMuted}>Sem tarefas vinculadas agora.</div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Check-ins</span>
+              <h2 className={styles.panelTitle}>Acompanhamento humano</h2>
+            </div>
+            {employee.checkIns.length ? (
+              <div className={styles.list}>
+                {employee.checkIns.map((entry) => (
+                  <div key={entry.id} className={styles.listItem}>
+                    <div className={styles.itemHeader}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{entry.title}</strong>
+                        <span className={styles.itemSubtitle}>{entry.author.name}</span>
+                      </div>
+                      <Badge variant="outline">{entry.type}</Badge>
+                    </div>
+                    {entry.summary ? <span className={styles.itemDescription}>{entry.summary}</span> : null}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>Nenhum registro de acompanhamento ainda.</div>
+            )}
+          </div>
+        </div>
+
+        <aside className={styles.stickyAside}>
+          <div className={styles.spotlight}>
+            <span className={styles.panelEyebrow}>Status</span>
+            <strong className={styles.spotlightValue}>{employee.status}</strong>
+            <p className={styles.panelDescription}>Leitura atual da situacao desta pessoa dentro da operacao.</p>
+          </div>
 
           {canManageWorkflows ? (
-            <Card className="panel-hover">
-              <CardHeader>
-                <CardTitle>Fluxos operacionais</CardTitle>
-                <CardDescription>Gerar ou reabrir fluxos de onboarding e offboarding.</CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-3">
+            <div className={styles.panel}>
+              <div className={styles.itemHeader}>
+                <div className={styles.itemLead}>
+                  <span className={styles.panelEyebrow}>Workflow actions</span>
+                  <h3 className={styles.panelTitle}>Fluxos operacionais</h3>
+                </div>
+                <span className={styles.iconLead}>
+                  <Workflow className="h-4 w-4" />
+                </span>
+              </div>
+              <div className={styles.actionCluster}>
                 <form action={startEmployeeWorkflowAction}>
                   <input type="hidden" name="employeeId" value={employee.id} />
                   <input type="hidden" name="kind" value={PeopleWorkflowKind.ONBOARDING} />
-                  <Button type="submit" variant="outline">
+                  <Button type="submit" variant="outline" className="w-full">
                     Iniciar onboarding
                   </Button>
                 </form>
                 <form action={startEmployeeWorkflowAction}>
                   <input type="hidden" name="employeeId" value={employee.id} />
                   <input type="hidden" name="kind" value={PeopleWorkflowKind.OFFBOARDING} />
-                  <Button type="submit" variant="destructive">
+                  <Button type="submit" variant="destructive" className="w-full">
                     Iniciar offboarding
                   </Button>
                 </form>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ) : null}
 
           {canManageCheckins ? (
-            <Card className="panel-hover">
-              <CardHeader>
-                <CardTitle>Novo registro</CardTitle>
-                <CardDescription>Check-in, feedback, probation ou nota operacional.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form action={createEmployeeCheckInAction} className="grid gap-4">
-                  <input type="hidden" name="employeeId" value={employee.id} />
-                  <Select name="type" defaultValue={EmployeeCheckInType.CHECK_IN}>
-                    {Object.values(EmployeeCheckInType).map((type) => (
-                      <option key={type} value={type}>
-                        {type}
-                      </option>
-                    ))}
-                  </Select>
-                  <Input name="title" required placeholder="Titulo do registro" />
-                  <Input name="followUpAt" type="date" />
-                  <Textarea name="summary" placeholder="Resumo do acompanhamento" className="min-h-28" />
-                  <Button type="submit">Salvar registro</Button>
-                </form>
-              </CardContent>
-            </Card>
-          ) : null}
-        </div>
-
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Workflow history</CardTitle>
-              <CardDescription>Onboarding, offboarding e progresso das etapas.</CardDescription>
-            </CardHeader>
-            <CardContent className="data-stack">
-              {employee.workflowRuns.length ? (
-                employee.workflowRuns.map((run) => (
-                  <div key={run.id} className="data-row">
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="font-semibold">{run.title}</p>
-                        <p className="text-sm text-muted-foreground">{run.kind}</p>
-                      </div>
-                      <Badge variant={run.status === "COMPLETED" ? "success" : "outline"}>{run.status}</Badge>
-                    </div>
-                    <div className="mt-4 data-stack">
-                      {run.steps.map((step) => (
-                        <div key={step.id} className="data-row p-3">
-                          <div className="flex items-center justify-between gap-3">
-                            <div>
-                              <p className="font-medium">{step.title}</p>
-                              <p className="text-sm text-muted-foreground">{step.ownerLabel}</p>
-                            </div>
-                            <Badge variant={step.status === "DONE" ? "success" : step.status === "BLOCKED" ? "warning" : "outline"}>
-                              {step.status}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
-                  Nenhum fluxo operacional registrado para este colaborador ainda.
+            <div className={styles.panel}>
+              <div className={styles.itemHeader}>
+                <div className={styles.itemLead}>
+                  <span className={styles.panelEyebrow}>Record entry</span>
+                  <h3 className={styles.panelTitle}>Novo registro</h3>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Requests e tasks</CardTitle>
-              <CardDescription>Visao resumida da carga operacional ligada a esta pessoa.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-4 lg:grid-cols-2">
-              <div className="space-y-3">
-                <p className="section-intro">Solicitacoes</p>
-                {employee.requestedHrRequests.length ? (
-                  employee.requestedHrRequests.map((request) => (
-                    <div key={request.id} className="data-row p-3">
-                      <p className="font-medium">{request.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{request.status}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
-                    Sem solicitacoes para este colaborador.
-                  </div>
-                )}
+                <span className={styles.iconLead}>
+                  <ClipboardCheck className="h-4 w-4" />
+                </span>
               </div>
-              <div className="space-y-3">
-                <p className="section-intro">Tarefas</p>
-                {employee.relatedTasks.length ? (
-                  employee.relatedTasks.map((task) => (
-                    <div key={task.id} className="data-row p-3">
-                      <p className="font-medium">{task.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{task.status}</p>
-                    </div>
-                  ))
-                ) : (
-                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
-                    Sem tarefas vinculadas agora.
-                  </div>
-                )}
+              <form action={createEmployeeCheckInAction} className={styles.actionCluster}>
+                <input type="hidden" name="employeeId" value={employee.id} />
+                <Select name="type" defaultValue={EmployeeCheckInType.CHECK_IN}>
+                  {Object.values(EmployeeCheckInType).map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </Select>
+                <Input name="title" required placeholder="Titulo do registro" />
+                <Input name="followUpAt" type="date" />
+                <Textarea name="summary" placeholder="Resumo do acompanhamento" className="min-h-28" />
+                <Button type="submit">Salvar registro</Button>
+              </form>
+            </div>
+          ) : null}
+
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Compliance</span>
+                <h3 className={styles.panelTitle}>Itens obrigatorios</h3>
               </div>
-            </CardContent>
-          </Card>
-
-          <section className="grid gap-6 xl:grid-cols-2">
-            <Card className="panel-hover">
-              <CardHeader>
-                <CardTitle>Compliance</CardTitle>
-                <CardDescription>Documentos e trilhas obrigatorias.</CardDescription>
-              </CardHeader>
-              <CardContent className="data-stack">
-                {employee.complianceRequirements.length ? (
-                  employee.complianceRequirements.map((item) => (
-                    <div key={item.id} className="data-row p-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="font-medium">{item.title}</p>
-                          <p className="text-sm text-muted-foreground">{item.type}</p>
-                        </div>
-                        <Badge variant={item.status === "COMPLETED" ? "success" : "warning"}>{item.status}</Badge>
+              <span className={styles.iconLead}>
+                <ShieldCheck className="h-4 w-4" />
+              </span>
+            </div>
+            {employee.complianceRequirements.length ? (
+              <div className={styles.list}>
+                {employee.complianceRequirements.map((item) => (
+                  <div key={item.id} className={styles.listItem}>
+                    <div className={styles.itemHeader}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{item.title}</strong>
+                        <span className={styles.itemSubtitle}>{item.type}</span>
                       </div>
+                      <Badge variant={item.status === "COMPLETED" ? "success" : "warning"}>{item.status}</Badge>
                     </div>
-                  ))
-                ) : (
-                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
-                    Nenhum item de compliance em aberto.
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.surfaceMuted}>Nenhum item de compliance em aberto.</div>
+            )}
+          </div>
 
-            <Card className="panel-hover">
-              <CardHeader>
-                <CardTitle>Policy acknowledgements</CardTitle>
-                <CardDescription>Aceites de politica e confirmacoes operacionais desta pessoa.</CardDescription>
-              </CardHeader>
-              <CardContent className="data-stack">
-                {employee.policyAcknowledgements.length ? (
-                  employee.policyAcknowledgements.map((item) => (
-                    <div key={item.id} className="data-row p-3">
-                      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                        <div>
-                          <p className="font-medium">{item.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {item.document?.title ?? "Politica interna"}
-                            {item.document?.versionLabel ? ` - ${item.document.versionLabel}` : ""}
-                            {item.dueAt ? ` - vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
-                          </p>
-                          {item.document?.summary ? <p className="mt-2 text-sm text-muted-foreground">{item.document.summary}</p> : null}
-                        </div>
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge
-                            variant={
-                              item.acknowledgedAt
-                                ? "success"
-                                : item.dueAt && item.dueAt.getTime() < Date.now()
-                                  ? "destructive"
-                                  : "warning"
-                            }
-                          >
-                            {item.acknowledgedAt ? "ACKNOWLEDGED" : item.dueAt && item.dueAt.getTime() < Date.now() ? "OVERDUE" : "PENDING"}
-                          </Badge>
-                          {!item.acknowledgedAt && canManageCompliance ? (
-                            <form action={acknowledgePolicyAction}>
-                              <input type="hidden" name="acknowledgementId" value={item.id} />
-                              <Button type="submit" variant="outline">
-                                Registrar aceite
-                              </Button>
-                            </form>
-                          ) : null}
-                        </div>
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Policies</span>
+                <h3 className={styles.panelTitle}>Aceites pendentes</h3>
+              </div>
+              <span className={styles.iconLead}>
+                <UserRoundCog className="h-4 w-4" />
+              </span>
+            </div>
+            {employee.policyAcknowledgements.length ? (
+              <div className={styles.list}>
+                {employee.policyAcknowledgements.map((item) => (
+                  <div key={item.id} className={styles.listItem}>
+                    <div className={styles.itemHeader}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{item.title}</strong>
+                        <span className={styles.itemSubtitle}>
+                          {item.document?.title ?? "Politica interna"}
+                          {item.document?.versionLabel ? ` - ${item.document.versionLabel}` : ""}
+                        </span>
                       </div>
+                      <Badge
+                        variant={
+                          item.acknowledgedAt
+                            ? "success"
+                            : item.dueAt && item.dueAt.getTime() < now
+                              ? "destructive"
+                              : "warning"
+                        }
+                      >
+                        {item.acknowledgedAt ? "ACKNOWLEDGED" : item.dueAt && item.dueAt.getTime() < now ? "OVERDUE" : "PENDING"}
+                      </Badge>
                     </div>
-                  ))
-                ) : (
-                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
-                    Nenhum aceite de politica pendente para este colaborador.
+                    {item.document?.summary ? <span className={styles.itemDescription}>{item.document.summary}</span> : null}
+                    {!item.acknowledgedAt && canManageCompliance ? (
+                      <form action={acknowledgePolicyAction}>
+                        <input type="hidden" name="acknowledgementId" value={item.id} />
+                        <Button type="submit" variant="outline" size="sm">
+                          Registrar aceite
+                        </Button>
+                      </form>
+                    ) : null}
                   </div>
-                )}
-              </CardContent>
-            </Card>
-
-            <Card className="panel-hover">
-              <CardHeader>
-                <CardTitle>Check-ins e notas</CardTitle>
-                <CardDescription>Acompanhamento humano e historico operacional.</CardDescription>
-              </CardHeader>
-              <CardContent className="data-stack">
-                {employee.checkIns.length ? (
-                  employee.checkIns.map((entry) => (
-                    <div key={entry.id} className="data-row p-3">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="font-medium">{entry.title}</p>
-                          <p className="text-sm text-muted-foreground">{entry.author.name}</p>
-                        </div>
-                        <Badge variant="outline">{entry.type}</Badge>
-                      </div>
-                      {entry.summary ? <p className="mt-2 text-sm text-muted-foreground">{entry.summary}</p> : null}
-                    </div>
-                  ))
-                ) : (
-                  <div className="data-row data-row-muted p-3 text-sm text-muted-foreground">
-                    Nenhum registro de acompanhamento ainda.
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </section>
-        </div>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.surfaceMuted}>Nenhum aceite de politica pendente para este colaborador.</div>
+            )}
+          </div>
+        </aside>
       </section>
     </div>
   );

@@ -102,10 +102,10 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
   };
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="workspace-form">
       <input type="hidden" name="scorecardRatings" value={JSON.stringify(scorecardRatings)} />
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="workspace-form-grid">
         <div className="space-y-2">
           <Label htmlFor="overallScore">Nota geral</Label>
           <ScoreSelect id="overallScore" name="overallScore" defaultValue={defaultValues?.overallScore} />
@@ -121,7 +121,7 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
           </Select>
         </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="workspace-form-grid workspace-form-grid-3">
         <div className="space-y-2">
           <Label htmlFor="communicationScore">Comunicacao</Label>
           <ScoreSelect id="communicationScore" name="communicationScore" defaultValue={defaultValues?.communicationScore} />
@@ -137,17 +137,17 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
       </div>
 
       {scorecardItems.length ? (
-        <div className="space-y-3 rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-          <div>
-            <p className="font-semibold">Scorecard da vaga</p>
-            <p className="text-sm text-muted-foreground">Avalie os eixos configurados especificamente para esta vaga.</p>
+        <div className="workspace-form-section">
+          <div className="workspace-form-copy">
+            <p className="workspace-form-title">Scorecard da vaga</p>
+            <p className="workspace-form-description">Avalie os eixos configurados especificamente para esta vaga.</p>
           </div>
           <div className="grid gap-4">
             {scorecardItems.map((item) => {
               const currentScore = scorecardRatings.find((rating) => rating.scorecardItemId === item.id)?.score ?? 3;
 
               return (
-                <div key={item.id} className="rounded-[1.15rem] border border-border/70 bg-background/80 p-4">
+                <div key={item.id} className="workspace-form-subsection">
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-1">
                       <p className="font-medium">{item.label}</p>
@@ -207,11 +207,13 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
         />
       </div>
       <FormMessage message={state.error} />
-      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
-      <Button type="submit" disabled={pending}>
-        <ClipboardPenLine className="mr-2 h-4 w-4" />
-        {pending ? "Salvando feedback..." : "Salvar feedback"}
-      </Button>
+      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
+      <div className="workspace-form-actions">
+        <Button type="submit" disabled={pending}>
+          <ClipboardPenLine className="mr-2 h-4 w-4" />
+          {pending ? "Salvando feedback..." : "Salvar feedback"}
+        </Button>
+      </div>
     </form>
   );
 }

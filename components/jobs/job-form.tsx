@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 export type JobCriterionInput = {
@@ -129,9 +130,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
 
   const updateScorecardItem = (index: number, nextValue: Partial<JobScorecardItemInput>) => {
     setScorecardItems((current) =>
-      current.map((item, currentIndex) =>
-        currentIndex === index ? { ...item, ...nextValue, order: currentIndex } : item
-      )
+      current.map((item, currentIndex) => (currentIndex === index ? { ...item, ...nextValue, order: currentIndex } : item))
     );
   };
 
@@ -160,13 +159,13 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
   };
 
   return (
-    <form action={action} className="space-y-8">
+    <form action={action} className="workspace-form">
       <input type="hidden" name="criteria" value={JSON.stringify(criteria)} />
       <input type="hidden" name="scorecardItems" value={JSON.stringify(scorecardItems)} />
       <input type="hidden" name="automationRules" value={JSON.stringify(automationRules)} />
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2 md:col-span-2">
+      <div className="workspace-form-grid">
+        <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="title">Titulo da vaga</Label>
           <Input id="title" name="title" defaultValue={defaultValues?.title} required />
         </div>
@@ -201,48 +200,31 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
             defaultValue={defaultValues?.minExperienceYears ?? 0}
           />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="summary">Resumo executivo da vaga</Label>
-          <Textarea
-            id="summary"
-            name="summary"
-            className="min-h-24"
-            defaultValue={defaultValues?.summary}
-            required
-          />
+          <Textarea id="summary" name="summary" className="min-h-24" defaultValue={defaultValues?.summary} required />
         </div>
-        <div className="space-y-2 md:col-span-2">
+        <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="description">Descricao completa</Label>
-          <Textarea
-            id="description"
-            name="description"
-            className="min-h-40"
-            defaultValue={defaultValues?.description}
-            required
-          />
+          <Textarea id="description" name="description" className="min-h-40" defaultValue={defaultValues?.description} required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="status">Status</Label>
-          <select
-            id="status"
-            name="status"
-            defaultValue={defaultValues?.status ?? JobStatus.DRAFT}
-            className="flex h-11 w-full rounded-2xl border border-border bg-background px-4 py-2 text-sm"
-          >
+          <Select id="status" name="status" defaultValue={defaultValues?.status ?? JobStatus.DRAFT}>
             {Object.values(JobStatus).map((status) => (
               <option key={status} value={status}>
                 {status}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
 
-      <section className="space-y-4 rounded-[1.6rem] border border-border/70 bg-white/70 p-6 shadow-soft">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-semibold">Criterios da vaga</h3>
-            <p className="text-sm text-muted-foreground">Base para score, triagem e aderencia do candidato.</p>
+      <section className="workspace-form-section">
+        <div className="workspace-form-header">
+          <div className="workspace-form-copy">
+            <h3 className="workspace-form-title">Criterios da vaga</h3>
+            <p className="workspace-form-description">Base para score, triagem e aderencia do candidato.</p>
           </div>
           <Button type="button" variant="outline" onClick={addCriterion}>
             <Plus className="mr-2 h-4 w-4" />
@@ -252,18 +234,14 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
 
         <div className="space-y-4">
           {criteria.map((criterion, index) => (
-            <div key={`${criterion.id ?? "criterion"}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/80 p-5">
+            <div key={`${criterion.id ?? "criterion"}-${index}`} className="workspace-form-subsection">
               <div className="grid gap-4 md:grid-cols-12">
                 <div className="space-y-2 md:col-span-3">
                   <Label>Tipo</Label>
-                  <select
-                    value={criterion.type}
-                    onChange={(event) => updateCriterion(index, { type: event.target.value as CriterionType })}
-                    className="flex h-11 w-full rounded-2xl border border-border bg-background px-4 py-2 text-sm"
-                  >
+                  <Select value={criterion.type} onChange={(event) => updateCriterion(index, { type: event.target.value as CriterionType })}>
                     <option value={CriterionType.MUST_HAVE}>Obrigatorio</option>
                     <option value={CriterionType.NICE_TO_HAVE}>Desejavel</option>
-                  </select>
+                  </Select>
                 </div>
                 <div className="space-y-2 md:col-span-6">
                   <Label>Descricao</Label>
@@ -303,11 +281,11 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
         </div>
       </section>
 
-      <section className="space-y-4 rounded-[1.6rem] border border-border/70 bg-white/70 p-6 shadow-soft">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-semibold">Scorecard de entrevista</h3>
-            <p className="text-sm text-muted-foreground">Template que guia o entrevistador por dimensao da vaga.</p>
+      <section className="workspace-form-section">
+        <div className="workspace-form-header">
+          <div className="workspace-form-copy">
+            <h3 className="workspace-form-title">Scorecard de entrevista</h3>
+            <p className="workspace-form-description">Template que guia o entrevistador por dimensao da vaga.</p>
           </div>
           <Button type="button" variant="outline" onClick={addScorecardItem}>
             <Plus className="mr-2 h-4 w-4" />
@@ -317,7 +295,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
 
         <div className="space-y-4">
           {scorecardItems.map((item, index) => (
-            <div key={`${item.id ?? "scorecard"}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/80 p-5">
+            <div key={`${item.id ?? "scorecard"}-${index}`} className="workspace-form-subsection">
               <div className="grid gap-4 md:grid-cols-12">
                 <div className="space-y-2 md:col-span-4">
                   <Label>Item</Label>
@@ -347,14 +325,13 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
                 </div>
                 <div className="space-y-2 md:col-span-2">
                   <Label>Obrigatorio</Label>
-                  <select
+                  <Select
                     value={item.isRequired ? "true" : "false"}
                     onChange={(event) => updateScorecardItem(index, { isRequired: event.target.value === "true" })}
-                    className="flex h-11 w-full rounded-2xl border border-border bg-background px-4 py-2 text-sm"
                   >
                     <option value="true">Sim</option>
                     <option value="false">Nao</option>
-                  </select>
+                  </Select>
                 </div>
                 <div className="flex items-end md:col-span-1">
                   <Button type="button" variant="ghost" size="icon" onClick={() => removeScorecardItem(index)} disabled={scorecardItems.length === 1}>
@@ -376,11 +353,11 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
         </div>
       </section>
 
-      <section className="space-y-4 rounded-[1.6rem] border border-border/70 bg-white/70 p-6 shadow-soft">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <h3 className="text-lg font-semibold">Automacoes do pipeline</h3>
-            <p className="text-sm text-muted-foreground">Mova automaticamente aplicacoes com base nos eventos chave da entrevista.</p>
+      <section className="workspace-form-section">
+        <div className="workspace-form-header">
+          <div className="workspace-form-copy">
+            <h3 className="workspace-form-title">Automacoes do pipeline</h3>
+            <p className="workspace-form-description">Mova automaticamente aplicacoes com base nos eventos chave da entrevista.</p>
           </div>
           <Button type="button" variant="outline" onClick={addAutomationRule} disabled={!canUseAutomations}>
             <Plus className="mr-2 h-4 w-4" />
@@ -389,7 +366,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
         </div>
 
         {!canUseAutomations ? (
-          <div className="rounded-[1.35rem] border border-dashed border-border bg-background/80 p-5 text-sm text-muted-foreground">
+          <div className="workspace-form-subsection border-dashed text-sm text-muted-foreground">
             Automacoes por vaga fazem parte dos planos Growth e Business. No Starter, o restante da vaga continua funcionando normalmente.
           </div>
         ) : null}
@@ -397,77 +374,76 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
         <div className="space-y-4">
           {canUseAutomations
             ? automationRules.map((rule, index) => (
-            <div key={`${rule.id ?? "automation"}-${index}`} className="rounded-[1.35rem] border border-border/70 bg-background/80 p-5">
-              <div className="grid gap-4 md:grid-cols-12">
-                <div className="space-y-2 md:col-span-4">
-                  <Label>Trigger</Label>
-                  <select
-                    value={rule.trigger}
-                    onChange={(event) => updateAutomationRule(index, { trigger: event.target.value as AutomationTrigger })}
-                    className="flex h-11 w-full rounded-2xl border border-border bg-background px-4 py-2 text-sm"
-                  >
-                    {Object.values(AutomationTrigger).map((trigger) => (
-                      <option key={trigger} value={trigger}>
-                        {automationTriggerLabels[trigger]}
-                      </option>
-                    ))}
-                  </select>
+                <div key={`${rule.id ?? "automation"}-${index}`} className="workspace-form-subsection">
+                  <div className="grid gap-4 md:grid-cols-12">
+                    <div className="space-y-2 md:col-span-4">
+                      <Label>Trigger</Label>
+                      <Select
+                        value={rule.trigger}
+                        onChange={(event) => updateAutomationRule(index, { trigger: event.target.value as AutomationTrigger })}
+                      >
+                        {Object.values(AutomationTrigger).map((trigger) => (
+                          <option key={trigger} value={trigger}>
+                            {automationTriggerLabels[trigger]}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div className="space-y-2 md:col-span-4">
+                      <Label>Etapa de destino</Label>
+                      <Select
+                        value={rule.targetStageId}
+                        onChange={(event) => updateAutomationRule(index, { targetStageId: event.target.value })}
+                      >
+                        <option value="">Selecione uma etapa</option>
+                        {stages.map((stage) => (
+                          <option key={stage.id} value={stage.id}>
+                            {stage.name}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div className="space-y-2 md:col-span-3">
+                      <Label>Ativa</Label>
+                      <Select
+                        value={rule.enabled ? "true" : "false"}
+                        onChange={(event) => updateAutomationRule(index, { enabled: event.target.value === "true" })}
+                      >
+                        <option value="true">Sim</option>
+                        <option value="false">Nao</option>
+                      </Select>
+                    </div>
+                    <div className="flex items-end md:col-span-1">
+                      <Button type="button" variant="ghost" size="icon" onClick={() => removeAutomationRule(index)}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="space-y-2 md:col-span-12">
+                      <Label>Observacoes</Label>
+                      <Textarea
+                        className="min-h-20"
+                        value={rule.notes ?? ""}
+                        onChange={(event) => updateAutomationRule(index, { notes: event.target.value })}
+                        placeholder="Explique quando essa automacao deve ser usada e como o time interpreta esse trigger."
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-2 md:col-span-4">
-                  <Label>Etapa de destino</Label>
-                  <select
-                    value={rule.targetStageId}
-                    onChange={(event) => updateAutomationRule(index, { targetStageId: event.target.value })}
-                    className="flex h-11 w-full rounded-2xl border border-border bg-background px-4 py-2 text-sm"
-                  >
-                    <option value="">Selecione uma etapa</option>
-                    {stages.map((stage) => (
-                      <option key={stage.id} value={stage.id}>
-                        {stage.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div className="space-y-2 md:col-span-3">
-                  <Label>Ativa</Label>
-                  <select
-                    value={rule.enabled ? "true" : "false"}
-                    onChange={(event) => updateAutomationRule(index, { enabled: event.target.value === "true" })}
-                    className="flex h-11 w-full rounded-2xl border border-border bg-background px-4 py-2 text-sm"
-                  >
-                    <option value="true">Sim</option>
-                    <option value="false">Nao</option>
-                  </select>
-                </div>
-                <div className="flex items-end md:col-span-1">
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removeAutomationRule(index)}>
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="space-y-2 md:col-span-12">
-                  <Label>Observacoes</Label>
-                  <Textarea
-                    className="min-h-20"
-                    value={rule.notes ?? ""}
-                    onChange={(event) => updateAutomationRule(index, { notes: event.target.value })}
-                    placeholder="Explique quando essa automacao deve ser usada e como o time interpreta esse trigger."
-                  />
-                </div>
-              </div>
-            </div>
               ))
             : null}
           {canUseAutomations && !automationRules.length ? (
-            <div className="rounded-[1.35rem] border border-dashed border-border bg-background/80 p-5 text-sm text-muted-foreground">
+            <div className="workspace-form-subsection border-dashed text-sm text-muted-foreground">
               Nenhuma automacao configurada. Adicione regras apenas se quiser mover aplicacoes automaticamente.
             </div>
           ) : null}
         </div>
       </section>
 
-      <Button type="submit" size="lg">
-        {submitLabel}
-      </Button>
+      <div className="workspace-form-actions">
+        <Button type="submit" size="lg">
+          {submitLabel}
+        </Button>
+      </div>
     </form>
   );
 }

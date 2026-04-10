@@ -8,3 +8,5 @@ coverage
 *.log
 uploads
 prisma/dev.db
+.edge-dashboard.png
+edge-dashboard-*.png

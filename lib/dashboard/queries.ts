@@ -119,6 +119,29 @@ export async function getDashboardMetrics(organizationId: string) {
     .slice(0, 4);
 
   const slaAlerts = [...stalledAlerts, ...missingFeedbackAlerts].slice(0, 6);
+  const decisionNetwork = applications
+    .filter((application) => !(application.currentStage?.isTerminal ?? false))
+    .map((application) => {
+      const lastMovement = application.history[0]?.createdAt ?? application.appliedAt;
+      const stagnantHours = Math.max(1, Math.round((Date.now() - lastMovement.getTime()) / (1000 * 60 * 60)));
+
+      return {
+        id: application.id,
+        candidateName: application.candidate.fullName,
+        jobTitle: application.job.title,
+        score: application.score ?? 0,
+        stageName: application.currentStage?.name ?? "Sem etapa",
+        stagnantHours,
+        href: `/applications/${application.id}`
+      };
+    })
+    .sort((left, right) => {
+      const leftPriority = left.score - left.stagnantHours * 0.08;
+      const rightPriority = right.score - right.stagnantHours * 0.08;
+
+      return rightPriority - leftPriority;
+    })
+    .slice(0, 12);
 
   return {
     jobCount,
@@ -128,6 +151,7 @@ export async function getDashboardMetrics(organizationId: string) {
     stages,
     recentJobs,
     slaAlerts,
-    intelligenceHighlights
+    intelligenceHighlights,
+    decisionNetwork
   };
 }

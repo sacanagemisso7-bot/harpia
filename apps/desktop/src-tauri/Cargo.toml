@@ -1,8 +1,8 @@
 [package]
 name = "hireflow_desktop"
 version = "0.1.0"
-description = "HireFlow Desktop"
-authors = ["HireFlow AI"]
+description = "Harpia Desktop"
+authors = ["Harpia"]
 edition = "2021"
 
 [build-dependencies]

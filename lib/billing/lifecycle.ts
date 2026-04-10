@@ -68,7 +68,7 @@ export async function processBillingLifecycle() {
     const emailResult = await sendBillingEmailToWorkspaceAdmins({
       organizationId: organization.id,
       kind: "trial_ending",
-      subject: `Seu trial do HireFlow AI termina em breve`,
+      subject: `Seu trial do Harpia termina em breve`,
       html: `<p>O trial do workspace <strong>${organization.name}</strong> termina em breve.</p><p>Abra a area de billing para escolher um plano e evitar interrupcoes em analytics, automacoes e outros recursos premium.</p>`,
       text: `O trial do workspace ${organization.name} termina em breve. Abra a area de billing para escolher um plano e evitar interrupcoes.`
     });

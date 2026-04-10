@@ -35,7 +35,7 @@ const envSchema = z.object({
     .default("false"),
   SMTP_USER: optionalString(),
   SMTP_PASSWORD: optionalString(),
-  EMAIL_FROM: z.string().default("HireFlow AI <noreply@hireflow.ai>"),
+  EMAIL_FROM: z.string().default("Harpia <noreply@harpia.app>"),
   GOOGLE_CALENDAR_ID: optionalString(),
   GOOGLE_SERVICE_ACCOUNT_EMAIL: optionalString(),
   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY: optionalString(),

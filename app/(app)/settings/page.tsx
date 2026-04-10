@@ -1,37 +1,33 @@
 import { BillingPlan, BillingStatus } from "@prisma/client";
 import Link from "next/link";
-import { Activity, CalendarClock, Cpu, CreditCard, Database, Link as LinkIcon, Mail, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
+import { Activity, CalendarClock, Cpu, CreditCard, Database, Mail, Sparkles } from "lucide-react";
 
+import styles from "../workspace-expansion.module.css";
 import {
   createBillingCheckout,
   deleteDepartmentPlaybook,
   inviteTeamMember,
   openBillingPortal,
-  startOrganizationTrial,
-  upsertDepartmentPlaybook,
   revokePendingInvite,
+  startOrganizationTrial,
   updateOrganizationSettings,
-  updateTeamMemberRole
+  updateTeamMemberRole,
+  upsertDepartmentPlaybook
 } from "@/app/(app)/settings/actions";
-import { getRecentAuditEvents } from "@/lib/audit/queries";
-import { getPlanDefinition, BILLING_STATUS_LABELS, formatLimitValue, isBillingActive } from "@/lib/billing/plans";
-import { isStripeConfigured, isStripePlanAvailable } from "@/lib/billing/stripe";
 import { DepartmentPlaybookForm } from "@/components/settings/department-playbook-form";
+import { OrganizationSettingsForm } from "@/components/settings/organization-settings-form";
 import { TeamInviteForm } from "@/components/settings/team-invite-form";
 import { TeamMemberRoleForm } from "@/components/settings/team-member-role-form";
-import { OrganizationSettingsForm } from "@/components/settings/organization-settings-form";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getRecentAuditEvents } from "@/lib/audit/queries";
 import { requirePermission } from "@/lib/auth/permissions";
-import {
-  canManageTeamMember,
-  getAssignableRoles,
-  getRoleLabel
-} from "@/lib/auth/roles";
-import { env } from "@/lib/env";
+import { canManageTeamMember, getAssignableRoles, getRoleLabel } from "@/lib/auth/roles";
+import { BILLING_STATUS_LABELS, formatLimitValue, getPlanDefinition, isBillingActive } from "@/lib/billing/plans";
+import { isStripeConfigured, isStripePlanAvailable } from "@/lib/billing/stripe";
 import { isGoogleCalendarSyncConfigured } from "@/lib/calendar/google-sync";
+import { env } from "@/lib/env";
 import { isEmailConfigured } from "@/lib/email/transporter";
 import { isObservabilityConfigured } from "@/lib/observability/forwarder";
 import { getDepartmentPlaybooks } from "@/lib/playbooks/queries";
@@ -74,7 +70,7 @@ export default async function SettingsPage() {
     },
     {
       title: "Google Calendar",
-      description: "Sincronizacao opcional de entrevistas com calendario externo via service account.",
+      description: "Sincronizacao opcional de entrevistas com calendario externo.",
       icon: CalendarClock,
       ready: isGoogleCalendarSyncConfigured(),
       meta: isGoogleCalendarSyncConfigured() ? env.GOOGLE_CALENDAR_ID : "Nao configurado"
@@ -88,7 +84,7 @@ export default async function SettingsPage() {
     },
     {
       title: "Stripe",
-      description: "Checkout, portal do cliente e sincronizacao de assinatura para cobrar por plano.",
+      description: "Checkout, portal do cliente e sincronizacao de assinatura.",
       icon: CreditCard,
       ready: isStripeConfigured(),
       meta: isStripeConfigured() ? "Checkout configuravel" : "Nao configurado"
@@ -101,122 +97,126 @@ export default async function SettingsPage() {
       meta: isObservabilityConfigured() ? env.OBSERVABILITY_SERVICE_NAME : "Nao configurado"
     }
   ];
+  const readyIntegrations = integrations.filter((integration) => integration.ready).length;
   const assignableRoles = getAssignableRoles(user.role).map((role) => ({
     value: role,
     label: getRoleLabel(role)
   }));
 
   return (
-    <div className="space-y-6">
+    <div className={styles.page}>
       <PageHeader
         eyebrow="Settings"
         title="Configuracoes da organizacao"
-        description="Ajuste identidade do workspace, equipe e readiness das integracoes principais para operacao e deploy."
+        description="Billing, equipe, integracoes e governanca do workspace em uma leitura mais direta."
       />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]">
-        <Card className="panel-hover">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                <CreditCard className="h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle>Billing e trial</CardTitle>
-                <CardDescription>Plano atual, uso do workspace e caminho para upgrade comercial.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <div className="flex flex-wrap items-center gap-3">
-              <Badge variant={billingIsActive ? "success" : "warning"}>{BILLING_STATUS_LABELS[organization.billingStatus]}</Badge>
-              <Badge variant="outline">{planDefinition.label}</Badge>
-              <span className="text-sm text-muted-foreground">{planDefinition.monthlyPriceLabel}</span>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Plano</span>
+          <strong className={styles.statValue}>{planDefinition.label}</strong>
+          <p className={styles.statHint}>{BILLING_STATUS_LABELS[organization.billingStatus]}</p>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Equipe</span>
+          <strong className={styles.statValue}>{teamMembers.length}</strong>
+          <p className={styles.statHint}>Membros ativos no workspace</p>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Convites</span>
+          <strong className={styles.statValue}>{pendingInvites.length}</strong>
+          <p className={styles.statHint}>Convites aguardando aceitacao</p>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Integracoes prontas</span>
+          <strong className={styles.statValue}>{readyIntegrations}</strong>
+          <p className={styles.statHint}>De {integrations.length} conectores avaliados</p>
+        </div>
+      </section>
+
+      <div className={styles.layout}>
+        <div className={styles.column}>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Billing</span>
+              <h2 className={styles.panelTitle}>Plano, uso e upgrade</h2>
+              <p className={styles.panelDescription}>Controle comercial do workspace, com trial, assinatura e limites em uma area unica.</p>
             </div>
 
-            <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-              <p className="font-semibold">{planDefinition.description}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
+            <div className={styles.summaryGrid}>
+              <div className={styles.summaryTile}>
+                <strong>{planDefinition.label}</strong>
+                <span>{planDefinition.monthlyPriceLabel}</span>
+              </div>
+              <div className={styles.summaryTile}>
+                <strong>{billingIsActive ? "Ativo" : "Inativo"}</strong>
+                <span>{BILLING_STATUS_LABELS[organization.billingStatus]}</span>
+              </div>
+              {billingOverview ? (
+                <>
+                  <div className={styles.summaryTile}>
+                    <strong>{billingOverview.usage.activeJobs}</strong>
+                    <span>Vagas ativas / limite {formatLimitValue(planDefinition.limits.activeJobs)}</span>
+                  </div>
+                  <div className={styles.summaryTile}>
+                    <strong>{billingOverview.usage.teamMembers}</strong>
+                    <span>Membros / limite {formatLimitValue(planDefinition.limits.teamMembers)}</span>
+                  </div>
+                </>
+              ) : null}
+            </div>
+
+            <div className={styles.listItem}>
+              <strong className={styles.itemTitle}>{planDefinition.description}</strong>
+              <p className={styles.itemDescription}>
                 {organization.billingStatus === BillingStatus.TRIALING && organization.billingTrialEndsAt
-                  ? `Trial ativo ate ${new Intl.DateTimeFormat("pt-BR", {
-                      dateStyle: "medium"
-                    }).format(organization.billingTrialEndsAt)}.`
+                  ? `Trial ativo ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(organization.billingTrialEndsAt)}.`
                   : organization.billingCurrentPeriodEndsAt
-                    ? `Periodo atual ate ${new Intl.DateTimeFormat("pt-BR", {
-                        dateStyle: "medium"
-                      }).format(organization.billingCurrentPeriodEndsAt)}.`
+                    ? `Periodo atual ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(organization.billingCurrentPeriodEndsAt)}.`
                     : "Nenhum trial ou assinatura ativa registrada ainda."}
               </p>
             </div>
 
-            {billingOverview ? (
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                  <p className="section-intro">Vagas ativas</p>
-                  <p className="mt-3 text-3xl font-semibold">{billingOverview.usage.activeJobs}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Limite: {formatLimitValue(planDefinition.limits.activeJobs)}
-                  </p>
-                </div>
-                <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                  <p className="section-intro">Membros</p>
-                  <p className="mt-3 text-3xl font-semibold">{billingOverview.usage.teamMembers}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Limite: {formatLimitValue(planDefinition.limits.teamMembers)}
-                  </p>
-                </div>
-                <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                  <p className="section-intro">IA no mes</p>
-                  <p className="mt-3 text-3xl font-semibold">{billingOverview.usage.monthlyAiAnalyses}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Limite: {formatLimitValue(planDefinition.limits.monthlyAiAnalyses)}
-                  </p>
-                </div>
-                <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                  <p className="section-intro">Candidatos no mes</p>
-                  <p className="mt-3 text-3xl font-semibold">{billingOverview.usage.monthlyCandidates}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Limite: {formatLimitValue(planDefinition.limits.monthlyCandidates)}
-                  </p>
-                </div>
+            <div className={styles.actionStack}>
+              <div className={styles.actionRow}>
+                <form action={startOrganizationTrial}>
+                  <Button type="submit" variant="outline">
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Ativar trial
+                  </Button>
+                </form>
+                <form action={createBillingCheckout.bind(null, BillingPlan.STARTER, "monthly")}>
+                  <Button type="submit" variant="outline" disabled={!isStripePlanAvailable(BillingPlan.STARTER, "monthly")}>
+                    Assinar Starter
+                  </Button>
+                </form>
+                <form action={createBillingCheckout.bind(null, BillingPlan.GROWTH, "monthly")}>
+                  <Button type="submit" disabled={!isStripePlanAvailable(BillingPlan.GROWTH, "monthly")}>
+                    Assinar Growth
+                  </Button>
+                </form>
               </div>
-            ) : null}
 
-            <div className="flex flex-wrap gap-3">
-              <form action={startOrganizationTrial}>
-                <Button type="submit" variant="outline">
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Ativar trial de 14 dias
+              <div className={styles.actionRow}>
+                <form action={openBillingPortal}>
+                  <Button type="submit" variant="ghost" disabled={!organization.stripeCustomerId}>
+                    Abrir portal do cliente
+                  </Button>
+                </form>
+                <Button asChild variant="ghost">
+                  <Link href="/settings/billing">Billing detalhado</Link>
                 </Button>
-              </form>
-              <form action={createBillingCheckout.bind(null, BillingPlan.STARTER, "monthly")}>
-                <Button type="submit" variant="outline" disabled={!isStripePlanAvailable(BillingPlan.STARTER, "monthly")}>
-                  Assinar Starter
-                </Button>
-              </form>
-              <form action={createBillingCheckout.bind(null, BillingPlan.GROWTH, "monthly")}>
-                <Button type="submit" disabled={!isStripePlanAvailable(BillingPlan.GROWTH, "monthly")}>
-                  Assinar Growth
-                </Button>
-              </form>
-              <form action={openBillingPortal}>
-                <Button type="submit" variant="ghost" disabled={!organization.stripeCustomerId}>
-                  Abrir portal do cliente
-                </Button>
-              </form>
-              <Button asChild variant="ghost">
-                <Link href="/settings/billing">Billing detalhado</Link>
-              </Button>
+              </div>
             </div>
-          </CardContent>
-        </Card>
+          </section>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Workspace</CardTitle>
-            <CardDescription>Informacoes exibidas e usadas para operacao do tenant.</CardDescription>
-          </CardHeader>
-          <CardContent>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Workspace</span>
+              <h2 className={styles.panelTitle}>Configuracoes da organizacao</h2>
+              <p className={styles.panelDescription}>Dados base usados pelo tenant e exibidos para o time.</p>
+            </div>
+
             <OrganizationSettingsForm
               action={updateOrganizationSettings}
               defaultValues={{
@@ -225,142 +225,80 @@ export default async function SettingsPage() {
                 sizeRange: organization.sizeRange
               }}
             />
-          </CardContent>
-        </Card>
+          </section>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Readiness de integracoes</CardTitle>
-            <CardDescription>Panorama do que ja esta pronto para demo ou ambiente de producao.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            {integrations.map((integration) => {
-              const Icon = integration.icon;
-
-              return (
-                <div key={integration.title} className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-start gap-4">
-                      <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      <div>
-                        <p className="font-semibold">{integration.title}</p>
-                        <p className="mt-1 text-sm text-muted-foreground">{integration.description}</p>
-                        <p className="mt-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">{integration.meta}</p>
-                      </div>
-                    </div>
-                    <Badge variant={integration.ready ? "success" : "warning"}>
-                      {integration.ready ? "Ativo" : "Pendente"}
-                    </Badge>
-                  </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Novo playbook por departamento</CardTitle>
-            <CardDescription>Padronize triagem, entrevista e decisao para tipos recorrentes de vaga.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <DepartmentPlaybookForm action={upsertDepartmentPlaybook} submitLabel="Salvar playbook" />
-          </CardContent>
-        </Card>
-
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Playbooks ativos</CardTitle>
-            <CardDescription>Templates reutilizaveis que alimentam o copiloto e a operacao do time.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {playbooks.length ? (
-              playbooks.map((playbook) => (
-                <div key={playbook.id} className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <div className="mb-4 flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold">{playbook.title}</p>
-                      <p className="text-sm text-muted-foreground">{playbook.department}</p>
-                    </div>
-                    <form action={deleteDepartmentPlaybook.bind(null, playbook.id)}>
-                      <Button type="submit" variant="ghost" size="sm">
-                        Remover
-                      </Button>
-                    </form>
-                  </div>
-                  <DepartmentPlaybookForm
-                    action={upsertDepartmentPlaybook}
-                    submitLabel="Atualizar playbook"
-                    defaultValues={{
-                      id: playbook.id,
-                      department: playbook.department,
-                      title: playbook.title,
-                      screeningGuidance: playbook.screeningGuidance,
-                      interviewGuidance: playbook.interviewGuidance,
-                      decisionGuidance: playbook.decisionGuidance,
-                      strongSignals: Array.isArray(playbook.strongSignals)
-                        ? playbook.strongSignals.filter((item): item is string => typeof item === "string")
-                        : [],
-                      riskSignals: Array.isArray(playbook.riskSignals)
-                        ? playbook.riskSignals.filter((item): item is string => typeof item === "string")
-                        : []
-                    }}
-                  />
-                </div>
-              ))
-            ) : (
-              <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                Nenhum playbook cadastrado ainda. Crie o primeiro template para reaproveitar entre vagas semelhantes.
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1fr)]">
-        <Card className="panel-hover">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                <UsersRound className="h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle>Convidar equipe</CardTitle>
-                <CardDescription>Envie acesso para recrutadores, hiring managers e admins.</CardDescription>
-              </div>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Playbooks</span>
+              <h2 className={styles.panelTitle}>Templates por departamento</h2>
+              <p className={styles.panelDescription}>Padronize triagem, entrevista e decisao para vagas recorrentes.</p>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-5">
+
+            <DepartmentPlaybookForm action={upsertDepartmentPlaybook} submitLabel="Salvar playbook" />
+
+            <div className={styles.list}>
+              {playbooks.length ? (
+                playbooks.map((playbook) => (
+                  <div key={playbook.id} className={styles.listItem}>
+                    <div className={styles.rowBetween}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{playbook.title}</strong>
+                        <span className={styles.itemMeta}>{playbook.department}</span>
+                      </div>
+                      <form action={deleteDepartmentPlaybook.bind(null, playbook.id)}>
+                        <Button type="submit" variant="ghost" size="sm">
+                          Remover
+                        </Button>
+                      </form>
+                    </div>
+
+                    <DepartmentPlaybookForm
+                      action={upsertDepartmentPlaybook}
+                      submitLabel="Atualizar playbook"
+                      defaultValues={{
+                        id: playbook.id,
+                        department: playbook.department,
+                        title: playbook.title,
+                        screeningGuidance: playbook.screeningGuidance,
+                        interviewGuidance: playbook.interviewGuidance,
+                        decisionGuidance: playbook.decisionGuidance,
+                        strongSignals: Array.isArray(playbook.strongSignals)
+                          ? playbook.strongSignals.filter((item): item is string => typeof item === "string")
+                          : [],
+                        riskSignals: Array.isArray(playbook.riskSignals)
+                          ? playbook.riskSignals.filter((item): item is string => typeof item === "string")
+                          : []
+                      }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className={styles.emptyState}>Nenhum playbook cadastrado ainda.</div>
+              )}
+            </div>
+          </section>
+
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Equipe</span>
+              <h2 className={styles.panelTitle}>Convites e papeis</h2>
+              <p className={styles.panelDescription}>Acesso ao workspace, convites pendentes e alteracao de role no mesmo fluxo.</p>
+            </div>
+
             {assignableRoles.length ? (
               <TeamInviteForm action={inviteTeamMember} assignableRoles={assignableRoles} />
             ) : (
-              <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                Seu papel nao pode convidar novos membros.
-              </div>
+              <div className={styles.emptyState}>Seu papel nao pode convidar novos membros.</div>
             )}
 
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm font-semibold">
-                <LinkIcon className="h-4 w-4 text-muted-foreground" />
-                Convites pendentes
-              </div>
+            <div className={styles.list}>
               {pendingInvites.length ? (
                 pendingInvites.map((invite) => (
-                  <div key={invite.id} className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                    <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                      <div className="space-y-1">
-                        <p className="font-semibold">{invite.email}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {getRoleLabel(invite.role)} - enviado por {invite.invitedBy.name}
-                        </p>
-                        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                          Expira em {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(invite.expiresAt)}
-                        </p>
-                        <p className="break-all text-sm text-primary">{`${env.APP_URL}/invite/${invite.token}`}</p>
+                  <div key={invite.id} className={styles.listItem}>
+                    <div className={styles.rowBetween}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{invite.email}</strong>
+                        <span className={styles.itemMeta}>{getRoleLabel(invite.role)} • enviado por {invite.invitedBy.name}</span>
                       </div>
                       <form action={revokePendingInvite.bind(null, invite.id)}>
                         <Button type="submit" variant="outline" size="sm">
@@ -368,44 +306,31 @@ export default async function SettingsPage() {
                         </Button>
                       </form>
                     </div>
+                    <p className={styles.itemDescription}>
+                      Expira em {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(invite.expiresAt)}
+                    </p>
+                    <p className={styles.itemMeta}>{`${env.APP_URL}/invite/${invite.token}`}</p>
                   </div>
                 ))
               ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                  Nenhum convite pendente no momento.
-                </div>
+                <div className={styles.emptyState}>Nenhum convite pendente no momento.</div>
               )}
             </div>
-          </CardContent>
-        </Card>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                <ShieldCheck className="h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle>Membros e papeis</CardTitle>
-                <CardDescription>Controle de acesso para operacao diaria do time.</CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {teamMembers.map((member) => {
-              const canEdit = canManageTeamMember(user.role, member.role);
-              const roleOptions = (canEdit ? getAssignableRoles(user.role) : [member.role]).map((role) => ({
-                value: role,
-                label: getRoleLabel(role)
-              }));
+            <div className={styles.list}>
+              {teamMembers.map((member) => {
+                const canEdit = canManageTeamMember(user.role, member.role);
+                const roleOptions = (canEdit ? getAssignableRoles(user.role) : [member.role]).map((role) => ({
+                  value: role,
+                  label: getRoleLabel(role)
+                }));
 
-              return (
-                <div key={member.id} className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-semibold">{member.name}</p>
-                        <p className="text-sm text-muted-foreground">{member.email}</p>
+                return (
+                  <div key={member.id} className={styles.listItem}>
+                    <div className={styles.rowBetween}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{member.name}</strong>
+                        <span className={styles.itemMeta}>{member.email}</span>
                       </div>
                       <Badge variant="outline">{getRoleLabel(member.role)}</Badge>
                     </div>
@@ -416,47 +341,75 @@ export default async function SettingsPage() {
                         action={updateTeamMemberRole.bind(null, member.id)}
                       />
                     ) : (
-                      <p className="text-sm text-muted-foreground">
-                        Papel visivel, sem permissao de alteracao para seu nivel atual.
-                      </p>
+                      <p className={styles.itemDescription}>Papel visivel, sem permissao de alteracao para seu nivel atual.</p>
                     )}
                   </div>
-                </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </section>
-
-      <Card className="panel-hover">
-        <CardHeader>
-          <CardTitle>Audit trail</CardTitle>
-          <CardDescription>Eventos criticos do workspace para operacao, suporte e rastreabilidade.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {auditEvents.length ? (
-            auditEvents.map((event) => (
-              <div key={event.id} className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="space-y-1">
-                    <p className="font-semibold">{event.summary}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {event.actor?.name || "Sistema"} - {event.action} - {event.entityType}
-                    </p>
-                  </div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(event.createdAt)}
-                  </p>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-              Ainda nao ha eventos de auditoria registrados.
+                );
+              })}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </section>
+        </div>
+
+        <aside className={styles.column}>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Integracoes</span>
+              <h2 className={styles.panelTitle}>Readiness do ambiente</h2>
+              <p className={styles.panelDescription}>Panorama do que ja esta pronto para demo ou producao.</p>
+            </div>
+
+            <div className={styles.list}>
+              {integrations.map((integration) => {
+                const Icon = integration.icon;
+
+                return (
+                  <div key={integration.title} className={styles.listItem}>
+                    <div className={styles.rowBetween}>
+                      <div className={styles.itemLead}>
+                        <div className={styles.miniRow}>
+                          <span className={styles.iconLead}>
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <strong className={styles.itemTitle}>{integration.title}</strong>
+                        </div>
+                        <span className={styles.itemMeta}>{integration.meta}</span>
+                      </div>
+                      <Badge variant={integration.ready ? "success" : "warning"}>{integration.ready ? "Ativo" : "Pendente"}</Badge>
+                    </div>
+                    <p className={styles.itemDescription}>{integration.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Audit trail</span>
+              <h2 className={styles.panelTitle}>Eventos criticos do workspace</h2>
+              <p className={styles.panelDescription}>Rastreabilidade para operacao, suporte e governanca.</p>
+            </div>
+
+            <div className={styles.list}>
+              {auditEvents.length ? (
+                auditEvents.map((event) => (
+                  <div key={event.id} className={styles.listItem}>
+                    <strong className={styles.itemTitle}>{event.summary}</strong>
+                    <p className={styles.itemDescription}>
+                      {event.actor?.name || "Sistema"} • {event.action} • {event.entityType}
+                    </p>
+                    <span className={styles.itemMeta}>
+                      {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(event.createdAt)}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.emptyState}>Ainda nao ha eventos de auditoria registrados.</div>
+              )}
+            </div>
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }

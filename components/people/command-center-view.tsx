@@ -1,10 +1,19 @@
 import Link from "next/link";
 import type { Route } from "next";
-import { BellRing, BriefcaseBusiness, CalendarClock, CheckCircle2, ClipboardList, FileWarning, ShieldAlert, UsersRound } from "lucide-react";
+import {
+  BellRing,
+  BriefcaseBusiness,
+  CalendarClock,
+  CheckCircle2,
+  ClipboardList,
+  FileWarning,
+  ShieldAlert,
+  UsersRound
+} from "lucide-react";
 
-import { KpiCard } from "@/components/dashboard/kpi-card";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+import styles from "./command-center-view.module.css";
 
 type CommandCenterViewProps = {
   data: {
@@ -77,296 +86,311 @@ function getProgress(steps: Array<{ status: string }>) {
   return Math.round((completed / steps.length) * 100);
 }
 
+function formatDate(date: Date) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(date);
+}
+
 export function CommandCenterView({ data }: CommandCenterViewProps) {
+  const metrics = [
+    { label: "Base ativa", value: data.metrics.employees, hint: `${data.metrics.onboardingActive} entradas em curso` },
+    { label: "Fila interna", value: data.metrics.openRequests, hint: `${data.metrics.requestsAtRisk} com risco de SLA` },
+    { label: "Pendencias", value: data.metrics.overdueTasks, hint: `${data.metrics.pendingCompliance} pontos de compliance` },
+    { label: "Agenda", value: data.metrics.eventsToday, hint: `${data.metrics.offboardingActive} saidas ativas` }
+  ];
+
+  const quickLinks = [
+    { href: "/employees" as Route, label: "Colaboradores", icon: UsersRound },
+    { href: "/requests" as Route, label: "Service desk", icon: BellRing },
+    { href: "/people/tasks" as Route, label: "People tasks", icon: ClipboardList },
+    { href: "/chat" as Route, label: "Company chat", icon: CheckCircle2 }
+  ];
+
+  const atRiskRequests = data.requests.filter((request) => request.effectiveSlaStatus !== "ON_TRACK").slice(0, 4);
+
   return (
-    <div className="page-stage space-y-7">
-      <section className="stagger-grid grid gap-5 xl:grid-cols-4">
-        <KpiCard title="Colaboradores" value={String(data.metrics.employees)} description="Base ativa de pessoas dentro da operacao." icon={UsersRound} />
-        <KpiCard
-          title="Solicitacoes abertas"
-          value={String(data.metrics.openRequests)}
-          description="Fila ativa do service desk interno."
-          icon={BellRing}
-        />
-        <KpiCard title="Tarefas vencidas" value={String(data.metrics.overdueTasks)} description="Pendencias que exigem acao agora." icon={ClipboardList} />
-        <KpiCard
-          title="Compliance pendente"
-          value={String(data.metrics.pendingCompliance)}
-          description="Documentos ou trilhas obrigatorias ainda abertas."
-          icon={ShieldAlert}
-        />
+    <div className={styles.workspace}>
+      <section className={styles.hero}>
+        <div className={styles.heroIntro}>
+          <span className={styles.eyebrow}>Live overview</span>
+          <h2 className={styles.heroTitle}>Tudo que pede acao hoje.</h2>
+          <p className={styles.heroDescription}>O command center junta fila, workflows, agenda e compliance numa leitura direta da operacao.</p>
+        </div>
+
+        <div className={styles.metricStrip}>
+          {metrics.map((metric) => (
+            <div key={metric.label} className={styles.metricTile}>
+              <span>{metric.label}</span>
+              <strong>{metric.value}</strong>
+              <p>{metric.hint}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.quickActions}>
+          {quickLinks.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <Link key={item.href} href={item.href} className={styles.quickLink}>
+                <Icon className="h-4 w-4" />
+                {item.label}
+              </Link>
+            );
+          })}
+        </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_380px]">
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Alertas operacionais</CardTitle>
-            <CardDescription>Leitura unica do que pode travar a operacao de pessoas no dia a dia.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {data.alerts.length ? (
-              data.alerts.map((alert) => (
-                <Link key={`${alert.type}-${alert.title}`} href={alert.href as Route} className="data-row block">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold">{alert.title}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">{alert.description}</p>
+      <div className={styles.grid}>
+        <div className={styles.primaryColumn}>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.eyebrow}>Prioridades</span>
+              <h3 className={styles.panelTitle}>O que pode travar primeiro</h3>
+              <p className={styles.panelDescription}>Alertas criticos, requests em risco e tarefas que ja passaram da janela ideal.</p>
+            </div>
+
+            <div className={styles.alertList}>
+              {data.alerts.length ? (
+                data.alerts.slice(0, 3).map((alert) => (
+                  <Link key={`${alert.type}-${alert.title}`} href={alert.href as Route} className={styles.alertItem}>
+                    <div className={styles.listRow}>
+                      <strong>{alert.title}</strong>
+                      <Badge variant={alert.severity === "high" ? "destructive" : "warning"}>
+                        {alert.severity === "high" ? "Critico" : "Atencao"}
+                      </Badge>
                     </div>
-                    <Badge variant={alert.severity === "high" ? "destructive" : "warning"}>
-                      {alert.severity === "high" ? "Critico" : "Atencao"}
-                    </Badge>
-                  </div>
+                    <p>{alert.description}</p>
+                  </Link>
+                ))
+              ) : (
+                <div className={styles.emptyRow}>Nenhum alerta critico no momento.</div>
+              )}
+            </div>
+
+            <div className={styles.queueSection}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionLabel}>Requests em risco</span>
+                <Link href={"/requests" as Route} className={styles.inlineLink}>
+                  Abrir fila
                 </Link>
-              ))
-            ) : (
-              <div className="data-row data-row-muted p-5 text-sm text-muted-foreground">
-                Nenhum alerta critico no momento. A operacao interna esta sob controle.
               </div>
-            )}
-          </CardContent>
-        </Card>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Resumo do dia</CardTitle>
-            <CardDescription>O que merece abertura imediata na rotina do time.</CardDescription>
-          </CardHeader>
-          <CardContent className="stagger-grid grid gap-3 sm:grid-cols-2">
-            <div className="data-row p-4">
-              <p className="section-intro">Onboarding ativo</p>
-              <p className="mt-3 text-3xl font-semibold">{data.metrics.onboardingActive}</p>
-            </div>
-            <div className="data-row p-4">
-              <p className="section-intro">Offboarding ativo</p>
-              <p className="mt-3 text-3xl font-semibold">{data.metrics.offboardingActive}</p>
-            </div>
-            <div className="data-row p-4">
-              <p className="section-intro">Eventos hoje</p>
-              <p className="mt-3 text-3xl font-semibold">{data.metrics.eventsToday}</p>
-            </div>
-            <div className="data-row p-4">
-              <p className="section-intro">SLAs em risco</p>
-              <p className="mt-3 text-3xl font-semibold">{data.metrics.requestsAtRisk}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </section>
-
-      <section className="grid gap-6 xl:grid-cols-2">
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Service desk interno</CardTitle>
-            <CardDescription>Solicitacoes recentes com visibilidade operacional e dono claro.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {data.requests.length ? (
-              data.requests.map((request) => (
-                <div key={request.id} className="data-row">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold">{request.title}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {request.assigneeUser?.name ? `Responsavel: ${request.assigneeUser.name}` : "Sem responsavel definido"}.
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline">{request.status}</Badge>
-                      <Badge variant={request.effectiveSlaStatus === "BREACHED" ? "destructive" : request.effectiveSlaStatus === "AT_RISK" ? "warning" : "success"}>
+              <div className={styles.queueList}>
+                {atRiskRequests.length ? (
+                  atRiskRequests.map((request) => (
+                    <div key={request.id} className={styles.queueItem}>
+                      <div>
+                        <strong>{request.title}</strong>
+                        <p>{request.assigneeUser?.name ?? "Sem responsavel definido"}</p>
+                      </div>
+                      <Badge
+                        variant={
+                          request.effectiveSlaStatus === "BREACHED"
+                            ? "destructive"
+                            : request.effectiveSlaStatus === "AT_RISK"
+                              ? "warning"
+                              : "outline"
+                        }
+                      >
                         {request.effectiveSlaStatus}
                       </Badge>
                     </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
-                Nenhuma solicitacao aberta agora.
+                  ))
+                ) : (
+                  <div className={styles.emptyRow}>Nenhuma request fora da faixa ideal.</div>
+                )}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            </div>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Tarefas e eventos</CardTitle>
-            <CardDescription>Pendencias de execucao e marcos do calendario operacional.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {data.overdueTasks.length ? (
-              data.overdueTasks.map((task) => (
-                <div key={task.id} className="data-row">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="font-semibold">{task.title}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {task.relatedEmployee ? `${task.relatedEmployee.fullName} segue com acao pendente.` : "Tarefa operacional sem colaborador associado."}
-                      </p>
-                    </div>
-                    <Badge variant="destructive">{task.status}</Badge>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
-                Nenhuma tarefa vencida agora.
+            <div className={styles.queueSection}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.sectionLabel}>Pendencias vencidas</span>
               </div>
-            )}
 
-            {data.events.length ? (
-              <div className="data-stack">
-                {data.events.map((event) => (
-                  <div key={event.id} className="data-row">
-                    <div className="flex items-start justify-between gap-4">
+              <div className={styles.queueList}>
+                {data.overdueTasks.length ? (
+                  data.overdueTasks.slice(0, 3).map((task) => (
+                    <div key={task.id} className={styles.queueItem}>
                       <div>
-                        <p className="font-semibold">{event.title}</p>
-                        <p className="mt-2 text-sm text-muted-foreground">
-                          {event.relatedEmployee?.fullName ?? "Evento interno"} -{" "}
-                          {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(event.startsAt)}
-                        </p>
+                        <strong>{task.title}</strong>
+                        <p>{task.relatedEmployee?.fullName ?? "Sem colaborador"}</p>
                       </div>
-                      <CalendarClock className="h-4 w-4 text-primary" />
+                      <Badge variant="warning">{task.status}</Badge>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  <div className={styles.emptyRow}>Nenhuma tarefa vencida agora.</div>
+                )}
               </div>
-            ) : null}
-          </CardContent>
-        </Card>
-      </section>
+            </div>
+          </section>
 
-      <section className="stagger-grid grid gap-6 xl:grid-cols-3">
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Onboarding</CardTitle>
-            <CardDescription>Fluxos de entrada ativos.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {data.onboarding.length ? (
-              data.onboarding.map((run) => (
-                <div key={run.id} className="data-row">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-semibold">{run.employee.fullName}</p>
-                      <p className="text-sm text-muted-foreground">{run.employee.title}</p>
-                    </div>
-                    <Badge variant="success">{getProgress(run.steps)}%</Badge>
-                  </div>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.eyebrow}>Workflows</span>
+              <h3 className={styles.panelTitle}>Entradas e saidas em curso</h3>
+              <p className={styles.panelDescription}>Acompanhe progresso, ownership e o ponto em que cada fluxo esta parado.</p>
+            </div>
+
+            <div className={styles.workflowGrid}>
+              <div className={styles.workflowPanel}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.sectionLabel}>Onboarding</span>
+                  <Link href={"/people/onboarding" as Route} className={styles.inlineLink}>
+                    Ver fluxo
+                  </Link>
                 </div>
-              ))
-            ) : (
-              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
-                Nenhum onboarding ativo.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                <div className={styles.workflowList}>
+                  {data.onboarding.length ? (
+                    data.onboarding.slice(0, 3).map((run) => {
+                      const progress = getProgress(run.steps);
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Offboarding</CardTitle>
-            <CardDescription>Saidas com acompanhamento operacional.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {data.offboarding.length ? (
-              data.offboarding.map((run) => (
-                <div key={run.id} className="data-row">
-                  <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-semibold">{run.employee.fullName}</p>
-                      <p className="text-sm text-muted-foreground">{run.employee.title}</p>
-                    </div>
-                    <Badge variant="warning">{getProgress(run.steps)}%</Badge>
-                  </div>
+                      return (
+                        <div key={run.id} className={styles.workflowItem}>
+                          <div className={styles.listRow}>
+                            <strong>{run.employee.fullName}</strong>
+                            <span>{progress}%</span>
+                          </div>
+                          <p>{run.employee.title}</p>
+                          <div className={styles.progressTrack}>
+                            <span className={styles.progressFill} style={{ width: `${progress}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={styles.emptyRow}>Nenhum onboarding ativo.</div>
+                  )}
                 </div>
-              ))
-            ) : (
-              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
-                Nenhum offboarding ativo.
               </div>
-            )}
-          </CardContent>
-        </Card>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Hiring module</CardTitle>
-            <CardDescription>Recrutamento preservado como modulo complementar da plataforma.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-3">
-            <div className="data-row p-4">
-              <p className="section-intro">Vagas</p>
-              <p className="mt-3 text-3xl font-semibold">{data.hiring.jobCount}</p>
-            </div>
-            <div className="data-row p-4">
-              <p className="section-intro">Aplicacoes</p>
-              <p className="mt-3 text-3xl font-semibold">{data.hiring.applicationCount}</p>
-            </div>
-            <div className="data-row p-4">
-              <p className="section-intro">Alertas do hiring</p>
-              <p className="mt-3 text-3xl font-semibold">{data.hiring.slaAlerts}</p>
-            </div>
-            <Link href="/hiring" className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
-              <BriefcaseBusiness className="h-4 w-4" />
-              Abrir modulo de hiring
-            </Link>
-          </CardContent>
-        </Card>
-      </section>
+              <div className={styles.workflowPanel}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.sectionLabel}>Offboarding</span>
+                  <Link href={"/people/offboarding" as Route} className={styles.inlineLink}>
+                    Ver fluxo
+                  </Link>
+                </div>
+                <div className={styles.workflowList}>
+                  {data.offboarding.length ? (
+                    data.offboarding.slice(0, 3).map((run) => {
+                      const progress = getProgress(run.steps);
 
-      <section className="grid gap-6 xl:grid-cols-2">
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Compliance leve</CardTitle>
-            <CardDescription>Itens obrigatorios ainda em aberto na operacao.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {data.compliance.length ? (
-              data.compliance.map((item) => (
-                <div key={item.id} className="data-row">
-                  <div className="flex items-start justify-between gap-4">
+                      return (
+                        <div key={run.id} className={styles.workflowItem}>
+                          <div className={styles.listRow}>
+                            <strong>{run.employee.fullName}</strong>
+                            <span>{progress}%</span>
+                          </div>
+                          <p>{run.employee.title}</p>
+                          <div className={styles.progressTrack}>
+                            <span className={styles.progressFill} style={{ width: `${progress}%` }} />
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className={styles.emptyRow}>Nenhum offboarding ativo.</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div className={styles.secondaryColumn}>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.eyebrow}>Agenda</span>
+              <h3 className={styles.panelTitle}>Hoje e proximos marcos</h3>
+              <p className={styles.panelDescription}>Eventos do dia e pontos que pedem acompanhamento antes de escalar.</p>
+            </div>
+
+            <div className={styles.eventList}>
+              {data.events.length ? (
+                data.events.slice(0, 4).map((event) => (
+                  <div key={event.id} className={styles.eventItem}>
+                    <CalendarClock className="h-4 w-4" />
                     <div>
-                      <p className="font-semibold">{item.title}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        {item.employee?.fullName ?? "Colaborador"}{item.dueAt ? ` - vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
+                      <strong>{event.title}</strong>
+                      <p>
+                        {formatDate(event.startsAt)}
+                        {event.relatedEmployee?.fullName ? ` • ${event.relatedEmployee.fullName}` : ""}
                       </p>
                     </div>
-                    <FileWarning className="h-4 w-4 text-amber-600" />
                   </div>
-                </div>
-              ))
-            ) : (
-              <div className="data-row data-row-muted p-4 text-sm text-muted-foreground">
-                Nenhum item de compliance pendente.
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                ))
+              ) : (
+                <div className={styles.emptyRow}>Sem eventos no calendario.</div>
+              )}
+            </div>
+          </section>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Proximos movimentos</CardTitle>
-            <CardDescription>Atalhos para manter a operacao rodando sem friccao.</CardDescription>
-          </CardHeader>
-          <CardContent className="stagger-grid grid gap-3 sm:grid-cols-2">
-            <Link href="/employees" className="command-link text-sm font-semibold">
-              <UsersRound className="mb-3 h-4 w-4 text-primary" />
-              Cadastrar colaborador
-            </Link>
-            <Link href="/requests" className="command-link text-sm font-semibold">
-              <BellRing className="mb-3 h-4 w-4 text-primary" />
-              Abrir solicitacao interna
-            </Link>
-            <Link href="/people/tasks" className="command-link text-sm font-semibold">
-              <ClipboardList className="mb-3 h-4 w-4 text-primary" />
-              Criar tarefa operacional
-            </Link>
-            <Link href="/chat" className="command-link text-sm font-semibold">
-              <CheckCircle2 className="mb-3 h-4 w-4 text-primary" />
-              Operar com o company chat
-            </Link>
-          </CardContent>
-        </Card>
-      </section>
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.eyebrow}>Compliance</span>
+              <h3 className={styles.panelTitle}>Itens que merecem revisao</h3>
+              <p className={styles.panelDescription}>Controles, pendencias e janelas de vencimento em uma unica lista.</p>
+            </div>
+
+            <div className={styles.complianceList}>
+              {data.compliance.length ? (
+                data.compliance.slice(0, 4).map((item) => (
+                  <div key={item.id} className={styles.complianceItem}>
+                    <div className={styles.listRow}>
+                      <strong>{item.title}</strong>
+                      <ShieldAlert className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <p>
+                      {item.employee?.fullName ?? "Colaborador"}
+                      {item.dueAt ? ` • ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <div className={styles.emptyRow}>Sem itens de compliance pendentes.</div>
+              )}
+            </div>
+          </section>
+
+          <section className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.eyebrow}>Hiring</span>
+              <h3 className={styles.panelTitle}>Snapshot de recrutamento</h3>
+              <p className={styles.panelDescription}>Leitura rapida de vagas, candidatos e alertas de SLA ligados ao hiring.</p>
+            </div>
+
+            <div className={styles.snapshotList}>
+              <div className={styles.snapshotItem}>
+                <BriefcaseBusiness className="h-4 w-4" />
+                <div>
+                  <strong>{data.hiring.jobCount} vagas</strong>
+                  <p>Vagas em operacao</p>
+                </div>
+              </div>
+              <div className={styles.snapshotItem}>
+                <UsersRound className="h-4 w-4" />
+                <div>
+                  <strong>{data.hiring.applicationCount} candidatos</strong>
+                  <p>Aplicacoes ativas</p>
+                </div>
+              </div>
+              <div className={styles.snapshotItem}>
+                <FileWarning className="h-4 w-4" />
+                <div>
+                  <strong>{data.hiring.slaAlerts} alertas</strong>
+                  <p>Itens com risco de atraso</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }

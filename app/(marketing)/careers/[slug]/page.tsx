@@ -31,7 +31,7 @@ export default async function CareersPage({
             Oportunidades abertas para construir a proxima geracao do time.
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Explore as vagas e candidate-se em poucos minutos. Sua candidatura entra direto no fluxo do HireFlow AI.
+            Explore as vagas e candidate-se em poucos minutos. Sua candidatura entra direto no fluxo operacional do Harpia.
           </p>
         </section>
 

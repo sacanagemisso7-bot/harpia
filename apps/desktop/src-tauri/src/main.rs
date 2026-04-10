@@ -3,5 +3,5 @@
 fn main() {
     tauri::Builder::default()
         .run(tauri::generate_context!())
-        .expect("error while running HireFlow Desktop");
+        .expect("error while running Harpia Desktop");
 }

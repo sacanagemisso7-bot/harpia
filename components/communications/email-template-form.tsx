@@ -19,11 +19,12 @@ type EmailTemplateFormProps = {
 
 export function EmailTemplateForm({ action, template }: EmailTemplateFormProps) {
   return (
-    <form action={action} className="space-y-5 rounded-[1.5rem] border border-border/70 bg-white/70 p-6 backdrop-blur">
+    <form action={action} className="workspace-form workspace-form-section h-full">
       <input type="hidden" name="type" value={template.type} />
-      <div className="space-y-1">
+      <div className="workspace-form-copy">
         <p className="section-intro">{template.type}</p>
-        <Input name="name" defaultValue={template.name} />
+        <Label htmlFor={`${template.id}-name`}>Nome interno</Label>
+        <Input id={`${template.id}-name`} name="name" defaultValue={template.name} />
       </div>
       <div className="space-y-2">
         <Label htmlFor={`${template.id}-subject`}>Assunto</Label>
@@ -37,7 +38,9 @@ export function EmailTemplateForm({ action, template }: EmailTemplateFormProps) 
         <Label htmlFor={`${template.id}-html`}>Corpo HTML</Label>
         <Textarea id={`${template.id}-html`} name="bodyHtml" defaultValue={template.bodyHtml} className="min-h-40" />
       </div>
-      <Button type="submit">Salvar template</Button>
+      <div className="workspace-form-actions">
+        <Button type="submit">Salvar template</Button>
+      </div>
     </form>
   );
 }

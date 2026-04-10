@@ -617,9 +617,9 @@ export async function inviteTeamMember(
       await getEmailTransporter().sendMail({
         from: env.EMAIL_FROM,
         to: invite.email,
-        subject: `Convite para acessar ${invite.organization.name} no HireFlow AI`,
-        html: `<p>Ola,</p><p>Voce recebeu um convite para acessar o workspace <strong>${invite.organization.name}</strong> como <strong>${getRoleLabel(invite.role)}</strong>.</p><p><a href="${acceptUrl}">Aceitar convite</a></p><p>${invite.message ?? "Sem mensagem adicional."}</p><p>Este link expira em 7 dias.</p>`,
-        text: `Voce recebeu um convite para acessar ${invite.organization.name} no HireFlow AI como ${getRoleLabel(invite.role)}.\nAceite aqui: ${acceptUrl}\n\n${invite.message ?? ""}\n\nEste link expira em 7 dias.`
+        subject: `Convite para acessar ${invite.organization.name} no Harpia`,
+        html: `<p>Ola,</p><p>Voce recebeu um convite para acessar o workspace <strong>${invite.organization.name}</strong> no <strong>Harpia</strong> como <strong>${getRoleLabel(invite.role)}</strong>.</p><p><a href="${acceptUrl}">Aceitar convite</a></p><p>${invite.message ?? "Sem mensagem adicional."}</p><p>Este link expira em 7 dias.</p>`,
+        text: `Voce recebeu um convite para acessar ${invite.organization.name} no Harpia como ${getRoleLabel(invite.role)}.\nAceite aqui: ${acceptUrl}\n\n${invite.message ?? ""}\n\nEste link expira em 7 dias.`
       });
     } catch (error) {
       logError("Failed to send team invite email", error, { inviteId: invite.id }, "settings");

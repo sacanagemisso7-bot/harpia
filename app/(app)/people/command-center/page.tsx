@@ -14,8 +14,8 @@ export default async function PeopleCommandCenterPage() {
     <div className="space-y-6">
       <PageHeader
         eyebrow="HR command center"
-        title="Centro operacional de RH e people ops"
-        description="Visibilidade diaria da operacao de pessoas: fila interna, pendencias, eventos, compliance leve e riscos que pedem acao."
+        title="Centro operacional de people ops"
+        description="Fila, workflows, agenda, compliance e riscos em uma leitura clara da operacao diaria."
         actions={
           <>
             <Button asChild variant="outline">

@@ -1,53 +1,54 @@
 import type { Metadata } from "next";
-import { CalendarClock, CheckCircle2, ClipboardList, MessagesSquare, Sparkles, UsersRound } from "lucide-react";
+import { CalendarClock, CheckCircle2, ClipboardList, MessagesSquare, ShieldCheck, UsersRound } from "lucide-react";
 
 import { DemoRequestForm } from "@/components/marketing/demo-request-form";
 import { SiteChrome } from "@/components/marketing/site-chrome";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { brand, formatBrandTitle } from "@/lib/brand";
 
 import { createDemoRequest } from "./actions";
 
 export const metadata: Metadata = {
-  title: "Agendar demo | HireFlow AI",
-  description: "Agende uma demo do HireFlow AI e veja como organizar triagem, pipeline, entrevistas e analytics em um unico fluxo."
+  title: formatBrandTitle("Agendar demo"),
+  description: `Agende uma demo do ${brand.name} e veja como estruturar recrutamento e people ops com mais clareza e controle.`
 };
 
 const demoPoints = [
-  "Mostramos o fluxo mais relevante para o seu tipo de vaga e time.",
-  "Voce sai com uma visao clara do que a IA ajuda de verdade e do que continua sendo decisao humana.",
-  "A conversa ja ajuda a entender qual plano faz sentido para seu estagio de operacao."
+  "A conversa parte do seu processo atual, nao de um roteiro generico.",
+  "Mostramos onde a plataforma reduz ruido operacional sem tirar o julgamento do time.",
+  "Voce sai com uma leitura clara do melhor ponto de entrada para adocao."
 ];
 
 const demoAgenda = [
   {
-    title: "Entendimento do processo atual",
-    description: "Como o time recebe curriculos, onde perde tempo e o que hoje esta mais quebrado."
+    title: "Entendimento do momento atual",
+    description: "Volume de vagas, atores envolvidos, gargalos e onde a operacao perde consistencia hoje."
   },
   {
     title: "Tour guiado no produto",
-    description: "Vagas, triagem, score, pipeline, entrevistas, analytics, automacoes e careers page."
+    description: "Requisicoes, triagem, pipeline, entrevistas, people ops, operacao interna e trilha de decisao."
   },
   {
-    title: "Plano de implantacao inicial",
-    description: "Quais fluxos entram primeiro e como configurar equipe, criterios e templates."
+    title: "Plano de entrada",
+    description: "Definimos por onde comecar, o que padronizar primeiro e como levar a equipe junto."
   }
 ];
 
 const reassurance = [
   {
-    icon: Sparkles,
-    title: "Nao e demo fake",
-    text: "O produto ja opera com persistencia real, parsing com IA, entrevistas, pipeline e analytics."
+    icon: ShieldCheck,
+    title: "Produto de uso real",
+    text: "A apresentacao acontece sobre uma base funcional, com operacao, persistencia e fluxos prontos para evoluir."
   },
   {
     icon: UsersRound,
-    title: "Feito para RH e lideranca",
-    text: "A conversa atende tanto quem opera a vaga no dia a dia quanto quem precisa de previsibilidade."
+    title: "Pensado para RH e lideranca",
+    text: "A conversa cobre tanto quem opera no dia a dia quanto quem precisa de visibilidade e previsibilidade."
   },
   {
     icon: CalendarClock,
-    title: "Foco em uso real",
-    text: "A demo puxa para processo, criterio, tempo ganho e visibilidade, nao so para interface bonita."
+    title: "Foco em decisao",
+    text: "Nao mostramos apenas interface. Mostramos como o time ganha criterio, ritmo e memoria operacional."
   }
 ];
 
@@ -56,21 +57,21 @@ export default function BookDemoPage() {
     <SiteChrome>
       <section className="relative overflow-hidden px-5 py-10 lg:px-8 lg:py-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="hero-orb absolute left-[-3rem] top-0 h-52 w-52 rounded-full bg-emerald-200/30 blur-3xl" />
-          <div className="hero-orb absolute right-[-3rem] top-12 h-64 w-64 rounded-full bg-amber-200/25 blur-3xl [animation-delay:1.3s]" />
+          <div className="hero-orb absolute left-[-3rem] top-0 h-52 w-52 rounded-full bg-primary/5 blur-3xl" />
+          <div className="hero-orb absolute right-[-3rem] top-12 h-64 w-64 rounded-full bg-[hsl(var(--accent-warm)/0.08)] blur-3xl" />
           <div className="grid-fade absolute inset-x-0 top-0 h-[560px]" />
         </div>
 
         <div className="relative mx-auto grid max-w-7xl gap-6 lg:grid-cols-[minmax(0,1fr)_480px]">
           <div className="space-y-7">
             <div className="space-y-4">
-              <p className="section-intro">Book demo</p>
+              <p className="section-intro">Agendar demo</p>
               <h1 className="font-display text-5xl font-semibold leading-[0.96] lg:text-6xl">
-                Agende uma demo que ja parece inicio de onboarding.
+                Uma conversa guiada para entender onde o Harpia realmente encaixa.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
-                Conte seu contexto e a apresentacao do HireFlow AI fica orientada pelo seu processo, nao por um pitch
-                generico.
+                Conte seu contexto e adaptamos a demonstracao ao seu processo, aos seus gargalos e ao ritmo de decisao
+                do seu time.
               </p>
             </div>
 
@@ -90,7 +91,7 @@ export default function BookDemoPage() {
                 return (
                   <Card key={item.title} className="panel-hover spotlight-card">
                     <CardContent className="p-6">
-                      <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground w-fit">
+                      <div className="w-fit rounded-2xl bg-secondary p-3 text-secondary-foreground">
                         <Icon className="h-5 w-5" />
                       </div>
                       <p className="mt-4 text-lg font-semibold">{item.title}</p>
@@ -104,9 +105,9 @@ export default function BookDemoPage() {
 
           <Card className="aurora border-white/80">
             <CardHeader>
-              <CardTitle className="text-3xl">Quero ver o produto em acao</CardTitle>
+              <CardTitle className="text-3xl">Quero avaliar no meu contexto</CardTitle>
               <CardDescription>
-                Preencha rapido e a captura ja fica registrada para o fluxo comercial trabalhar em cima.
+                Preencha em poucos minutos e registramos sua demanda para seguir a conversa com precisao.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -120,22 +121,22 @@ export default function BookDemoPage() {
         <div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
           <Card className="aurora">
             <CardHeader>
-              <CardTitle>O que voce pode trazer</CardTitle>
-              <CardDescription>Isso ajuda a deixar a conversa mais objetiva e muito mais util.</CardDescription>
+              <CardTitle>O que ajuda trazer para a conversa</CardTitle>
+              <CardDescription>Com isso, a demo fica mais objetiva e mais proxima do uso real.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-[1.25rem] border border-white/70 bg-white/75 p-5 shadow-soft">
                 <ClipboardList className="h-5 w-5 text-primary" />
                 <p className="mt-4 font-semibold">Volume e maturidade</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Quantas vagas voce abre, quantas pessoas tocam o processo e em que etapa hoje tudo desacelera.
+                  Quantas vagas o time abre, quantas pessoas participam e em que ponto o processo desacelera.
                 </p>
               </div>
               <div className="rounded-[1.25rem] border border-white/70 bg-white/75 p-5 shadow-soft">
                 <MessagesSquare className="h-5 w-5 text-primary" />
-                <p className="mt-4 font-semibold">Problema mais urgente</p>
+                <p className="mt-4 font-semibold">Problema prioritario</p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Triagem manual, pipeline confuso, atraso para resposta, falta de visibilidade ou despadronizacao.
+                  Triagem manual, visibilidade baixa, demora para responder, falta de padrao ou handoffs fracos.
                 </p>
               </div>
             </CardContent>

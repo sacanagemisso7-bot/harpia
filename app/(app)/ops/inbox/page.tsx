@@ -4,136 +4,145 @@ import { BellRing, BriefcaseBusiness, CalendarClock, ClipboardList, ShieldAlert,
 
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requirePermission } from "@/lib/auth/permissions";
 import { getPeopleDashboard } from "@/modules/people-ops/queries";
+
+import styles from "../../workspace-expansion.module.css";
 
 export default async function OperationsInboxPage() {
   const user = await requirePermission("view_ops_inbox");
   const inbox = await getPeopleDashboard(user.organizationId);
 
   return (
-    <div className="space-y-6">
+    <div className={styles.page}>
       <PageHeader
         eyebrow="Operations inbox"
         title="Inbox operacional da empresa"
-        description="Priorize o que esta travando people ops, service desk interno, compliance e processos do dia a dia. Hiring continua visivel como modulo complementar."
+        description="Priorize o que esta travando people ops, service desk interno, compliance e processos do dia a dia."
       />
 
-      <section className="grid gap-5 xl:grid-cols-4">
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Solicitacoes abertas</p>
-            <p className="mt-3 text-3xl font-semibold">{inbox.metrics.openRequests}</p>
-          </CardContent>
-        </Card>
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Tarefas vencidas</p>
-            <p className="mt-3 text-3xl font-semibold">{inbox.metrics.overdueTasks}</p>
-          </CardContent>
-        </Card>
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">Compliance pendente</p>
-            <p className="mt-3 text-3xl font-semibold">{inbox.metrics.pendingCompliance}</p>
-          </CardContent>
-        </Card>
-        <Card className="panel-hover">
-          <CardContent className="p-5">
-            <p className="section-intro">SLAs em risco</p>
-            <p className="mt-3 text-3xl font-semibold">{inbox.metrics.requestsAtRisk}</p>
-          </CardContent>
-        </Card>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Solicitacoes abertas</span>
+          <strong className={styles.statValue}>{inbox.metrics.openRequests}</strong>
+          <span className={styles.statHint}>Itens que ainda exigem retorno ou resolucao.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Tarefas vencidas</span>
+          <strong className={styles.statValue}>{inbox.metrics.overdueTasks}</strong>
+          <span className={styles.statHint}>Atrasos que podem contaminar a rotina do time.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Compliance pendente</span>
+          <strong className={styles.statValue}>{inbox.metrics.pendingCompliance}</strong>
+          <span className={styles.statHint}>Policies e obrigatorios ainda em aberto.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>SLAs em risco</span>
+          <strong className={styles.statValue}>{inbox.metrics.requestsAtRisk}</strong>
+          <span className={styles.statHint}>Casos que pedem decisao ou resposta mais rapida.</span>
+        </div>
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_380px]">
-        <Card className="panel-hover">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                <BellRing className="h-4 w-4" />
-              </div>
-              <div>
-                <CardTitle>Fila de prioridades</CardTitle>
-                <CardDescription>Leitura unica do que esta exigindo acao imediata na operacao interna.</CardDescription>
-              </div>
+      <section className={styles.detailLayout}>
+        <div className={styles.column}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Priority queue</span>
+              <h2 className={styles.panelTitle}>Fila de prioridades</h2>
+              <p className={styles.panelDescription}>Leitura unica do que esta exigindo acao imediata na operacao interna.</p>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
             {inbox.alerts.length ? (
-              inbox.alerts.map((item, index) => (
-                <Link
-                  key={`${item.type}-${index}`}
-                  href={item.href as Route}
-                  className="block rounded-[1.35rem] border border-border/70 bg-white/75 p-5 transition hover:-translate-y-0.5 hover:shadow-soft"
-                >
-                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        {item.type === "overdue_task" ? (
-                          <ClipboardList className="h-4 w-4 text-amber-600" />
-                        ) : item.type === "hr_request" ? (
-                          <ShieldAlert className="h-4 w-4 text-destructive" />
-                        ) : (
-                          <Sparkles className="h-4 w-4 text-primary" />
-                        )}
-                        <p className="font-semibold">{item.title}</p>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{item.description}</p>
-                    </div>
-                    <Badge variant={item.severity === "high" ? "destructive" : "warning"}>
-                      {item.severity === "high" ? "Alta prioridade" : "Atencao"}
-                    </Badge>
-                  </div>
-                </Link>
-              ))
+              <div className={styles.linkList}>
+                {inbox.alerts.map((item, index) => (
+                  <Link key={`${item.type}-${index}`} href={item.href as Route} className={styles.linkItem}>
+                    <strong>
+                      {item.type === "overdue_task" ? (
+                        <ClipboardList className="mr-2 inline h-4 w-4 text-amber-600" />
+                      ) : item.type === "hr_request" ? (
+                        <ShieldAlert className="mr-2 inline h-4 w-4 text-destructive" />
+                      ) : (
+                        <Sparkles className="mr-2 inline h-4 w-4 text-primary" />
+                      )}
+                      {item.title}
+                    </strong>
+                    <span>{item.description}</span>
+                    <span>{item.severity === "high" ? "Alta prioridade" : "Atencao"}</span>
+                  </Link>
+                ))}
+              </div>
             ) : (
-              <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                Nenhum item critico no inbox operacional agora.
-              </div>
+              <div className={styles.emptyState}>Nenhum item critico no inbox operacional agora.</div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                <CalendarClock className="h-4 w-4" />
+        <aside className={styles.stickyAside}>
+          <div className={styles.spotlight}>
+            <span className={styles.panelEyebrow}>Now</span>
+            <strong className={styles.spotlightValue}>{inbox.alerts.length}</strong>
+            <p className={styles.panelDescription}>Itens com prioridade real aguardando acao do time.</p>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Quick read</span>
+                <h3 className={styles.panelTitle}>Resumo curto</h3>
               </div>
-              <div>
-                <CardTitle>Resumo rapido</CardTitle>
-                <CardDescription>Uma leitura curta para abrir a rotina do dia.</CardDescription>
+              <span className={styles.iconLead}>
+                <BellRing className="h-4 w-4" />
+              </span>
+            </div>
+            <div className={styles.metricStack}>
+              <div className={styles.metricRow}>
+                <span>Onboarding ativo</span>
+                <strong>{inbox.metrics.onboardingActive}</strong>
+              </div>
+              <div className={styles.metricRow}>
+                <span>Offboarding ativo</span>
+                <strong>{inbox.metrics.offboardingActive}</strong>
+              </div>
+              <div className={styles.metricRow}>
+                <span>Eventos hoje</span>
+                <strong>{inbox.metrics.eventsToday}</strong>
               </div>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-              <p className="section-intro">Onboarding ativo</p>
-              <p className="mt-3 text-3xl font-semibold">{inbox.metrics.onboardingActive}</p>
-            </div>
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-              <p className="section-intro">Offboarding ativo</p>
-              <p className="mt-3 text-3xl font-semibold">{inbox.metrics.offboardingActive}</p>
-            </div>
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-              <p className="section-intro">Eventos hoje</p>
-              <p className="mt-3 text-3xl font-semibold">{inbox.metrics.eventsToday}</p>
-            </div>
-            <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-              <p className="section-intro">Hiring complementar</p>
-              <p className="mt-3 text-3xl font-semibold">{inbox.hiring.applicationCount}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                {inbox.hiring.jobCount} vagas abertas e {inbox.hiring.slaAlerts} alertas operacionais no modulo de hiring.
-              </p>
-              <Link href="/hiring" className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-primary">
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Hiring</span>
+                <h3 className={styles.panelTitle}>Modulo complementar</h3>
+              </div>
+              <span className={styles.iconLead}>
                 <BriefcaseBusiness className="h-4 w-4" />
-                Abrir modulo de hiring
-              </Link>
+              </span>
             </div>
-          </CardContent>
-        </Card>
+            <div className={styles.surfaceMuted}>
+              <span className={styles.itemDescription}>
+                {inbox.hiring.applicationCount} aplicacoes, {inbox.hiring.jobCount} vagas abertas e {inbox.hiring.slaAlerts} alertas operacionais.
+              </span>
+            </div>
+            <Link href="/hiring" className={styles.linkItem}>
+              <strong>Abrir modulo de hiring</strong>
+              <span>Continue a leitura do lado de recrutamento quando necessario.</span>
+            </Link>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.metricStack}>
+              <div className={styles.metricRow}>
+                <span>
+                  <CalendarClock className="mr-2 inline h-4 w-4" />
+                  Eventos
+                </span>
+                <strong>{inbox.metrics.eventsToday}</strong>
+              </div>
+            </div>
+          </div>
+        </aside>
       </section>
     </div>
   );

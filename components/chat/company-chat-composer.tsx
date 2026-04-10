@@ -35,10 +35,14 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
   return (
     <form action={formAction} className="chat-pane-shell space-y-4">
       {threadId ? <input type="hidden" name="threadId" value={threadId} /> : null}
+      <div className="space-y-2 px-1">
+        <p className="section-intro">Nova leitura</p>
+        <p className="text-sm text-muted-foreground">Escreva uma pergunta, uma decisao ou uma acao que precisa sair do papel.</p>
+      </div>
       <Textarea
         name="message"
         className="min-h-[160px] border-transparent bg-transparent shadow-none hover:border-transparent"
-        placeholder="Pergunte sobre colaboradores, solicitacoes internas, tarefas, onboarding, politicas, knowledge base ou peca ajuda para operar o dia a dia."
+        placeholder="Pergunte sobre colaboradores, solicitacoes, tarefas, onboarding, politicas ou qualquer passo da operacao."
       />
       <FormMessage message={state.error} />
       <div className="flex flex-wrap items-center justify-between gap-3">

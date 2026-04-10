@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, CircleGauge, ShieldCheck } from "lucide-react";
 
 import { SiteChrome } from "@/components/marketing/site-chrome";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { brand, brandPaths, formatBrandTitle } from "@/lib/brand";
 
 export const metadata: Metadata = {
-  title: "Planos | HireFlow AI",
-  description: "Planos do HireFlow AI para times de RH que querem contratar com mais criterio e velocidade."
+  title: formatBrandTitle("Planos"),
+  description: `Planos do ${brand.name} para equipes que precisam operar recrutamento e people ops com mais clareza, consistencia e controle.`
 };
 
 const plans = [
@@ -18,12 +19,12 @@ const plans = [
     price: "R$ 499",
     cadence: "/mes",
     annualPrice: "R$ 4.990/ano",
-    description: "Para startups que querem sair de planilhas e organizar o processo sem overengineering.",
+    description: "Para equipes que precisam sair do improviso e consolidar uma base operacional seria.",
     badge: "Entrada",
     features: [
       "Ate 3 vagas ativas",
       "Ate 250 candidatos",
-      "Triagem com IA e parsing de curriculo",
+      "Triagem estruturada e consolidacao de perfil",
       "Pipeline, entrevistas e templates de email",
       "2 membros do time"
     ],
@@ -34,13 +35,13 @@ const plans = [
     price: "R$ 1.290",
     cadence: "/mes",
     annualPrice: "R$ 12.900/ano",
-    description: "Para RHs com mais volume e necessidade de padrao operacional e analytics melhores.",
+    description: "Para operacoes com mais volume, mais participantes e necessidade de visibilidade constante.",
     badge: "Mais escolhido",
     highlight: true,
     features: [
       "Ate 12 vagas ativas",
       "Ate 2.500 candidatos",
-      "Automações por vaga e scorecards",
+      "Automacoes por vaga e scorecards",
       "Analytics, SLA e produtividade",
       "8 membros do time",
       "SMTP e storage configuraveis"
@@ -52,10 +53,10 @@ const plans = [
     price: "Sob consulta",
     cadence: "",
     annualPrice: "Sob consulta anual",
-    description: "Para operacoes com mais governanca, onboarding mais proximo e necessidades de integracao.",
+    description: "Para ambientes com mais governanca, onboarding proximo e fluxos mais adaptados por area.",
     badge: "Custom",
     features: [
-      "Vagas e candidatos customizados",
+      "Escala customizada de vagas e candidatos",
       "Membros e workspaces customizados",
       "Auditoria, multi-org e controles avancados",
       "Suporte de implantacao",
@@ -67,7 +68,7 @@ const plans = [
 
 const comparisonRows = [
   {
-    label: "Triagem com IA",
+    label: "Triagem estruturada",
     values: ["Sim", "Sim", "Sim"]
   },
   {
@@ -75,7 +76,7 @@ const comparisonRows = [
     values: ["Sim", "Sim", "Sim"]
   },
   {
-    label: "Automações por vaga",
+    label: "Automacoes por vaga",
     values: ["-", "Sim", "Sim"]
   },
   {
@@ -93,9 +94,9 @@ const comparisonRows = [
 ];
 
 const buyingReasons = [
-  "Preco simples para apresentar sem friccao em demo comercial.",
-  "Caminho claro de expansao: Starter para provar valor, Growth para padronizar, Business para escalar.",
-  "Recursos alinhados ao que RH realmente sente no dia a dia: triagem, velocidade, colaboracao e visibilidade."
+  "Estrutura comercial direta para avaliar valor sem excesso de complexidade.",
+  "Caminho claro de adocao: provar valor, consolidar padrao e expandir com controle.",
+  "Recursos desenhados para problemas reais de operacao, nao para checklists de marketing."
 ];
 
 function getPricingNotice(code?: string) {
@@ -128,19 +129,19 @@ export default async function PricingPage({
     <SiteChrome>
       <section className="relative overflow-hidden px-5 py-10 lg:px-8 lg:py-14">
         <div className="pointer-events-none absolute inset-0">
-          <div className="hero-orb absolute left-[-3rem] top-[-1rem] h-52 w-52 rounded-full bg-emerald-200/30 blur-3xl" />
-          <div className="hero-orb absolute right-[-4rem] top-12 h-64 w-64 rounded-full bg-amber-200/25 blur-3xl [animation-delay:1.4s]" />
+          <div className="hero-orb absolute left-[-3rem] top-[-1rem] h-52 w-52 rounded-full bg-primary/5 blur-3xl" />
+          <div className="hero-orb absolute right-[-4rem] top-12 h-64 w-64 rounded-full bg-[hsl(var(--accent-warm)/0.08)] blur-3xl" />
         </div>
 
         <div className="relative mx-auto max-w-7xl space-y-8">
           <div className="max-w-4xl space-y-4">
-            <p className="section-intro">Pricing</p>
+            <p className="section-intro">Planos</p>
             <h1 className="font-display text-5xl font-semibold leading-[0.95] lg:text-6xl">
-              Planos simples para vender, operar e expandir com mais clareza.
+              Um modelo comercial claro para adotar com seguranca e evoluir sem ruido.
             </h1>
             <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
-              A estrutura comercial do HireFlow AI foi pensada para startups e SMBs comprarem rapido, com um caminho
-              claro de adocao e evolucao do uso.
+              O desenho comercial do {brand.name} prioriza clareza de entrada, previsibilidade de expansao e alinhamento
+              com a maturidade operacional de cada equipe.
             </p>
           </div>
 
@@ -158,7 +159,7 @@ export default async function PricingPage({
                 <p className="font-semibold">Atualizacao comercial</p>
                 <p className="text-sm text-muted-foreground">{notice.message}</p>
               </div>
-              <Badge variant={notice.variant}>{notice.variant === "warning" ? "Atenção" : "Info"}</Badge>
+              <Badge variant={notice.variant}>{notice.variant === "warning" ? "Atencao" : "Info"}</Badge>
             </div>
           ) : null}
         </div>
@@ -210,7 +211,7 @@ export default async function PricingPage({
                 </div>
 
                 <Button asChild size="lg" variant={plan.highlight ? "default" : "outline"} className="w-full">
-                  <Link href="/book-demo">
+                  <Link href={brandPaths.demo}>
                     Agendar demo ou receber trial
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -227,7 +228,7 @@ export default async function PricingPage({
             <CardHeader>
               <p className="section-intro">Comparativo</p>
               <CardTitle className="text-3xl">O que muda entre os planos</CardTitle>
-              <CardDescription>Uma tabela simples para a conversa comercial nao travar em detalhes desnecessarios.</CardDescription>
+              <CardDescription>Uma leitura objetiva para a conversa comercial seguir sem travar em excesso de detalhe.</CardDescription>
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <div className="min-w-[720px]">
@@ -259,22 +260,22 @@ export default async function PricingPage({
         <div className="mx-auto max-w-7xl">
           <Card className="overflow-hidden">
             <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_360px]">
-              <div className="bg-[linear-gradient(135deg,rgba(22,59,43,0.98),rgba(31,88,61,0.92),rgba(145,162,97,0.82))] p-8 text-primary-foreground lg:p-10">
-                <p className="section-intro text-primary-foreground/72">Seguranca de compra</p>
+              <div className="bg-[linear-gradient(135deg,rgba(14,35,29,0.98),rgba(20,47,38,0.94),rgba(46,44,36,0.92))] p-8 text-primary-foreground lg:p-10">
+                <p className="section-intro text-primary-foreground/72">Confianca de compra</p>
                 <h2 className="mt-3 max-w-2xl font-display text-4xl font-semibold">
-                  Uma stack pronta para parecer produto serio na demo e continuar firme depois da venda.
+                  Uma plataforma pronta para impressionar na avaliacao e sustentar o uso depois da decisao.
                 </h2>
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[1.25rem] border border-white/15 bg-white/10 p-5">
-                    <Sparkles className="h-5 w-5" />
-                    <p className="mt-4 font-semibold">UX de SaaS premium</p>
+                    <CircleGauge className="h-5 w-5" />
+                    <p className="mt-4 font-semibold">Clareza operacional</p>
                     <p className="mt-2 text-sm text-primary-foreground/72">
-                      Landing, app e fluxo operacional com uma cara muito mais vendavel que um CRUD comum.
+                      Interface, fluxo e linguagem pensados para trabalho serio, nao para demonstracao vazia.
                     </p>
                   </div>
                   <div className="rounded-[1.25rem] border border-white/15 bg-white/10 p-5">
                     <ShieldCheck className="h-5 w-5" />
-                    <p className="mt-4 font-semibold">Base de producao</p>
+                    <p className="mt-4 font-semibold">Base pronta para producao</p>
                     <p className="mt-2 text-sm text-primary-foreground/72">
                       Prisma, PostgreSQL, auditoria, permissions, SMTP, storage e readiness ja previstos.
                     </p>
@@ -286,10 +287,10 @@ export default async function PricingPage({
                 <p className="section-intro">Pronto para conversar</p>
                 <h3 className="font-display text-3xl font-semibold">Quer validar o plano certo para seu time?</h3>
                 <p className="text-sm leading-6 text-muted-foreground">
-                  A demo ajuda a mapear volume de vagas, maturidade do processo, opcao mensal ou anual e eventuais cupons no checkout.
+                  A demo ajuda a mapear maturidade do processo, volume de vagas e o ritmo de implantacao mais adequado.
                 </p>
                 <Button asChild size="lg">
-                  <Link href="/book-demo">
+                  <Link href={brandPaths.demo}>
                     Falar com vendas
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>

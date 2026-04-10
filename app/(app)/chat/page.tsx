@@ -8,9 +8,9 @@ import { CompanyChatComposer } from "@/components/chat/company-chat-composer";
 import { CompanyChatProposalForm } from "@/components/chat/company-chat-proposal-form";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { hasPermission } from "@/lib/auth/permission-matrix";
 import { requirePermission } from "@/lib/auth/permissions";
+import { cn } from "@/lib/utils";
 import { getCompanyChatWorkspace } from "@/modules/company-chat/queries";
 import type {
   CompanyChatActionProposal,
@@ -22,6 +22,8 @@ import type {
   CompanyChatRelatedEntity,
   CompanyChatToolTrace
 } from "@/types/company-chat";
+
+import styles from "./company-chat-page.module.css";
 
 function formatEnumLabel(value: string) {
   return value
@@ -176,334 +178,345 @@ export default async function CompanyChatPage({
     userRole: user.role,
     threadId
   });
+
   const activeThreadId = workspace.activeThread?.id;
   const canReviewApprovals = hasPermission(user.role, "review_agent_approvals");
   const latestAssistantMessage = [...(workspace.activeThread?.messages ?? [])].reverse().find((message) => message.role === "ASSISTANT");
   const latestAssistantMetadata = latestAssistantMessage ? parseMessageMetadata(latestAssistantMessage.metadata) : null;
+  const assistantCount = workspace.activeThread?.messages.filter((message) => message.role === "ASSISTANT").length ?? 0;
+  const messageCount = workspace.activeThread?.messages.length ?? 0;
+  const threadCount = workspace.threads.length;
+  const promptCount = latestAssistantMetadata?.suggestedPrompts.length ?? 4;
+  const prompts =
+    latestAssistantMetadata?.suggestedPrompts.length
+      ? latestAssistantMetadata.suggestedPrompts.slice(0, 4)
+      : [
+          "Quais pendencias do RH estao em risco agora?",
+          "Mostre o que exige decisao hoje.",
+          "Onde onboarding perdeu ritmo?",
+          "Quais politicas sustentam essa resposta?"
+        ];
+
+  const focusSignals = [
+    { label: "threads", value: String(threadCount).padStart(2, "0") },
+    { label: "mensagens", value: String(messageCount).padStart(2, "0") },
+    { label: "assist", value: String(assistantCount).padStart(2, "0") },
+    { label: "fontes", value: String(latestAssistantMetadata?.citations.length ?? 0).padStart(2, "0") }
+  ];
 
   return (
-    <div className="page-stage space-y-7">
+    <div className={styles.scene}>
       <PageHeader
         eyebrow="Company chat"
-        title="Copiloto operacional da empresa"
-        description="Converse com colaboradores, solicitacoes internas, tarefas, onboarding, offboarding, compliance, knowledge base e tambem com o modulo de hiring quando necessario."
+        ghost="COMPANY CHAT"
+        title="Conversa com contexto operacional."
+        description="Threads, fontes, aprovacoes e rascunhos no mesmo fluxo para decidir mais rapido."
       />
 
-      <section className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)_320px]">
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Threads</CardTitle>
-            <CardDescription>Historico do seu contexto operacional.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
+      <div className={styles.workspace}>
+        <aside className={styles.rail}>
+          <div className={styles.panelHeader}>
+            <span className={styles.panelEyebrow}>Threads</span>
+            <h2 className={styles.panelTitle}>Continuidades abertas</h2>
+            <p className={styles.panelDescription}>Acompanhe o que ja foi perguntado e retome o contexto certo sem reabrir o assunto do zero.</p>
+          </div>
+
+          <div className={styles.signalGrid}>
+            {focusSignals.map((signal) => (
+              <div key={signal.label} className={styles.signalCard}>
+                <span>{signal.label}</span>
+                <strong>{signal.value}</strong>
+              </div>
+            ))}
+          </div>
+
+          <div className={styles.threadList}>
             {workspace.threads.length ? (
               workspace.threads.map((thread) => (
                 <Link
                   key={thread.id}
                   href={`/chat?threadId=${thread.id}`}
-                  className={`chat-rail-item ${
-                    workspace.activeThread?.id === thread.id ? "chat-rail-item-active" : ""
-                  }`}
+                  className={cn(styles.threadItem, workspace.activeThread?.id === thread.id && styles.threadItemActive)}
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="font-semibold">{thread.title}</p>
-                      <Badge variant="outline">{thread.scope}</Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{thread.messages[0]?.content ?? "Sem mensagens ainda."}</p>
+                  <div className={styles.threadItemTop}>
+                    <strong>{thread.title}</strong>
+                    <Badge variant="outline">{thread.scope}</Badge>
                   </div>
+                  <p>{thread.messages[0]?.content ?? "Sem mensagens ainda."}</p>
+                  <span>{thread.messages.length} mensagens</span>
                 </Link>
               ))
             ) : (
-              <div className="empty-state-shell p-4 text-sm text-muted-foreground">
-                Sua primeira conversa vira um thread automaticamente.
-              </div>
+              <div className={styles.emptyState}>Sua primeira conversa abre a trilha automaticamente.</div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </aside>
 
-        <Card className="panel-hover">
-          <CardHeader>
-            <div className="flex items-center gap-3">
-              <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
-                <Bot className="h-4 w-4" />
+        <section className={styles.conversationPanel}>
+          <div className={styles.conversationHeader}>
+            <div>
+              <span className={styles.panelEyebrow}>Thread ativa</span>
+              <div className={styles.conversationLead}>
+                <h2>{workspace.activeThread?.title ?? "Nova conversa"}</h2>
+                {workspace.activeThread?.scope ? <Badge variant="outline">{workspace.activeThread.scope}</Badge> : null}
               </div>
-              <div>
-                <CardTitle>Workspace de conversa</CardTitle>
-                <CardDescription>Leitura, copiloto operacional e acoes assistidas com confirmacao.</CardDescription>
-              </div>
+              <p className={styles.panelDescription}>
+                {workspace.activeThread
+                  ? "Mensagens, evidencias e propostas aparecem em sequencia, sem dividir a leitura em paines artificiais."
+                  : "Comece perguntando sobre backlog, people ops, compliance ou conhecimento interno."}
+              </p>
             </div>
-          </CardHeader>
-          <CardContent className="space-y-5">
-            <CompanyChatComposer action={sendCompanyChatMessage} threadId={workspace.activeThread?.id} />
 
-            <div className="data-stack">
-              {workspace.activeThread?.messages.length ? (
-                workspace.activeThread.messages.map((message) => {
-                  const metadata = parseMessageMetadata(message.metadata);
-                  const isAssistant = message.role === "ASSISTANT";
+            <div className={styles.conversationMeta}>
+              <span>
+                <MessagesSquare className="h-4 w-4" />
+                {messageCount} itens
+              </span>
+              <span>
+                <Sparkles className="h-4 w-4" />
+                {assistantCount} respostas
+              </span>
+              <span>
+                <Bot className="h-4 w-4" />
+                {promptCount} gatilhos
+              </span>
+            </div>
+          </div>
 
-                  return (
-                    <div
-                      key={message.id}
-                      className={`chat-message-shell ${
-                        isAssistant ? "assistant-message" : message.role === "USER" ? "user-message" : "system-message"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                        {isAssistant ? <Sparkles className="h-3.5 w-3.5" /> : <MessagesSquare className="h-3.5 w-3.5" />}
-                        {message.role}
-                      </div>
-                      <div className="mt-3 whitespace-pre-wrap text-sm leading-7">{message.content}</div>
+          <div className={styles.messageRiver}>
+            {workspace.activeThread?.messages.length ? (
+              workspace.activeThread.messages.map((message) => {
+                const metadata = parseMessageMetadata(message.metadata);
+                const isAssistant = message.role === "ASSISTANT";
 
-                      {metadata.agentExecution ? (
-                        <div className="data-row mt-4 p-4">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.status)}</Badge>
-                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.riskLevel)}</Badge>
-                            <Badge variant="outline">
-                              {metadata.agentExecution.requiresApproval ? "Com aprovacao" : "Execucao direta"}
-                            </Badge>
-                            {metadata.agentExecution.approvalStatus ? (
-                              <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.approvalStatus)}</Badge>
-                            ) : null}
-                            {metadata.agentExecution.executionStatus ? (
-                              <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.executionStatus)}</Badge>
-                            ) : null}
-                          </div>
-                          <p className="mt-3 text-sm text-muted-foreground">{metadata.agentExecution.summary}</p>
-                          {metadata.agentExecution.status === "WAITING_APPROVAL" &&
-                          canReviewApprovals &&
-                          metadata.agentExecution.approvalRequestId ? (
-                            <AgentApprovalReviewForm
-                              action={reviewAgentApprovalAction}
-                              approvalRequestId={metadata.agentExecution.approvalRequestId}
-                              compact
-                            />
+                return (
+                  <div
+                    key={message.id}
+                    className={`chat-message-shell ${
+                      isAssistant ? "assistant-message" : message.role === "USER" ? "user-message" : "system-message"
+                    }`}
+                  >
+                    <div className={cn("flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground", styles.messageMeta)}>
+                      {isAssistant ? <Sparkles className="h-3.5 w-3.5" /> : <MessagesSquare className="h-3.5 w-3.5" />}
+                      {message.role}
+                    </div>
+                    <div className="mt-3 whitespace-pre-wrap text-sm leading-7">{message.content}</div>
+
+                    {metadata.agentExecution ? (
+                      <div className="data-row mt-4 p-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.status)}</Badge>
+                          <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.riskLevel)}</Badge>
+                          <Badge variant="outline">
+                            {metadata.agentExecution.requiresApproval ? "Com aprovacao" : "Execucao direta"}
+                          </Badge>
+                          {metadata.agentExecution.approvalStatus ? (
+                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.approvalStatus)}</Badge>
+                          ) : null}
+                          {metadata.agentExecution.executionStatus ? (
+                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.executionStatus)}</Badge>
                           ) : null}
                         </div>
-                      ) : null}
+                        <p className="mt-3 text-sm text-muted-foreground">{metadata.agentExecution.summary}</p>
+                        {metadata.agentExecution.status === "WAITING_APPROVAL" &&
+                        canReviewApprovals &&
+                        metadata.agentExecution.approvalRequestId ? (
+                          <AgentApprovalReviewForm
+                            action={reviewAgentApprovalAction}
+                            approvalRequestId={metadata.agentExecution.approvalRequestId}
+                            compact
+                          />
+                        ) : null}
+                      </div>
+                    ) : null}
 
-                      {metadata.toolTraces.length ? (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {metadata.toolTraces.map((trace) => (
-                            <div key={`${message.id}-${trace.tool}`} className="trace-pill">
-                              {trace.tool}: {trace.summary}
+                    {metadata.toolTraces.length ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {metadata.toolTraces.map((trace) => (
+                          <div key={`${message.id}-${trace.tool}`} className="trace-pill">
+                            {trace.tool}: {trace.summary}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {metadata.policyDraft ? (
+                      <div className="data-row mt-4 p-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline">Policy assistant</Badge>
+                          <Badge variant="outline">{formatEnumLabel(metadata.policyDraft.confidence)}</Badge>
+                        </div>
+                        <p className="mt-3 text-sm text-foreground">{metadata.policyDraft.response}</p>
+                        <p className="mt-2 text-sm text-muted-foreground">{metadata.policyDraft.summary}</p>
+                      </div>
+                    ) : null}
+
+                    {metadata.policyOperations ? (
+                      <div className="data-row mt-4 p-4">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge variant="outline">Compliance operacional</Badge>
+                          <Badge variant="outline">{metadata.policyOperations.pendingAcknowledgements} pendentes</Badge>
+                          {metadata.policyOperations.overdueAcknowledgements > 0 ? (
+                            <Badge variant="outline">{metadata.policyOperations.overdueAcknowledgements} atrasados</Badge>
+                          ) : null}
+                        </div>
+                        <p className="mt-3 text-sm text-muted-foreground">{metadata.policyOperations.summary}</p>
+                      </div>
+                    ) : null}
+
+                    {metadata.citations.length ? (
+                      <div className="mt-4 data-stack">
+                        {metadata.citations.map((citation) => (
+                          <a
+                            key={`${message.id}-${citation.id}`}
+                            href={citation.href ?? "/knowledge"}
+                            className="command-link p-4"
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="font-semibold">{citation.title}</p>
+                              {citation.position !== null && citation.position !== undefined ? (
+                                <Badge variant="outline">Trecho {citation.position + 1}</Badge>
+                              ) : null}
                             </div>
-                          ))}
-                        </div>
-                      ) : null}
+                            <p className="mt-2 text-sm text-muted-foreground">{citation.excerpt}</p>
+                          </a>
+                        ))}
+                      </div>
+                    ) : null}
 
-                      {metadata.policyDraft ? (
-                        <div className="data-row mt-4 p-4">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline">Policy assistant</Badge>
-                            <Badge variant="outline">{formatEnumLabel(metadata.policyDraft.confidence)}</Badge>
-                          </div>
-                          <p className="mt-3 text-sm text-foreground">{metadata.policyDraft.response}</p>
-                          <p className="mt-2 text-sm text-muted-foreground">{metadata.policyDraft.summary}</p>
-                        </div>
-                      ) : null}
-
-                      {metadata.policyOperations ? (
-                        <div className="data-row mt-4 p-4">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <Badge variant="outline">Compliance operacional</Badge>
-                            <Badge variant="outline">{metadata.policyOperations.pendingAcknowledgements} pendentes</Badge>
-                            {metadata.policyOperations.overdueAcknowledgements > 0 ? (
-                              <Badge variant="outline">{metadata.policyOperations.overdueAcknowledgements} atrasados</Badge>
-                            ) : null}
-                          </div>
-                          <p className="mt-3 text-sm text-muted-foreground">{metadata.policyOperations.summary}</p>
-                        </div>
-                      ) : null}
-
-                      {metadata.citations.length ? (
-                        <div className="mt-4 data-stack">
-                          {metadata.citations.map((citation) => (
+                    {metadata.relatedEntities.length ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {metadata.relatedEntities.map((entity) =>
+                          entity.href ? (
                             <a
-                              key={`${message.id}-${citation.id}`}
-                              href={citation.href ?? "/knowledge"}
-                              className="command-link p-4"
+                              key={`${message.id}-${entity.id}`}
+                              href={entity.href}
+                              className="interactive-chip text-xs text-muted-foreground"
                             >
-                              <div className="flex items-center justify-between gap-3">
-                                <p className="font-semibold">{citation.title}</p>
-                                {citation.position !== null && citation.position !== undefined ? (
-                                  <Badge variant="outline">Trecho {citation.position + 1}</Badge>
-                                ) : null}
-                              </div>
-                              <p className="mt-2 text-sm text-muted-foreground">{citation.excerpt}</p>
+                              <Link2 className="h-3.5 w-3.5" />
+                              {entity.label}
                             </a>
-                          ))}
-                        </div>
-                      ) : null}
+                          ) : null
+                        )}
+                      </div>
+                    ) : null}
 
-                      {metadata.relatedEntities.length ? (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {metadata.relatedEntities.map((entity) =>
-                            entity.href ? (
-                              <a
-                                key={`${message.id}-${entity.id}`}
-                                href={entity.href}
-                                className="interactive-chip text-xs text-muted-foreground"
-                              >
-                                <Link2 className="h-3.5 w-3.5" />
-                                {entity.label}
-                              </a>
-                            ) : null
-                          )}
-                        </div>
-                      ) : null}
+                    {metadata.actionProposals.length > 0 && activeThreadId ? (
+                      <div className="mt-4 grid gap-3">
+                        {metadata.actionProposals.map((proposal, index) => (
+                          <CompanyChatProposalForm
+                            key={`${message.id}-${proposal.type}-${index}`}
+                            action={applyCompanyChatAction}
+                            threadId={activeThreadId}
+                            proposal={proposal}
+                          />
+                        ))}
+                      </div>
+                    ) : null}
 
-                      {metadata.actionProposals.length > 0 && activeThreadId ? (
-                        <div className="mt-4 grid gap-3">
-                          {metadata.actionProposals.map((proposal, index) => (
-                            <CompanyChatProposalForm
-                              key={`${message.id}-${proposal.type}-${index}`}
-                              action={applyCompanyChatAction}
-                              threadId={activeThreadId}
-                              proposal={proposal}
-                            />
-                          ))}
-                        </div>
-                      ) : null}
-
-                      {metadata.suggestedPrompts.length ? (
-                        <div className="mt-4 flex flex-wrap gap-2">
-                          {metadata.suggestedPrompts.map((prompt) => (
-                            <div key={`${message.id}-${prompt}`} className="interactive-chip text-xs text-muted-foreground">
-                              {prompt}
-                            </div>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="empty-state-shell p-5 text-sm text-muted-foreground">
-                  Pergunte algo como &quot;quais tarefas do RH estao vencidas?&quot;, &quot;resuma o backlog de solicitacoes internas&quot; ou &quot;crie um onboarding para esse colaborador&quot;.
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="panel-hover">
-          <CardHeader>
-            <CardTitle>Contexto lateral</CardTitle>
-            <CardDescription>Artifacts, trilha de tools e prompts para operar o chat como copiloto.</CardDescription>
-          </CardHeader>
-          <CardContent className="data-stack">
-            {latestAssistantMetadata?.emailDraft ? (
-              <div className="data-row p-4">
-                <p className="section-intro">Rascunho de email</p>
-                <p className="mt-3 font-semibold">{latestAssistantMetadata.emailDraft.subject}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{latestAssistantMetadata.emailDraft.to ?? "Sem destinatario sugerido"}</p>
-                <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
-                  {latestAssistantMetadata.emailDraft.body}
-                </p>
-              </div>
-            ) : null}
-
-            {latestAssistantMetadata?.toolTraces.length ? (
-              <div className="data-row p-4">
-                <p className="section-intro">Toolchain usada</p>
-                <div className="mt-3 data-stack">
-                  {latestAssistantMetadata.toolTraces.map((trace) => (
-                    <div key={trace.tool} className="data-row p-3">
-                      <p className="font-semibold">{trace.tool}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{trace.summary}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            {latestAssistantMetadata?.policyDraft ? (
-              <div className="data-row p-4">
-                <p className="section-intro">Policy assistant</p>
-                <p className="mt-3 font-semibold">{formatEnumLabel(latestAssistantMetadata.policyDraft.confidence)}</p>
-                <p className="mt-2 text-sm text-muted-foreground">{latestAssistantMetadata.policyDraft.summary}</p>
-              </div>
-            ) : null}
-
-            {latestAssistantMetadata?.policyOperations ? (
-              <div className="data-row p-4">
-                <p className="section-intro">Status operacional</p>
-                <p className="mt-3 font-semibold">{latestAssistantMetadata.policyOperations.summary}</p>
-                <div className="mt-3 data-stack">
-                  {latestAssistantMetadata.policyOperations.items.map((item) => (
-                    <a
-                      key={item.id}
-                      href={item.href ?? "/people/compliance"}
-                      className="command-link p-3"
-                    >
-                      <p className="font-semibold">{item.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {item.employeeName}
-                        {item.documentTitle ? ` - ${item.documentTitle}` : ""}
-                      </p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            {latestAssistantMetadata?.citations.length ? (
-              <div className="data-row p-4">
-                <p className="section-intro">Fontes citadas</p>
-                <div className="mt-3 data-stack">
-                  {latestAssistantMetadata.citations.map((citation) => (
-                    <a
-                      key={citation.id}
-                      href={citation.href ?? "/knowledge"}
-                      className="command-link p-3"
-                    >
-                      <p className="font-semibold">{citation.title}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{citation.excerpt}</p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            {latestAssistantMetadata?.relatedEntities.length ? (
-              <div className="data-row p-4">
-                <p className="section-intro">Entidades relacionadas</p>
-                <div className="mt-3 data-stack">
-                  {latestAssistantMetadata.relatedEntities.map((entity) => (
-                    <a
-                      key={entity.id}
-                      href={entity.href ?? "/chat"}
-                      className="command-link p-3"
-                    >
-                      <p className="font-semibold">{entity.label}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">{entity.type}</p>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-
-            <div className="data-stack">
-              {[
-                "Quais politicas internas devo citar para responder este caso?",
-                "Resuma as pendencias operacionais que estao em risco hoje.",
-                "Onde onboarding ou offboarding ficou travado?",
-                "Quais solicitacoes internas precisam de resposta agora?"
-              ].map((prompt) => (
-                <div key={prompt} className="data-row p-4 text-sm text-muted-foreground">
-                  <div className="flex items-start gap-3">
-                    <WandSparkles className="mt-0.5 h-4 w-4 text-primary" />
-                    <span>{prompt}</span>
+                    {metadata.suggestedPrompts.length ? (
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        {metadata.suggestedPrompts.map((prompt) => (
+                          <div key={`${message.id}-${prompt}`} className="interactive-chip text-xs text-muted-foreground">
+                            {prompt}
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
                   </div>
+                );
+              })
+            ) : (
+              <div className={styles.messageEmpty}>
+                <div className="empty-state-shell p-5 text-sm text-muted-foreground">
+                  Pergunte algo como &quot;quais tarefas do RH estao vencidas?&quot;, &quot;resuma o backlog de solicitacoes internas&quot; ou
+                  &quot;crie um onboarding para esse colaborador&quot;.
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.composerWrap}>
+            <CompanyChatComposer action={sendCompanyChatMessage} threadId={workspace.activeThread?.id} />
+          </div>
+        </section>
+
+        <aside className={styles.contextPanel}>
+          <div className={styles.contextSection}>
+            <span className={styles.panelEyebrow}>Readout</span>
+            <h3>Contexto atual</h3>
+            <p>{latestAssistantMessage ? "A ultima resposta ja deixou fontes, drafts e traces prontos para consulta." : "Quando a thread ganhar contexto, Harpia fixa tudo aqui."}</p>
+          </div>
+
+          {latestAssistantMetadata?.emailDraft ? (
+            <div className={styles.contextSection}>
+              <span className={styles.panelEyebrow}>Draft</span>
+              <h3>{latestAssistantMetadata.emailDraft.subject}</h3>
+              <p>{latestAssistantMetadata.emailDraft.to ?? "Sem destinatario sugerido"}</p>
+            </div>
+          ) : null}
+
+          {latestAssistantMetadata?.policyDraft ? (
+            <div className={styles.contextSection}>
+              <span className={styles.panelEyebrow}>Policy</span>
+              <h3>{formatEnumLabel(latestAssistantMetadata.policyDraft.confidence)}</h3>
+              <p>{latestAssistantMetadata.policyDraft.summary}</p>
+            </div>
+          ) : null}
+
+          {latestAssistantMetadata?.toolTraces.length ? (
+            <div className={styles.contextSection}>
+              <span className={styles.panelEyebrow}>Toolchain</span>
+              <div className={styles.contextList}>
+                {latestAssistantMetadata.toolTraces.slice(0, 3).map((trace) => (
+                  <div key={trace.tool} className={styles.contextItem}>
+                    <strong>{trace.tool}</strong>
+                    <p>{trace.summary}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {latestAssistantMetadata?.citations.length ? (
+            <div className={styles.contextSection}>
+              <span className={styles.panelEyebrow}>Fontes</span>
+              <div className={styles.contextList}>
+                {latestAssistantMetadata.citations.slice(0, 3).map((citation) => (
+                  <a key={citation.id} href={citation.href ?? "/knowledge"} className={styles.contextLink}>
+                    {citation.title}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          {latestAssistantMetadata?.relatedEntities.length ? (
+            <div className={styles.contextSection}>
+              <span className={styles.panelEyebrow}>Entidades</span>
+              <div className={styles.contextList}>
+                {latestAssistantMetadata.relatedEntities.slice(0, 3).map((entity) => (
+                  <a key={entity.id} href={entity.href ?? "/chat"} className={styles.contextLink}>
+                    {entity.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          ) : null}
+
+          <div className={styles.contextSection}>
+            <span className={styles.panelEyebrow}>Atalhos</span>
+            <div className={styles.promptList}>
+              {prompts.map((prompt) => (
+                <div key={prompt} className={styles.promptItem}>
+                  <WandSparkles className="h-4 w-4" />
+                  <span>{prompt}</span>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-      </section>
+          </div>
+        </aside>
+      </div>
     </div>
   );
 }

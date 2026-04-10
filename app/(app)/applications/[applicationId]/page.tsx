@@ -12,16 +12,16 @@ import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getStageCopilotDecision } from "@/lib/ai/stage-copilot";
 import { hasPermission } from "@/lib/auth/permissions";
 import { requireCurrentUser } from "@/lib/auth/current-user";
-import { getTemplateLabel } from "@/lib/email/templates";
-import { isEmailConfigured } from "@/lib/email/transporter";
 import { getApplicationById } from "@/lib/applications/queries";
+import { isEmailConfigured } from "@/lib/email/transporter";
+import { getTemplateLabel } from "@/lib/email/templates";
 import { getPipelineStages } from "@/lib/pipeline/queries";
 import { formatScore } from "@/lib/utils";
 
+import styles from "../../workspace-expansion.module.css";
 import {
   createApplicationNote,
   moveApplicationStage,
@@ -32,6 +32,12 @@ import { createInterview } from "../../interviews/actions";
 
 function jsonStringArray(value: unknown) {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+}
+
+function getRecommendationVariant(recommendation: string) {
+  if (recommendation === "ADVANCE") return "success" as const;
+  if (recommendation === "REJECT") return "destructive" as const;
+  return "warning" as const;
 }
 
 export default async function ApplicationDetailPage({
@@ -95,7 +101,7 @@ export default async function ApplicationDetailPage({
   const canManageCommunications = hasPermission(user.role, "manage_communications");
 
   return (
-    <div className="space-y-6">
+    <div className={styles.page}>
       <PageHeader
         eyebrow="Application detail"
         title={`${application.candidate.fullName} x ${application.job.title}`}
@@ -108,296 +114,302 @@ export default async function ApplicationDetailPage({
         }
       />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Resumo da avaliacao</CardTitle>
-              <CardDescription>Leitura executiva e justificativa do score.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                <p className="text-sm text-muted-foreground">Justificativa</p>
-                <p className="mt-2 text-sm leading-6">{application.scoreJustification || "Score ainda sem justificativa."}</p>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <p className="text-sm text-muted-foreground">Pontos fortes</p>
-                  <div className="mt-3 space-y-2">
-                    {strengths.length ? strengths.map((item) => <p key={item} className="text-sm">{item}</p>) : <p className="text-sm text-muted-foreground">Sem highlights registrados.</p>}
-                  </div>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Score</span>
+          <strong className={styles.statValue}>{formatScore(application.score)}</strong>
+          <span className={styles.statHint}>Leitura atual de aderencia desta candidatura.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Entrevistas</span>
+          <strong className={styles.statValue}>{application.interviews.length}</strong>
+          <span className={styles.statHint}>Encontros agendados ou concluidos no processo.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Skills</span>
+          <strong className={styles.statValue}>{skills.length}</strong>
+          <span className={styles.statHint}>Sinais detectados a partir do curriculo e do processo.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Notas</span>
+          <strong className={styles.statValue}>{application.notes.length}</strong>
+          <span className={styles.statHint}>Contexto interno acumulado pelo time.</span>
+        </div>
+      </section>
+
+      <section className={styles.detailLayout}>
+        <div className={styles.column}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Assessment</span>
+              <h2 className={styles.panelTitle}>Resumo da avaliacao</h2>
+            </div>
+            <div className={styles.surfaceMuted}>
+              <strong className={styles.itemTitle}>Justificativa do score</strong>
+              <span className={styles.itemDescription}>
+                {application.scoreJustification || "Score ainda sem justificativa registrada."}
+              </span>
+            </div>
+            <div className={styles.subGrid2}>
+              <div className={styles.surfaceMuted}>
+                <strong className={styles.itemTitle}>Pontos fortes</strong>
+                <div className={styles.list}>
+                  {strengths.length ? strengths.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Sem highlights registrados.</span>}
                 </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <p className="text-sm text-muted-foreground">Gaps observados</p>
-                  <div className="mt-3 space-y-2">
-                    {gaps.length ? gaps.map((item) => <p key={item} className="text-sm">{item}</p>) : <p className="text-sm text-muted-foreground">Sem gaps registrados.</p>}
-                  </div>
+              </div>
+              <div className={styles.surfaceMuted}>
+                <strong className={styles.itemTitle}>Gaps observados</strong>
+                <div className={styles.list}>
+                  {gaps.length ? gaps.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Sem gaps registrados.</span>}
                 </div>
               </div>
-              <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                <p className="text-sm text-muted-foreground">Perguntas sugeridas</p>
-                <div className="mt-3 space-y-3">
-                  {questions.length ? (
-                    questions.map((question) => (
-                      <div key={question} className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-secondary p-2 text-secondary-foreground">
-                          <Sparkles className="h-4 w-4" />
-                        </div>
-                        <p className="text-sm">{question}</p>
-                      </div>
-                    ))
+            </div>
+            <div className={styles.surfaceMuted}>
+              <strong className={styles.itemTitle}>Perguntas sugeridas</strong>
+              <div className={styles.list}>
+                {questions.length ? (
+                  questions.map((question) => (
+                    <div key={question} className={styles.rowBetween}>
+                      <span className={styles.itemDescription}>{question}</span>
+                      <Sparkles className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                  ))
+                ) : (
+                  <span className={styles.itemDescription}>Sem perguntas registradas.</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Copilot</span>
+              <h2 className={styles.panelTitle}>Decisao por etapa</h2>
+              <p className={styles.panelDescription}>Leitura orientada para avancar, segurar ou encerrar nesta fase.</p>
+            </div>
+            <div className={styles.spotlight}>
+              <span className={styles.panelEyebrow}>Recommendation</span>
+              <strong className={styles.spotlightValue}>{copilotDecision.recommendation}</strong>
+              <p className={styles.panelDescription}>{copilotDecision.summary}</p>
+              <Badge variant={getRecommendationVariant(copilotDecision.recommendation)}>
+                {application.currentStage?.name || "Sem etapa"}
+              </Badge>
+            </div>
+            <div className={styles.subGrid2}>
+              <div className={styles.surfaceMuted}>
+                <strong className={styles.itemTitle}>Por que agora</strong>
+                <div className={styles.list}>
+                  {copilotDecision.reasons.length ? (
+                    copilotDecision.reasons.map((reason) => <span key={reason} className={styles.itemDescription}>{reason}</span>)
                   ) : (
-                    <p className="text-sm text-muted-foreground">Sem perguntas registradas.</p>
+                    <span className={styles.itemDescription}>Sem justificativas adicionais.</span>
                   )}
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Copiloto de decisao por etapa</CardTitle>
-              <CardDescription>
-                Leitura orientada para decidir se a candidatura deve avancar, segurar ou encerrar nesta etapa.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Recomendacao</p>
-                    <p className="mt-2 font-display text-3xl font-semibold">{copilotDecision.recommendation}</p>
-                  </div>
-                  <Badge variant={copilotDecision.recommendation === "ADVANCE" ? "success" : copilotDecision.recommendation === "REJECT" ? "destructive" : "warning"}>
-                    {application.currentStage?.name || "Sem etapa"}
-                  </Badge>
-                </div>
-                <p className="mt-4 text-sm leading-6 text-muted-foreground">{copilotDecision.summary}</p>
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <p className="text-sm text-muted-foreground">Por que agora</p>
-                  <div className="mt-3 space-y-2">
-                    {copilotDecision.reasons.map((reason) => (
-                      <p key={reason} className="text-sm">
-                        {reason}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-                <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <p className="text-sm text-muted-foreground">Proximas acoes</p>
-                  <div className="mt-3 space-y-2">
-                    {copilotDecision.nextActions.map((action) => (
-                      <p key={action} className="text-sm">
-                        {action}
-                      </p>
-                    ))}
-                  </div>
+              <div className={styles.surfaceMuted}>
+                <strong className={styles.itemTitle}>Proximas acoes</strong>
+                <div className={styles.list}>
+                  {copilotDecision.nextActions.length ? (
+                    copilotDecision.nextActions.map((action) => <span key={action} className={styles.itemDescription}>{action}</span>)
+                  ) : (
+                    <span className={styles.itemDescription}>Sem proximas acoes sugeridas.</span>
+                  )}
                 </div>
               </div>
-              {playbook ? (
-                <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <p className="text-sm text-muted-foreground">Playbook aplicado</p>
-                  <p className="mt-2 font-semibold">{playbook.title}</p>
-                  <p className="mt-2 text-sm text-muted-foreground">{playbook.department}</p>
-                </div>
-              ) : (
-                <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                  Nenhum playbook do departamento encontrado. Cadastre um playbook em settings para guiar melhor essa decisao.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            </div>
+            {playbook ? (
+              <div className={styles.surfaceMuted}>
+                <strong className={styles.itemTitle}>{playbook.title}</strong>
+                <span className={styles.itemDescription}>{playbook.department}</span>
+              </div>
+            ) : (
+              <div className={styles.surfaceMuted}>
+                Nenhum playbook do departamento encontrado. Cadastre um playbook em settings para guiar melhor essa decisao.
+              </div>
+            )}
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Historico de pipeline</CardTitle>
-              <CardDescription>Movimentacoes registradas para auditoria e contexto da vaga.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {application.history.map((entry) => (
-                <div key={entry.id} className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="space-y-1">
-                      <p className="font-semibold">
-                        {entry.fromStage?.name || "Inicio"} <ArrowRightLeft className="mx-2 inline h-4 w-4" /> {entry.toStage.name}
-                      </p>
-                      <p className="text-sm text-muted-foreground">{entry.notes || "Sem notas adicionais."}</p>
-                    </div>
-                    <div className="text-right text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      <p>{entry.movedBy?.name || "Sistema"}</p>
-                      <p>{new Intl.DateTimeFormat("pt-BR").format(entry.createdAt)}</p>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>History</span>
+              <h2 className={styles.panelTitle}>Movimentacao no pipeline</h2>
+            </div>
+            {application.history.length ? (
+              <div className={styles.timeline}>
+                {application.history.map((entry) => (
+                  <div key={entry.id} className={styles.timelineItem}>
+                    <span className={styles.timelineDot} />
+                    <div className={styles.timelineBody}>
+                      <div className={styles.itemHeader}>
+                        <div className={styles.itemLead}>
+                          <strong className={styles.itemTitle}>
+                            {entry.fromStage?.name || "Inicio"} <ArrowRightLeft className="mx-2 inline h-4 w-4" /> {entry.toStage.name}
+                          </strong>
+                          <span className={styles.itemSubtitle}>{entry.movedBy?.name || "Sistema"}</span>
+                        </div>
+                        <span className={styles.tinyLabel}>{new Intl.DateTimeFormat("pt-BR").format(entry.createdAt)}</span>
+                      </div>
+                      <span className={styles.itemDescription}>{entry.notes || "Sem notas adicionais."}</span>
                     </div>
                   </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>Sem historico de etapa registrado ainda.</div>
+            )}
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Notas internas da aplicacao</CardTitle>
-              <CardDescription>Observacoes do time sobre aderencia, riscos e proximos passos.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Notes</span>
+              <h2 className={styles.panelTitle}>Contexto interno</h2>
+            </div>
+            <div className={styles.column}>
               {canCreateNotes ? (
-                <NoteForm
-                  title="Nova nota da aplicacao"
-                  action={createApplicationNote.bind(null, application.id)}
-                />
+                <div className={styles.surfaceMuted}>
+                  <NoteForm title="Nova nota da aplicacao" action={createApplicationNote.bind(null, application.id)} />
+                </div>
               ) : null}
               <NoteFeed notes={application.notes} emptyMessage="Ainda nao ha notas internas nesta aplicacao." />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Controles da aplicacao</CardTitle>
-              <CardDescription>Recalcule score e mova de etapa sem sair da tela.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5 text-center">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Score atual</p>
-                <p className="mt-2 font-display text-4xl font-semibold">{formatScore(application.score)}</p>
+        <aside className={styles.stickyAside}>
+          <div className={styles.spotlight}>
+            <span className={styles.panelEyebrow}>Current score</span>
+            <strong className={styles.spotlightValue}>{formatScore(application.score)}</strong>
+            <p className={styles.panelDescription}>Fit score atual desta aplicacao dentro da vaga.</p>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Controls</span>
+                <h3 className={styles.panelTitle}>Mover e recalcular</h3>
               </div>
-              {canManageApplication ? (
-                <>
+              <span className={styles.iconLead}>
+                <CircleGauge className="h-4 w-4" />
+              </span>
+            </div>
+            {canManageApplication ? (
+              <div className={styles.actionCluster}>
+                <div className={styles.surfaceMuted}>
                   <ApplicationStageForm
                     stages={stages}
                     currentStageId={application.currentStageId}
                     action={moveApplicationStage.bind(null, application.id)}
                   />
+                </div>
+                <div className={styles.surfaceMuted}>
                   <RecalculateScoreForm action={recalculateApplicationScore.bind(null, application.id)} />
-                </>
-              ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                  Somente recrutadores e administradores podem mover etapa ou recalcular score.
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </div>
+            ) : (
+              <div className={styles.surfaceMuted}>
+                Somente recrutadores e administradores podem mover etapa ou recalcular score.
+              </div>
+            )}
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Entrevistas</CardTitle>
-              <CardDescription>Agende e acompanhe os proximos encontros com o candidato.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              {canManageInterviews ? (
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Interviews</span>
+                <h3 className={styles.panelTitle}>Agenda e feedback</h3>
+              </div>
+              <span className={styles.iconLead}>
+                <CalendarClock className="h-4 w-4" />
+              </span>
+            </div>
+            {canManageInterviews ? (
+              <div className={styles.surfaceMuted}>
                 <InterviewForm action={createInterview.bind(null, application.id)} />
-              ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                  Somente recrutadores e administradores podem agendar entrevistas.
-                </div>
-              )}
-              <div className="space-y-3">
-                {application.interviews.length ? (
-                  application.interviews.map((interview) => (
-                    <div key={interview.id} className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-secondary p-2 text-secondary-foreground">
-                          <CalendarClock className="h-4 w-4" />
-                        </div>
-                        <div className="space-y-1">
-                          <p className="font-semibold">{interview.title}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(interview.startsAt)}
-                            {" · "}
-                            {new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" }).format(interview.endsAt)}
-                          </p>
-                          <p className="text-sm text-muted-foreground">{interview.location || interview.meetingUrl || "Sem local ou link"}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                    Nenhuma entrevista agendada ainda.
-                  </div>
-                )}
               </div>
-            </CardContent>
-          </Card>
+            ) : (
+              <div className={styles.surfaceMuted}>
+                Somente recrutadores e administradores podem agendar entrevistas.
+              </div>
+            )}
+            {application.interviews.length ? (
+              <div className={styles.linkList}>
+                {application.interviews.map((interview) => (
+                  <Link key={interview.id} href={`/interviews/${interview.id}`} className={styles.linkItem}>
+                    <strong>{interview.title}</strong>
+                    <span>
+                      {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(interview.startsAt)}
+                    </span>
+                    <span>{interview.location || interview.meetingUrl || "Sem local ou link"}</span>
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.surfaceMuted}>Nenhuma entrevista agendada ainda.</div>
+            )}
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Contexto do candidato</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <div className="flex items-start gap-3">
-                  <UserRound className="mt-1 h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="font-semibold">{application.candidate.fullName}</p>
-                    <p className="text-sm text-muted-foreground">{application.candidate.currentTitle || "Sem cargo atual"}</p>
-                  </div>
-                </div>
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Context</span>
+                <h3 className={styles.panelTitle}>Candidato e vaga</h3>
               </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <div className="flex items-start gap-3">
-                  <BriefcaseBusiness className="mt-1 h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="font-semibold">{application.job.title}</p>
-                    <p className="text-sm text-muted-foreground">{application.job.department}</p>
-                  </div>
-                </div>
+              <span className={styles.iconLead}>
+                <UserRound className="h-4 w-4" />
+              </span>
+            </div>
+            <div className={styles.linkList}>
+              <Link href={`/candidates/${application.candidateId}`} className={styles.linkItem}>
+                <strong>{application.candidate.fullName}</strong>
+                <span>{application.candidate.currentTitle || "Sem cargo atual"}</span>
+              </Link>
+              <Link href={`/jobs/${application.jobId}`} className={styles.linkItem}>
+                <strong>{application.job.title}</strong>
+                <span>{application.job.department}</span>
+              </Link>
+            </div>
+            <div className={styles.surfaceMuted}>
+              <strong className={styles.itemTitle}>Skills detectadas</strong>
+              <div className={styles.tagWrap}>
+                {skills.length ? skills.map((skill) => <span key={skill} className={styles.tagPill}>{skill}</span>) : <span className={styles.itemDescription}>Sem skills estruturadas.</span>}
               </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <div className="flex items-start gap-3">
-                  <CircleGauge className="mt-1 h-4 w-4 text-muted-foreground" />
-                  <div>
-                    <p className="font-semibold">Skills detectadas</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {skills.length ? skills.map((skill) => <Badge key={skill} variant="success">{skill}</Badge>) : <span className="text-sm text-muted-foreground">Sem skills estruturadas.</span>}
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <Button asChild variant="outline" className="w-full">
-                <Link href={`/jobs/${application.jobId}`}>Voltar para a vaga</Link>
-              </Button>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Comunicacao com candidato</CardTitle>
-              <CardDescription>
-                Dispare emails a partir dos templates do workspace. {smtpReady ? "SMTP ativo." : "Configure SMTP para habilitar envio."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {application.candidate.email && canManageCommunications ? (
-                <>
-                  <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-4 text-sm text-muted-foreground">
-                    Destinatario: <span className="font-medium text-foreground">{application.candidate.email}</span>
-                  </div>
-                  {[EmailTemplateType.APPLICATION_RECEIVED, EmailTemplateType.STAGE_ADVANCED, EmailTemplateType.REJECTION].map(
-                    (templateType) => (
+          <div className={styles.panel}>
+            <div className={styles.itemHeader}>
+              <div className={styles.itemLead}>
+                <span className={styles.panelEyebrow}>Communication</span>
+                <h3 className={styles.panelTitle}>Email com candidato</h3>
+              </div>
+              <span className={styles.iconLead}>
+                <BriefcaseBusiness className="h-4 w-4" />
+              </span>
+            </div>
+            {application.candidate.email && canManageCommunications ? (
+              <div className={styles.actionCluster}>
+                <div className={styles.surfaceMuted}>
+                  Destinatario: <strong>{application.candidate.email}</strong> {smtpReady ? "" : "- configure SMTP para envio."}
+                </div>
+                {[EmailTemplateType.APPLICATION_RECEIVED, EmailTemplateType.STAGE_ADVANCED, EmailTemplateType.REJECTION].map(
+                  (templateType) => (
+                    <div key={templateType} className={styles.surfaceMuted}>
                       <SendTemplateEmailForm
-                        key={templateType}
                         action={sendApplicationEmail.bind(null, application.id)}
                         templateType={templateType}
                         label={getTemplateLabel(templateType)}
                       />
-                    )
-                  )}
-                </>
-              ) : application.candidate.email ? (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                  Somente recrutadores e administradores podem enviar comunicacoes.
-                </div>
-              ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/75 p-5 text-sm text-muted-foreground">
-                  Cadastre um email no perfil do candidato para enviar comunicacoes.
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+                    </div>
+                  )
+                )}
+              </div>
+            ) : application.candidate.email ? (
+              <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem enviar comunicacoes.</div>
+            ) : (
+              <div className={styles.surfaceMuted}>Cadastre um email no perfil do candidato para enviar comunicacoes.</div>
+            )}
+          </div>
+        </aside>
       </section>
     </div>
   );

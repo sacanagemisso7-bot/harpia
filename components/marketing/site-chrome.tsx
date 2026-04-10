@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Layers3 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
+import { HarpiaLogo } from "@/components/brand/harpia-logo";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { brand, brandPaths } from "@/lib/brand";
 
 type SiteChromeProps = {
   children: React.ReactNode;
@@ -9,94 +12,74 @@ type SiteChromeProps = {
 
 export function SiteChrome({ children }: SiteChromeProps) {
   return (
-    <main className="min-h-screen px-4 py-4 lg:px-5">
-      <div className="site-frame mx-auto max-w-[1580px]">
-        <div className="glass-strip border-b border-white/[0.08] px-5 py-3 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.24em] text-muted-foreground">
-            <p className="inline-flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-primary" />
-              Plataforma de recrutamento com linguagem visual mais limpa e executiva
-            </p>
-            <Link href="/pricing" className="font-semibold text-foreground hover:text-white">
-              Ver planos
+    <main className="min-h-screen pb-8 pt-0 lg:pb-10">
+      <header className="pointer-events-none fixed inset-x-0 top-0 z-40">
+        <div className="relative h-0">
+          <div className="pointer-events-auto absolute left-4 top-4 lg:left-6">
+            <Link
+              href="/"
+              className="glass-strip flex items-center gap-3 rounded-[1.2rem] border border-border/70 px-4 py-3 shadow-[0_20px_44px_rgba(0,0,0,0.18)] backdrop-blur-xl"
+            >
+              <HarpiaLogo variant="compact" />
             </Link>
           </div>
-        </div>
 
-        <header className="sticky top-0 z-20 border-b border-white/[0.08] bg-[linear-gradient(180deg,rgba(12,15,22,0.94),rgba(12,15,22,0.82))] px-5 py-4 backdrop-blur-xl lg:px-8">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="brand-mark text-slate-100">
-                <Layers3 className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-display text-xl font-semibold">HireFlow AI</p>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">Talent operations</p>
-              </div>
-            </Link>
-
-            <nav className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
-              <Link href="/#produto" className="site-nav-link">
-                Produto
+          <div className="pointer-events-auto absolute right-4 top-4 flex items-start gap-3 lg:right-6">
+            <nav className="glass-strip hidden items-center gap-6 rounded-[1.2rem] border border-border/70 px-4 py-3 text-[0.64rem] font-semibold uppercase tracking-[0.24em] text-muted-foreground shadow-[0_20px_44px_rgba(0,0,0,0.18)] backdrop-blur-xl xl:flex">
+              <Link href="/#vision" className="site-nav-link">
+                Visao
               </Link>
-              <Link href="/#como-funciona" className="site-nav-link">
-                Como funciona
+              <Link href="/#system" className="site-nav-link">
+                Sistema
               </Link>
-              <Link href="/pricing" className="site-nav-link">
-                Planos
+              <Link href="/#control" className="site-nav-link">
+                Controle
               </Link>
-              <Link href="/book-demo" className="site-nav-link">
-                Agendar demo
-              </Link>
-              <Link href="/careers/hireflow-demo" className="site-nav-link">
-                Careers demo
+              <Link href={brandPaths.pricing} className="site-nav-link">
+                Pricing
               </Link>
             </nav>
 
-            <div className="flex items-center gap-3">
-              <Button asChild variant="outline" className="hidden sm:inline-flex">
-                <Link href="/login">Entrar</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/book-demo">
-                  Agendar demo
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+            <div className="glass-strip flex items-center gap-3 rounded-[1.2rem] border border-border/70 px-3 py-3 shadow-[0_20px_44px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+              <ThemeToggle className="hidden sm:inline-flex" />
+              <Button asChild variant="ghost" className="hidden sm:inline-flex">
+                <Link href={brandPaths.login}>Entrar</Link>
               </Button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {children}
+      <div>{children}</div>
 
-        <footer className="border-t border-white/[0.08] px-5 py-8 lg:px-8">
-          <div className="mx-auto flex max-w-7xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p className="font-display text-xl font-semibold">HireFlow AI</p>
-              <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-                Plataforma de triagem inteligente para RH com score explicavel, pipeline organizado e operacao mais previsivel.
-              </p>
-            </div>
-            <div className="grid gap-2 text-sm text-muted-foreground">
-              <p className="inline-flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-primary" />
-                Feito para startups e SMBs que querem contratar com mais criterio.
-              </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <Link href="/pricing" className="hover:text-foreground">
-                  Planos
-                </Link>
-                <Link href="/book-demo" className="hover:text-foreground">
-                  Agendar demo
-                </Link>
-                <Link href="/careers/hireflow-demo" className="hover:text-foreground">
-                  Careers demo
-                </Link>
-              </div>
-            </div>
+      <footer className="relative z-10 px-4 pb-3 pt-8 lg:px-6">
+        <div className="ml-auto flex max-w-[74rem] flex-col gap-6 rounded-[1.6rem] border border-border/70 bg-card/32 px-4 py-6 backdrop-blur-xl lg:flex-row lg:items-end lg:justify-between lg:px-6">
+          <div className="space-y-3">
+            <HarpiaLogo />
+            <p className="max-w-lg text-sm leading-7 text-muted-foreground">
+              {brand.marketingEyebrow}. Sistema de decisao para recrutamento e people ops.
+            </p>
           </div>
-        </footer>
-      </div>
+
+          <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
+            <Link href={brandPaths.pricing} className="hover:text-foreground">
+              Pricing
+            </Link>
+            <Link href={brandPaths.demo} className="hover:text-foreground">
+              Agendar demo
+            </Link>
+            <Link href={brandPaths.careersDemo} className="hover:text-foreground">
+              Careers demo
+            </Link>
+            <Button asChild size="sm">
+              <Link href={brandPaths.demo}>
+                Ver Harpia
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

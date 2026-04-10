@@ -153,7 +153,9 @@ export async function getPeopleDashboard(organizationId: string) {
     hiring: {
       jobCount: hiring.jobCount,
       applicationCount: hiring.applicationCount,
-      slaAlerts: hiring.slaAlerts.length
+      slaAlerts: hiring.slaAlerts.length,
+      intelligenceHighlights: hiring.intelligenceHighlights,
+      decisionNetwork: hiring.decisionNetwork
     }
   };
 }

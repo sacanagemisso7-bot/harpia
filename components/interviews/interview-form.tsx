@@ -32,13 +32,13 @@ export function InterviewForm({ action }: InterviewFormProps) {
   }, [router, state.success]);
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="workspace-form">
       <input type="hidden" name="status" value="SCHEDULED" />
       <div className="space-y-2">
         <Label htmlFor="title">Titulo</Label>
         <Input id="title" name="title" placeholder="Ex.: Entrevista de triagem" />
       </div>
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="workspace-form-grid">
         <div className="space-y-2">
           <Label htmlFor="startsAt">Inicio</Label>
           <Input id="startsAt" name="startsAt" type="datetime-local" />
@@ -61,11 +61,13 @@ export function InterviewForm({ action }: InterviewFormProps) {
         <Textarea id="notes" name="notes" className="min-h-24" />
       </div>
       <FormMessage message={state.error} />
-      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
-      <Button type="submit" disabled={pending}>
-        <CalendarPlus2 className="mr-2 h-4 w-4" />
-        {pending ? "Agendando..." : "Agendar entrevista"}
-      </Button>
+      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
+      <div className="workspace-form-actions">
+        <Button type="submit" disabled={pending}>
+          <CalendarPlus2 className="mr-2 h-4 w-4" />
+          {pending ? "Agendando..." : "Agendar entrevista"}
+        </Button>
+      </div>
     </form>
   );
 }

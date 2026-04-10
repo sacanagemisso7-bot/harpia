@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BriefcaseBusiness, FileText, Linkedin, MapPin, Sparkles } from "lucide-react";
+import { FileText, Linkedin, MapPin, Sparkles } from "lucide-react";
 import { notFound } from "next/navigation";
 
 import { AnalyzeResumeForm } from "@/components/candidates/analyze-resume-form";
@@ -9,15 +9,13 @@ import { PageHeader } from "@/components/layout/page-header";
 import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { hasPermission } from "@/lib/auth/permissions";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import { getCandidateById } from "@/lib/candidates/queries";
 import { getOpenJobsForCandidate } from "@/lib/jobs/queries";
 import { formatScore } from "@/lib/utils";
 
+import styles from "../../workspace-expansion.module.css";
 import { analyzeCandidateResume, createCandidateNote, uploadResume } from "../actions";
 import { createApplication } from "../../applications/actions";
 
@@ -71,7 +69,7 @@ export default async function CandidateDetailPage({
   const canCreateNotes = hasPermission(user.role, "create_hiring_notes");
 
   return (
-    <div className="space-y-6">
+    <div className={styles.page}>
       <PageHeader
         eyebrow="Candidate profile"
         title={candidate.fullName}
@@ -88,235 +86,240 @@ export default async function CandidateDetailPage({
         }
       />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_420px]">
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Perfil consolidado</CardTitle>
-              <CardDescription>Dados centrais do candidato para operacao, triagem e entrevistas.</CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-5 md:grid-cols-2">
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <p className="text-sm text-muted-foreground">Email</p>
-                <p className="mt-2 font-semibold">{candidate.email || "--"}</p>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <p className="text-sm text-muted-foreground">Telefone</p>
-                <p className="mt-2 font-semibold">{candidate.phone || "--"}</p>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <p className="text-sm text-muted-foreground">Cargo atual</p>
-                <p className="mt-2 font-semibold">{candidate.currentTitle || "--"}</p>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5">
-                <p className="text-sm text-muted-foreground">Empresa atual</p>
-                <p className="mt-2 font-semibold">{candidate.currentCompany || "--"}</p>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/75 p-5 md:col-span-2">
-                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                  {candidate.location ? (
-                    <span className="inline-flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      {candidate.location}
-                    </span>
-                  ) : null}
-                  {candidate.linkedinUrl ? (
-                    <a href={candidate.linkedinUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 hover:text-primary">
-                      <Linkedin className="h-4 w-4" />
-                      LinkedIn
-                    </a>
-                  ) : null}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <section className={styles.statsGrid}>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Curriculos</span>
+          <strong className={styles.statValue}>{candidate.resumes.length}</strong>
+          <span className={styles.statHint}>Arquivos salvos para parsing e reprocessamento.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Aplicacoes</span>
+          <strong className={styles.statValue}>{candidate.applications.length}</strong>
+          <span className={styles.statHint}>Vagas nas quais o perfil ja esta em movimento.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Skills</span>
+          <strong className={styles.statValue}>{coreSkills.length}</strong>
+          <span className={styles.statHint}>Sinais estruturados identificados pela IA.</span>
+        </div>
+        <div className={styles.statCard}>
+          <span className={styles.statLabel}>Open jobs</span>
+          <strong className={styles.statValue}>{availableJobs.length}</strong>
+          <span className={styles.statHint}>Vagas ainda disponiveis para vincular este perfil.</span>
+        </div>
+      </section>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Curriculos enviados</CardTitle>
-              <CardDescription>Persistencia local no MVP com extração imediata de texto para IA.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {candidate.resumes.length ? (
-                candidate.resumes.map((resume) => (
-                  <div key={resume.id} className="rounded-[1.35rem] border border-border/70 bg-white/75 p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="space-y-1">
-                        <p className="font-semibold">{resume.fileName}</p>
-                        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                          {formatResumeSize(resume.sizeBytes)} · {new Intl.DateTimeFormat("pt-BR").format(resume.uploadedAt)}
-                        </p>
+      <section className={styles.detailLayout}>
+        <div className={styles.column}>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Profile</span>
+              <h2 className={styles.panelTitle}>Base operacional do candidato</h2>
+              <p className={styles.panelDescription}>Contato, contexto atual e sinais mais uteis para triagem.</p>
+            </div>
+            <div className={styles.infoGrid}>
+              <div className={styles.infoTile}>
+                <strong>Email</strong>
+                <span>{candidate.email || "--"}</span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Telefone</strong>
+                <span>{candidate.phone || "--"}</span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Cargo atual</strong>
+                <span>{candidate.currentTitle || "--"}</span>
+              </div>
+              <div className={styles.infoTile}>
+                <strong>Empresa atual</strong>
+                <span>{candidate.currentCompany || "--"}</span>
+              </div>
+            </div>
+            <div className={styles.tagWrap}>
+              {candidate.location ? (
+                <span className={styles.tagPill}>
+                  <MapPin className="mr-2 h-3.5 w-3.5" />
+                  {candidate.location}
+                </span>
+              ) : null}
+              {candidate.linkedinUrl ? (
+                <a href={candidate.linkedinUrl} target="_blank" rel="noreferrer" className={styles.tagPill}>
+                  <Linkedin className="mr-2 h-3.5 w-3.5" />
+                  LinkedIn
+                </a>
+              ) : null}
+              {candidate.portfolioUrl ? (
+                <a href={candidate.portfolioUrl} target="_blank" rel="noreferrer" className={styles.tagPill}>
+                  Portfolio
+                </a>
+              ) : null}
+            </div>
+          </div>
+
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Resume ledger</span>
+              <h2 className={styles.panelTitle}>Curriculos enviados</h2>
+            </div>
+            {candidate.resumes.length ? (
+              <div className={styles.list}>
+                {candidate.resumes.map((resume) => (
+                  <div key={resume.id} className={styles.listItem}>
+                    <div className={styles.itemHeader}>
+                      <div className={styles.itemLead}>
+                        <strong className={styles.itemTitle}>{resume.fileName}</strong>
+                        <span className={styles.itemSubtitle}>
+                          {formatResumeSize(resume.sizeBytes)} - {new Intl.DateTimeFormat("pt-BR").format(resume.uploadedAt)}
+                        </span>
                       </div>
-                      <div className="rounded-2xl bg-secondary p-3 text-secondary-foreground">
+                      <span className={styles.iconLead}>
                         <FileText className="h-4 w-4" />
-                      </div>
+                      </span>
                     </div>
-                    <Separator className="my-4" />
-                    <p className="max-h-64 overflow-y-auto whitespace-pre-line text-sm leading-6 text-muted-foreground">
+                    <p className={styles.richText}>
                       {resume.extractedText || "Nao foi possivel extrair o texto deste PDF. O arquivo continua salvo para reprocessamento."}
                     </p>
                   </div>
-                ))
-              ) : (
-                <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-6 text-sm text-muted-foreground">
-                  Nenhum curriculo enviado ainda.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>Nenhum curriculo enviado ainda.</div>
+            )}
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Aplicacoes ativas</CardTitle>
-              <CardDescription>Vinculos com vagas, score e etapa atual.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {candidate.applications.length ? (
-                candidate.applications.map((application) => (
-                  <Link
-                    key={application.id}
-                    href={`/applications/${application.id}`}
-                    className="block rounded-[1.35rem] border border-border/70 bg-white/75 p-5 hover:-translate-y-1 hover:shadow-soft"
-                  >
-                    <div className="flex items-center justify-between gap-4">
-                      <div>
-                        <p className="font-semibold">{application.job.title}</p>
-                        <p className="text-sm text-muted-foreground">{application.currentStage?.name || "Sem etapa"}</p>
-                      </div>
-                      <Badge variant="outline">{formatScore(application.score)}</Badge>
-                    </div>
-                    <p className="mt-4 text-sm text-muted-foreground">
-                      {application.executiveSummary || "Analise de aderencia disponivel no detalhe da aplicacao."}
-                    </p>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Applications</span>
+              <h2 className={styles.panelTitle}>Vagas em curso</h2>
+              <p className={styles.panelDescription}>Cada aplicacao mostra fit score, etapa e resumo executivo.</p>
+            </div>
+            {candidate.applications.length ? (
+              <div className={styles.linkList}>
+                {candidate.applications.map((application) => (
+                  <Link key={application.id} href={`/applications/${application.id}`} className={styles.linkItem}>
+                    <strong>{application.job.title}</strong>
+                    <span>
+                      {application.currentStage?.name || "Sem etapa"} - score {formatScore(application.score)}
+                    </span>
+                    <span>{application.executiveSummary || "Analise de aderencia disponivel no detalhe da aplicacao."}</span>
                   </Link>
-                ))
-              ) : (
-                <div className="rounded-[1.35rem] border border-dashed border-border bg-white/75 p-6 text-sm text-muted-foreground">
-                  Ainda sem aplicacoes para este candidato.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>Ainda sem aplicacoes para este candidato.</div>
+            )}
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Notas internas</CardTitle>
-              <CardDescription>Contexto compartilhado entre recrutadores e hiring managers.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Internal notes</span>
+              <h2 className={styles.panelTitle}>Contexto compartilhado</h2>
+            </div>
+            <div className={styles.column}>
               {canCreateNotes ? (
-                <NoteForm
-                  title="Nova nota sobre o candidato"
-                  action={createCandidateNote.bind(null, candidate.id)}
-                />
+                <div className={styles.surfaceMuted}>
+                  <NoteForm title="Nova nota sobre o candidato" action={createCandidateNote.bind(null, candidate.id)} />
+                </div>
               ) : null}
               <NoteFeed notes={candidate.notes} emptyMessage="Ainda nao ha notas internas para este candidato." />
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-6">
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Upload de curriculo</CardTitle>
-              <CardDescription>Adicione PDFs para extracao local e analise com IA.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {canManageCandidate ? (
-                <ResumeUploadForm action={uploadResume.bind(null, candidate.id)} />
-              ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/70 p-5 text-sm text-muted-foreground">
-                  Somente recrutadores e administradores podem enviar novos curriculos.
-                </div>
-              )}
-            </CardContent>
-          </Card>
+        <aside className={styles.stickyAside}>
+          <div className={styles.spotlight}>
+            <span className={styles.panelEyebrow}>Signal</span>
+            <strong className={styles.spotlightValue}>{candidate.applications.length || 0}</strong>
+            <p className={styles.panelDescription}>Frentes ativas em que este perfil ja esta sendo avaliado.</p>
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Aplicar em vaga</CardTitle>
-              <CardDescription>Crie a aplicacao e gere score inicial automaticamente.</CardDescription>
-            </CardHeader>
-            <CardContent>
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>Actions</span>
+              <h2 className={styles.panelTitle}>Operar o perfil</h2>
+            </div>
+            <div className={styles.actionCluster}>
+              {canManageCandidate ? (
+                <div className={styles.surfaceMuted}>
+                  <ResumeUploadForm action={uploadResume.bind(null, candidate.id)} />
+                </div>
+              ) : (
+                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem enviar curriculos.</div>
+              )}
+
               {canManageApplications && availableJobs.length ? (
-                <ApplyToJobForm action={createApplication.bind(null, candidate.id)} jobs={availableJobs} />
+                <div className={styles.surfaceMuted}>
+                  <ApplyToJobForm action={createApplication.bind(null, candidate.id)} jobs={availableJobs} />
+                </div>
               ) : canManageApplications ? (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/70 p-5 text-sm text-muted-foreground">
-                  Este candidato ja foi vinculado a todas as vagas abertas disponiveis.
-                </div>
+                <div className={styles.surfaceMuted}>Este candidato ja foi vinculado a todas as vagas abertas disponiveis.</div>
               ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/70 p-5 text-sm text-muted-foreground">
-                  Somente recrutadores e administradores podem criar novas aplicacoes.
-                </div>
+                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem criar novas aplicacoes.</div>
               )}
-            </CardContent>
-          </Card>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Analise de IA</CardTitle>
-              <CardDescription>Atualize o perfil consolidado com parsing estruturado do curriculo.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
               {canManageCandidate ? (
-                <AnalyzeResumeForm action={analyzeCandidateResume.bind(null, candidate.id)} />
+                <div className={styles.surfaceMuted}>
+                  <AnalyzeResumeForm action={analyzeCandidateResume.bind(null, candidate.id)} />
+                </div>
               ) : (
-                <div className="rounded-[1.25rem] border border-dashed border-border bg-white/70 p-5 text-sm text-muted-foreground">
-                  Somente recrutadores e administradores podem rodar a analise de IA.
-                </div>
+                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem rodar a analise de IA.</div>
               )}
-              {parsedProfile ? (
-                <div className="rounded-[1.25rem] border border-border/70 bg-white/70 p-5">
-                  <p className="text-sm text-muted-foreground">Resumo executivo</p>
-                  <p className="mt-2 text-sm leading-6">{String(parsedProfile.executiveSummary ?? candidate.summary ?? "--")}</p>
-                </div>
-              ) : null}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          <Card className="panel-hover">
-            <CardHeader>
-              <CardTitle>Insights de IA</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/70 p-5">
-                <p className="text-sm text-muted-foreground">Skills detectadas</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {coreSkills.length ? coreSkills.map((skill) => <Badge key={skill} variant="success">{skill}</Badge>) : <span className="text-sm text-muted-foreground">Sem skills estruturadas ainda.</span>}
+          <div className={styles.panel}>
+            <div className={styles.panelHeader}>
+              <span className={styles.panelEyebrow}>AI digest</span>
+              <h2 className={styles.panelTitle}>Leitura estruturada</h2>
+            </div>
+
+            {parsedProfile ? (
+              <div className={styles.column}>
+                <div className={styles.surfaceMuted}>
+                  <strong className={styles.itemTitle}>Resumo executivo</strong>
+                  <span className={styles.itemDescription}>
+                    {String(parsedProfile.executiveSummary ?? candidate.summary ?? "--")}
+                  </span>
                 </div>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/70 p-5">
-                <p className="text-sm text-muted-foreground">Pontos fortes</p>
-                <div className="mt-3 space-y-2">
-                  {strengths.length ? strengths.map((item) => <p key={item} className="text-sm">{item}</p>) : <p className="text-sm text-muted-foreground">Nenhum ponto forte estruturado ainda.</p>}
+                <div className={styles.surfaceMuted}>
+                  <strong className={styles.itemTitle}>Skills detectadas</strong>
+                  <div className={styles.tagWrap}>
+                    {coreSkills.length ? coreSkills.map((skill) => <span key={skill} className={styles.tagPill}>{skill}</span>) : <span className={styles.itemDescription}>Sem skills estruturadas ainda.</span>}
+                  </div>
                 </div>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/70 p-5">
-                <p className="text-sm text-muted-foreground">Gaps observados</p>
-                <div className="mt-3 space-y-2">
-                  {risks.length ? risks.map((item) => <p key={item} className="text-sm">{item}</p>) : <p className="text-sm text-muted-foreground">Nenhum gap estruturado ainda.</p>}
+                <div className={styles.surfaceMuted}>
+                  <strong className={styles.itemTitle}>Pontos fortes</strong>
+                  <div className={styles.list}>
+                    {strengths.length ? strengths.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Nenhum ponto forte estruturado ainda.</span>}
+                  </div>
                 </div>
-              </div>
-              <div className="rounded-[1.25rem] border border-border/70 bg-white/70 p-5">
-                <p className="text-sm text-muted-foreground">Perguntas sugeridas</p>
-                <div className="mt-3 space-y-3">
-                  {questions.length ? (
-                    questions.map((question) => (
-                      <div key={question} className="flex items-start gap-3">
-                        <div className="rounded-2xl bg-secondary p-2 text-secondary-foreground">
-                          <Sparkles className="h-4 w-4" />
+                <div className={styles.surfaceMuted}>
+                  <strong className={styles.itemTitle}>Gaps observados</strong>
+                  <div className={styles.list}>
+                    {risks.length ? risks.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Nenhum gap estruturado ainda.</span>}
+                  </div>
+                </div>
+                <div className={styles.surfaceMuted}>
+                  <strong className={styles.itemTitle}>Perguntas sugeridas</strong>
+                  <div className={styles.list}>
+                    {questions.length ? (
+                      questions.map((question) => (
+                        <div key={question} className={styles.rowBetween}>
+                          <span className={styles.itemDescription}>{question}</span>
+                          <Sparkles className="h-4 w-4 text-muted-foreground" />
                         </div>
-                        <p className="text-sm">{question}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">Rode a analise de IA para gerar perguntas guiadas.</p>
-                  )}
+                      ))
+                    ) : (
+                      <span className={styles.itemDescription}>Rode a analise de IA para gerar perguntas guiadas.</span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            ) : (
+              <div className={styles.surfaceMuted}>Rode a analise de IA para gerar resumo, skills e perguntas sugeridas.</div>
+            )}
+          </div>
+        </aside>
       </section>
     </div>
   );

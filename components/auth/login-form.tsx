@@ -24,7 +24,7 @@ export function LoginForm({ action }: LoginFormProps) {
     <form action={formAction} className="space-y-5">
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" placeholder="founder@hireflow.ai" required />
+        <Input id="email" name="email" type="email" placeholder="voce@empresa.com" required />
       </div>
       <div className="space-y-2">
         <Label htmlFor="password">Senha</Label>

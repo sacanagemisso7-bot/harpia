@@ -19,10 +19,15 @@ import type {
   DesktopSessionResponse,
   DesktopTasksResponse
 } from "../../../types/desktop";
+import { brand } from "../../../lib/brand";
 
 type AppView = "home" | "inbox" | "tasks" | "requests" | "calendar" | "approvals" | "chat" | "settings";
+type AppTheme = "dark" | "light";
 
-const STORAGE_KEY = "hireflow-desktop-session";
+const STORAGE_KEY = "harpia-desktop-session";
+const LEGACY_STORAGE_KEY = "hireflow-desktop-session";
+const THEME_STORAGE_KEY = "harpia-desktop-theme";
+const LEGACY_THEME_STORAGE_KEY = "hireflow-desktop-theme";
 const PEOPLE_OPS_ROLES = new Set(["OWNER", "ADMIN", "PEOPLE_ADMIN", "PEOPLE_OPS", "MANAGER"]);
 const DEFAULT_SUGGESTED_PROMPTS = [
   "Quais pendencias operacionais de RH merecem atencao hoje?",
@@ -32,7 +37,7 @@ const DEFAULT_SUGGESTED_PROMPTS = [
 
 function loadStoredSession() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
     return raw ? (JSON.parse(raw) as { apiBase: string; token: string }) : null;
   } catch {
     return null;
@@ -42,10 +47,21 @@ function loadStoredSession() {
 function saveStoredSession(input: { apiBase: string; token: string } | null) {
   if (!input) {
     localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem(LEGACY_STORAGE_KEY);
     return;
   }
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(input));
+  localStorage.removeItem(LEGACY_STORAGE_KEY);
+}
+
+function loadStoredTheme(): AppTheme {
+  try {
+    const raw = localStorage.getItem(THEME_STORAGE_KEY) ?? localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
+    return raw === "light" ? "light" : "dark";
+  } catch {
+    return "dark";
+  }
 }
 
 function parseMessageMetadata(metadata: unknown): CompanyChatMessageMetadata {
@@ -265,6 +281,11 @@ function getSlaTone(status: string) {
   return getToneClass("success");
 }
 
+function BrandGlyph() {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/brand/harpia-mark.png" alt="" draggable={false} />;
+}
+
 function EmptyState({ children }: { children: ReactNode }) {
   return <div className="empty-state">{children}</div>;
 }
@@ -280,10 +301,12 @@ function MetricCard({ label, value }: { label: string; value: string | number })
 
 export function App() {
   const storedSession = typeof window !== "undefined" ? loadStoredSession() : null;
+  const storedTheme = typeof window !== "undefined" ? loadStoredTheme() : "dark";
   const [apiBase, setApiBase] = useState(storedSession?.apiBase || "http://127.0.0.1:3000");
   const [token, setToken] = useState(storedSession?.token || "");
-  const [email, setEmail] = useState("founder@hireflow.ai");
-  const [password, setPassword] = useState("ChangeMe123!");
+  const [theme, setTheme] = useState<AppTheme>(storedTheme);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [activeView, setActiveView] = useState<AppView>("home");
   const [showPalette, setShowPalette] = useState(false);
   const [chatInput, setChatInput] = useState("");
@@ -306,6 +329,17 @@ export function App() {
   const activeRole = bootstrap?.user.role || session?.user.role || null;
   const canViewPeopleOpsQueues = !!activeRole && PEOPLE_OPS_ROLES.has(activeRole);
   const canReviewAgentApprovals = !!activeRole && PEOPLE_OPS_ROLES.has(activeRole);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+      localStorage.removeItem(LEGACY_THEME_STORAGE_KEY);
+    } catch {
+      // Ignora falhas de persistencia local para nao bloquear a UI.
+    }
+  }, [theme]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -488,7 +522,7 @@ export function App() {
       setActiveView("home");
       setRefreshTick((current) => current + 1);
     } catch (loginError) {
-      setError(loginError instanceof Error ? loginError.message : "Falha ao autenticar no HireFlow Desktop.");
+      setError(loginError instanceof Error ? loginError.message : `Falha ao autenticar no ${brand.desktopName}.`);
     } finally {
       setAuthLoading(false);
     }
@@ -614,7 +648,7 @@ export function App() {
 
         notifiedAlertKeysRef.current.add(key);
 
-        const notification = new window.Notification("HireFlow Desktop", {
+        const notification = new window.Notification(brand.desktopName, {
           body: `${item.title}\n${item.description}`
         });
 
@@ -1255,20 +1289,40 @@ export function App() {
     return (
       <div className="desktop-auth">
         <div className="auth-panel">
-          <div className="auth-brand">
-            <div className="brand-icon">HF</div>
-            <div>
-              <p className="brand-title">HireFlow Desktop</p>
-              <p className="brand-subtitle">Native operations client for people teams</p>
+          <div className="auth-brand-row">
+            <div className="auth-brand">
+              <div className="brand-icon" aria-hidden="true">
+                <BrandGlyph />
+              </div>
+              <div>
+                <p className="brand-title">{brand.desktopName}</p>
+                <p className="brand-subtitle">Strategic operations client</p>
+              </div>
+            </div>
+            <div className="theme-toggle" role="tablist" aria-label="Selecionar tema">
+              <button
+                type="button"
+                className={`theme-toggle-button ${theme === "light" ? "active" : ""}`}
+                onClick={() => setTheme("light")}
+              >
+                Claro
+              </button>
+              <button
+                type="button"
+                className={`theme-toggle-button ${theme === "dark" ? "active" : ""}`}
+                onClick={() => setTheme("dark")}
+              >
+                Escuro
+              </button>
             </div>
           </div>
 
           <div className="auth-copy">
-            <p className="eyebrow">Desktop operations app</p>
-            <h1>Entre no cockpit interno da empresa.</h1>
+            <p className="eyebrow">{brand.desktopName}</p>
+            <h1>Entre no ambiente operacional da sua organizacao.</h1>
             <p>
-              O desktop agora existe para operar RH, people ops, service desk interno, documentos, tarefas e o company chat
-              corporativo em uma experiencia nativa de rotina.
+              O desktop do {brand.name} concentra people ops, service desk interno, tarefas, documentos e company chat
+              em uma experiencia nativa, mais focada e mais rapida para o dia a dia.
             </p>
           </div>
 
@@ -1279,22 +1333,22 @@ export function App() {
             </label>
             <label className="field">
               <span>Email</span>
-              <input value={email} onChange={(event) => setEmail(event.target.value)} />
+              <input value={email} onChange={(event) => setEmail(event.target.value)} placeholder="voce@empresa.com" />
             </label>
             <label className="field">
               <span>Senha</span>
-              <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} />
+              <input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Sua senha" />
             </label>
             {error ? <p className="status-error">{error}</p> : null}
             <button className="primary-button large" type="submit" disabled={authLoading}>
-              {authLoading ? "Conectando..." : "Entrar no desktop"}
+              {authLoading ? "Conectando..." : `Entrar no ${brand.name}`}
             </button>
           </form>
         </div>
 
         <div className="auth-preview">
           <div className="preview-card">
-            <p className="eyebrow">What feels different</p>
+            <p className="eyebrow">O que muda aqui</p>
             <ul>
               <li>Home executiva para operacao interna</li>
               <li>Inbox com alertas de people ops e service desk</li>
@@ -1335,10 +1389,12 @@ export function App() {
 
       <aside className="desktop-sidebar">
         <div className="brand-block">
-          <div className="brand-icon">HF</div>
+          <div className="brand-icon" aria-hidden="true">
+            <BrandGlyph />
+          </div>
           <div>
-            <p className="brand-title">HireFlow Desktop</p>
-            <p className="brand-subtitle">People & internal operations OS</p>
+            <p className="brand-title">{brand.desktopName}</p>
+            <p className="brand-subtitle">People and internal operations</p>
           </div>
         </div>
 
@@ -1357,7 +1413,7 @@ export function App() {
 
         <div className="workspace-card">
           <p className="eyebrow">Workspace</p>
-          <p className="workspace-name">{bootstrap?.user.organizationName || session?.user.organizationName || "HireFlow"}</p>
+          <p className="workspace-name">{bootstrap?.user.organizationName || session?.user.organizationName || brand.name}</p>
           <p className="workspace-meta">{activeRole ? formatEnumLabel(activeRole) : "Internal operations team"}</p>
         </div>
 
@@ -1375,20 +1431,36 @@ export function App() {
       <main className="desktop-main">
         <header className="desktop-header">
           <div>
-            <p className="eyebrow">Desktop operations app</p>
-            <h1>{bootstrap?.user.organizationName || "HireFlow Workspace"}</h1>
+            <p className="eyebrow">{brand.desktopName}</p>
+            <h1>{bootstrap?.user.organizationName || `${brand.name} Workspace`}</h1>
             <p className="header-copy">
               Cliente nativo para operar pessoas, service desk interno, compliance leve, agenda operacional e company chat.
             </p>
           </div>
           <div className="header-actions">
+            <div className="theme-toggle" role="tablist" aria-label="Selecionar tema">
+              <button
+                type="button"
+                className={`theme-toggle-button ${theme === "light" ? "active" : ""}`}
+                onClick={() => setTheme("light")}
+              >
+                Claro
+              </button>
+              <button
+                type="button"
+                className={`theme-toggle-button ${theme === "dark" ? "active" : ""}`}
+                onClick={() => setTheme("dark")}
+              >
+                Escuro
+              </button>
+            </div>
             <button className="secondary-button" onClick={() => setRefreshTick((current) => current + 1)}>
               Atualizar
             </button>
             <button className="secondary-button" onClick={() => setShowPalette(true)}>
               Ctrl/Cmd + K
             </button>
-            <div className="status-pill">{loading ? "Syncing..." : "Native operational surface"}</div>
+            <div className="status-pill">{loading ? "Syncing..." : "Superficie operacional nativa"}</div>
           </div>
         </header>
 
@@ -1408,7 +1480,7 @@ export function App() {
 
           <aside className="desktop-side-rail">
             <div className="surface-card">
-              <p className="eyebrow">Notification center</p>
+              <p className="eyebrow">Centro de alertas</p>
               <div className="stack-list compact">
                 {notificationItems.length ? (
                   notificationItems.map((item) => (

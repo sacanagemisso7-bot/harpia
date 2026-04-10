@@ -27,9 +27,10 @@ export function AgentApprovalReviewForm({
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className={`space-y-3 rounded-[1.1rem] border border-border/70 bg-white/80 p-4 ${compact ? "mt-3" : ""}`}>
+    <form action={formAction} className={`workspace-form workspace-form-section ${compact ? "mt-3 px-4 py-4" : ""}`}>
       <input type="hidden" name="approvalRequestId" value={approvalRequestId} />
       <div className="space-y-2">
+        <p className="scene-label">Approval review</p>
         <label className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground" htmlFor={`approval-notes-${approvalRequestId}`}>
           Observacoes
         </label>
@@ -41,8 +42,8 @@ export function AgentApprovalReviewForm({
         />
       </div>
       <FormMessage message={state.error} />
-      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
-      <div className="flex flex-wrap gap-3">
+      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
+      <div className="workspace-form-actions">
         <Button type="submit" name="decision" value="APPROVE" disabled={pending}>
           {pending ? "Processando..." : "Aprovar e executar"}
         </Button>

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 
 import { auth } from "@/auth";
 import { AcceptInviteForm } from "@/components/auth/accept-invite-form";
+import { HarpiaLogo } from "@/components/brand/harpia-logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { prisma } from "@/lib/prisma/client";
@@ -35,9 +36,10 @@ export default async function AcceptInvitePage({
     <main className="grid min-h-screen place-items-center px-6 py-12">
       <Card className="w-full max-w-lg">
         <CardHeader className="space-y-3">
+          <HarpiaLogo variant="compact" className="text-foreground" />
           <div className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">Team invite</div>
           <CardTitle>Entrar no workspace {invite.organization.name}</CardTitle>
-          <CardDescription>Ative seu acesso com uma senha para participar do time no HireFlow AI.</CardDescription>
+          <CardDescription>Ative seu acesso com uma senha para participar do time no Harpia.</CardDescription>
         </CardHeader>
         <CardContent>
           {isUnavailable ? (

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 export type KnowledgeUploadState = {
@@ -23,20 +24,15 @@ export function KnowledgeUploadForm({ action }: KnowledgeUploadFormProps) {
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-5" encType="multipart/form-data">
-      <div className="grid gap-4 md:grid-cols-2">
+    <form action={formAction} className="workspace-form" encType="multipart/form-data">
+      <div className="workspace-form-grid">
         <div className="space-y-2">
           <Label htmlFor="title">Titulo</Label>
           <Input id="title" name="title" placeholder="Ex.: Playbook de triagem para Product Engineering" />
         </div>
         <div className="space-y-2">
           <Label htmlFor="type">Tipo</Label>
-          <select
-            id="type"
-            name="type"
-            defaultValue="PLAYBOOK"
-            className="h-11 w-full rounded-2xl border border-border bg-white px-4 py-2 text-sm"
-          >
+          <Select id="type" name="type" defaultValue="PLAYBOOK">
             <option value="PLAYBOOK">Playbook</option>
             <option value="POLICY">Policy</option>
             <option value="SCORECARD">Scorecard</option>
@@ -44,7 +40,7 @@ export function KnowledgeUploadForm({ action }: KnowledgeUploadFormProps) {
             <option value="BRIEFING">Briefing</option>
             <option value="PDF">PDF</option>
             <option value="OTHER">Outro</option>
-          </select>
+          </Select>
         </div>
       </div>
 
@@ -61,14 +57,17 @@ export function KnowledgeUploadForm({ action }: KnowledgeUploadFormProps) {
       <div className="space-y-2">
         <Label htmlFor="document">Arquivo</Label>
         <Input id="document" name="document" type="file" accept=".pdf,.txt,.md" />
+        <p className="workspace-form-note">Aceita PDF, Markdown e texto puro para ingestao e indexacao automatica.</p>
       </div>
 
       <FormMessage message={state.error} />
-      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
+      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
 
-      <Button type="submit" disabled={pending}>
-        {pending ? "Enviando..." : "Enviar documento"}
-      </Button>
+      <div className="workspace-form-actions">
+        <Button type="submit" disabled={pending}>
+          {pending ? "Enviando..." : "Enviar documento"}
+        </Button>
+      </div>
     </form>
   );
 }

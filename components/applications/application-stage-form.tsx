@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { Label } from "@/components/ui/label";
+import { Select } from "@/components/ui/select";
 
 export type StageTransitionState = {
   error?: string;
@@ -40,27 +41,24 @@ export function ApplicationStageForm({
   }, [router, state.success]);
 
   return (
-    <form action={formAction} className={compact ? "space-y-2" : "space-y-4"}>
+    <form action={formAction} className={compact ? "workspace-form gap-2" : "workspace-form"}>
       <div className="space-y-2">
         {!compact ? <Label htmlFor="stageId">Mover etapa</Label> : null}
-        <select
-          id="stageId"
-          name="stageId"
-          defaultValue={currentStageId ?? ""}
-          className="flex h-10 w-full rounded-2xl border border-border bg-white px-4 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
+        <Select id="stageId" name="stageId" defaultValue={currentStageId ?? ""} className={compact ? "h-10" : undefined}>
           {stages.map((stage) => (
             <option key={stage.id} value={stage.id}>
               {stage.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
       <FormMessage message={state.error} />
-      {!compact && state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
-      <Button type="submit" variant={compact ? "outline" : "default"} size={compact ? "sm" : "default"} disabled={pending}>
-        {pending ? "Movendo..." : "Atualizar etapa"}
-      </Button>
+      {!compact && state.success ? <p className="workspace-form-success">{state.success}</p> : null}
+      <div className="workspace-form-actions">
+        <Button type="submit" variant={compact ? "outline" : "default"} size={compact ? "sm" : "default"} disabled={pending}>
+          {pending ? "Movendo..." : "Atualizar etapa"}
+        </Button>
+      </div>
     </form>
   );
 }

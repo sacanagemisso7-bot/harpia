@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Plus_Jakarta_Sans } from "next/font/google";
 
 import "@/app/globals.css";
+import { AppThemeProvider } from "@/components/theme/theme-provider";
+import { brand } from "@/lib/brand";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -21,8 +23,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "HireFlow AI",
-  description: "Plataforma SaaS de triagem inteligente para RH."
+  title: {
+    default: brand.name,
+    template: `%s | ${brand.name}`
+  },
+  description: brand.description
 };
 
 export default function RootLayout({
@@ -31,8 +36,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${plusJakartaSans.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable}`}>{children}</body>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body
+        suppressHydrationWarning
+        className={`${plusJakartaSans.variable} ${ibmPlexSans.variable} ${ibmPlexMono.variable}`}
+      >
+        <AppThemeProvider>{children}</AppThemeProvider>
+      </body>
     </html>
   );
 }

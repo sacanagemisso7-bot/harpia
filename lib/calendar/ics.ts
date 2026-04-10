@@ -26,7 +26,7 @@ export function buildInterviewIcs(event: InterviewCalendarEvent) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
-    "PRODID:-//HireFlow AI//Hiring Calendar//PT-BR",
+    "PRODID:-//Harpia//Hiring Calendar//PT-BR",
     "CALSCALE:GREGORIAN",
     "METHOD:PUBLISH",
     "BEGIN:VEVENT",

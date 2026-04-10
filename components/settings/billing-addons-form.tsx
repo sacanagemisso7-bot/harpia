@@ -27,8 +27,8 @@ export function BillingAddonsForm({ action, defaultValues }: BillingAddonsFormPr
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="space-y-5">
-      <div className="grid gap-4 md:grid-cols-3">
+    <form action={formAction} className="workspace-form">
+      <div className="workspace-form-grid workspace-form-grid-3">
         <div className="space-y-2">
           <Label htmlFor="billingExtraSeats">Seats extras</Label>
           <Input id="billingExtraSeats" name="billingExtraSeats" type="number" min={0} defaultValue={defaultValues.billingExtraSeats} />
@@ -56,11 +56,13 @@ export function BillingAddonsForm({ action, defaultValues }: BillingAddonsFormPr
       </div>
 
       <FormMessage message={state.error} />
-      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
+      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
 
-      <Button type="submit" disabled={pending}>
-        {pending ? "Salvando..." : "Salvar termos comerciais"}
-      </Button>
+      <div className="workspace-form-actions">
+        <Button type="submit" disabled={pending}>
+          {pending ? "Salvando..." : "Salvar termos comerciais"}
+        </Button>
+      </div>
     </form>
   );
 }
