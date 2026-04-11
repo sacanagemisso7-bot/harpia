@@ -23,12 +23,12 @@ export function ResumeUploadForm({ action }: ResumeUploadFormProps) {
   return (
     <form action={formAction} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="resume">Curriculo em PDF</Label>
+        <Label htmlFor="resume">Currículo em PDF</Label>
         <Input id="resume" name="resume" type="file" accept="application/pdf" required />
       </div>
       <FormMessage message={state.error} />
       <Button type="submit" disabled={pending}>
-        {pending ? "Enviando..." : "Enviar curriculo"}
+        {pending ? "Enviando..." : "Enviar currículo"}
       </Button>
     </form>
   );

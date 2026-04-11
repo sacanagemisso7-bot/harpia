@@ -1,4 +1,4 @@
-﻿.experience {
+.experience {
   position: relative;
   width: 100vw;
   min-height: 440svh;
@@ -225,7 +225,7 @@
 .nodeBeaconStem {
   width: 1px;
   height: 4.4rem;
-  background: linear-gradient(180deg, rgba(129, 155, 255, 0.88), transparent);
+  background: linear-gradient(180deg, rgba(214, 198, 165, 0.88), transparent);
   opacity: 0.9;
 }
 
@@ -241,7 +241,7 @@
 .nodeBeaconPulse {
   width: 4.6rem;
   height: 4.6rem;
-  background: radial-gradient(circle, rgba(129, 155, 255, 0.16), transparent 66%);
+  background: radial-gradient(circle, rgba(214, 198, 165, 0.16), transparent 66%);
   filter: blur(14px);
   animation: scan-linked 22s cubic-bezier(0.22, 1, 0.36, 1) infinite;
 }
@@ -249,10 +249,10 @@
 .nodeBeaconCore {
   width: 0.8rem;
   height: 0.8rem;
-  background: rgba(129, 155, 255, 0.94);
+  background: rgba(214, 198, 165, 0.94);
   box-shadow:
-    0 0 0 0.16rem rgba(129, 155, 255, 0.16),
-    0 0 20px rgba(129, 155, 255, 0.52);
+    0 0 0 0.16rem rgba(214, 198, 165, 0.16),
+    0 0 20px rgba(214, 198, 165, 0.52);
 }
 
 .nodeBeaconLabel {
@@ -547,4 +547,90 @@
     min-height: 82svh;
   }
 }
+
+:global(html.light) .canvasStage::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent 16%, transparent 82%, rgba(214, 198, 165, 0.18)),
+    radial-gradient(circle at 18% 24%, rgba(214, 198, 165, 0.16), transparent 24%),
+    radial-gradient(circle at 84% 18%, rgba(106, 97, 86, 0.08), transparent 24%);
+}
+
+:global(html.light) .canvasStage::after {
+  background: linear-gradient(180deg, transparent, rgba(245, 243, 238, 0.74));
+}
+
+:global(html.light) .canvasVeil {
+  background:
+    linear-gradient(100deg, rgba(245, 243, 238, 0.72), rgba(245, 243, 238, 0.28) 32%, transparent 56%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent 18%, transparent 82%, rgba(214, 198, 165, 0.18));
+}
+
+:global(html.light) .heroEyebrow,
+:global(html.light) .planeEyebrow,
+:global(html.light) .panelKicker,
+:global(html.light) .radarLabel,
+:global(html.light) .ctaLabel {
+  color: hsl(var(--foreground) / 0.48);
+}
+
+:global(html.light) .heroSubline,
+:global(html.light) .radarMeta,
+:global(html.light) .metricCell span,
+:global(html.light) .finalSignal,
+:global(html.light) .nodeBeaconLabel,
+:global(html.light) .diagonalLabel {
+  color: hsl(var(--foreground) / 0.54);
+}
+
+:global(html.light) .ctaDock,
+:global(html.light) .dataPanel,
+:global(html.light) .analysisPlane,
+:global(html.light) .radarNote,
+:global(html.light) .finalPlane,
+:global(html.light) .nodeBeaconLabel {
+  border-color: hsl(var(--border) / 0.92);
+  background:
+    linear-gradient(180deg, hsl(var(--card) / 0.96), hsl(var(--secondary) / 0.82)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.68), transparent 48%);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+:global(html.light) .metricCell,
+:global(html.light) .finalSignal {
+  border-color: hsl(var(--border) / 0.88);
+  background: hsl(var(--card) / 0.74);
+}
+
+:global(html.light) .heroButton {
+  border-color: hsl(var(--primary) / 0.28) !important;
+  background:
+    linear-gradient(180deg, hsl(var(--primary) / 0.92), hsl(var(--accent-warm) / 0.84)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent 52%) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  box-shadow:
+    0 16px 34px rgba(22, 18, 12, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.26) !important;
+}
+
+:global(html.light) .nodeBeaconStem {
+  background: linear-gradient(180deg, rgba(184, 169, 138, 0.88), transparent);
+}
+
+:global(html.light) .nodeBeaconPulse {
+  background: radial-gradient(circle, rgba(184, 169, 138, 0.14), transparent 66%);
+}
+
+:global(html.light) .nodeBeaconCore {
+  background: rgba(184, 169, 138, 0.92);
+  box-shadow:
+    0 0 0 0.16rem rgba(184, 169, 138, 0.12),
+    0 0 16px rgba(184, 169, 138, 0.34);
+}
+
+:global(html.light) .oversizedWord {
+  color: hsl(var(--foreground) / 0.07);
+}
+
 

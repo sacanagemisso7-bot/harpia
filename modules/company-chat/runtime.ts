@@ -1,6 +1,12 @@
+import { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma/client";
 import { applyAgentAction, getAgentExecutionMetadata, reviewAgentApproval } from "@/modules/ai-agent/service";
 import { buildCompanyChatReply, buildThreadTitle } from "@/modules/company-chat/service";
+
+function asJson(value: unknown) {
+  return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
+}
 
 export async function sendCompanyChatMessageForUser(input: {
   organizationId: string;
@@ -45,6 +51,16 @@ export async function sendCompanyChatMessageForUser(input: {
   });
 
   const assistantReply = await buildCompanyChatReply(input.organizationId, input.message);
+  const assistantMetadata = asJson({
+    suggestedPrompts: assistantReply.suggestedPrompts,
+    relatedEntities: assistantReply.relatedEntities,
+    actionProposals: assistantReply.actionProposals,
+    toolTraces: assistantReply.toolTraces,
+    citations: assistantReply.citations,
+    emailDraft: assistantReply.emailDraft ?? null,
+    policyDraft: assistantReply.policyDraft ?? null,
+    policyOperations: assistantReply.policyOperations ?? null
+  });
 
   const assistantMessage = await prisma.chatMessage.create({
     data: {
@@ -52,16 +68,7 @@ export async function sendCompanyChatMessageForUser(input: {
       threadId: thread.id,
       role: "ASSISTANT",
       content: assistantReply.reply,
-      metadata: {
-        suggestedPrompts: assistantReply.suggestedPrompts,
-        relatedEntities: assistantReply.relatedEntities,
-        actionProposals: assistantReply.actionProposals,
-        toolTraces: assistantReply.toolTraces,
-        citations: assistantReply.citations,
-        emailDraft: assistantReply.emailDraft ?? null,
-        policyDraft: assistantReply.policyDraft ?? null,
-        policyOperations: assistantReply.policyOperations ?? null
-      }
+      metadata: assistantMetadata
     }
   });
 
@@ -129,10 +136,10 @@ export async function applyCompanyChatActionForUser(input: {
       role: "SYSTEM",
       authorId: input.userId,
       content: result.summary,
-      metadata: {
+      metadata: asJson({
         actionType: input.type,
         agentExecution: getAgentExecutionMetadata(result)
-      }
+      })
     }
   });
 
@@ -175,10 +182,10 @@ export async function reviewCompanyChatApprovalForUser(input: {
       role: "SYSTEM",
       authorId: input.approverUserId,
       content: result.summary,
-      metadata: {
+      metadata: asJson({
         actionType: result.actionType,
         agentExecution: getAgentExecutionMetadata(result)
-      }
+      })
     }
   });
 

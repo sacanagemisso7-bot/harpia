@@ -8,8 +8,8 @@ const blankToUndefined = (value: unknown) => (value === "" ? undefined : value);
 export const hrRequestFormSchema = z.object({
   requesterEmployeeId: z.preprocess(blankToUndefined, z.string().optional()),
   assigneeUserId: z.preprocess(blankToUndefined, z.string().optional()),
-  title: z.string().min(3, "Informe um titulo para a solicitacao."),
-  description: z.string().min(5, "Descreva a solicitacao."),
+  title: z.string().min(3, "Informe um titulo para a solicitação."),
+  description: z.string().min(5, "Descreva a solicitação."),
   category: z.nativeEnum(HrRequestCategory),
   priority: z.nativeEnum(PeopleTaskPriority),
   dueAt: z.preprocess(

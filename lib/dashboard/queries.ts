@@ -1,7 +1,9 @@
+import { unstable_cache } from "next/cache";
+
 import { prisma } from "@/lib/prisma/client";
 
-export async function getDashboardMetrics(organizationId: string) {
-  const [jobCount, candidateCount, applicationAggregate, stages, recentJobs, applications, completedInterviews] = await Promise.all([
+async function loadDashboardMetrics(organizationId: string) {
+  const [jobCount, candidateCount, applicationAggregate, stages, recentJobs] = await Promise.all([
     prisma.job.count({
       where: { organizationId }
     }),
@@ -35,29 +37,70 @@ export async function getDashboardMetrics(organizationId: string) {
           }
         }
       }
-    }),
+    })
+  ]);
+
+  const [applications, completedInterviews] = await Promise.all([
     prisma.application.findMany({
-      where: { organizationId },
-      include: {
-        candidate: true,
-        job: true,
-        currentStage: true,
+      where: {
+        organizationId,
+        currentStage: {
+          is: {
+            isTerminal: false
+          }
+        }
+      },
+      select: {
+        id: true,
+        score: true,
+        appliedAt: true,
+        candidate: {
+          select: {
+            fullName: true
+          }
+        },
+        job: {
+          select: {
+            title: true
+          }
+        },
+        currentStage: {
+          select: {
+            name: true,
+            isTerminal: true
+          }
+        },
         history: {
           orderBy: { createdAt: "desc" },
-          take: 1
+          take: 1,
+          select: {
+            createdAt: true
+          }
         }
-      }
+      },
+      orderBy: [{ appliedAt: "desc" }],
+      take: 48
     }),
     prisma.interview.findMany({
       where: {
         organizationId,
         status: "COMPLETED"
       },
-      include: {
+      select: {
+        id: true,
+        endsAt: true,
         application: {
-          include: {
-            candidate: true,
-            job: true
+          select: {
+            candidate: {
+              select: {
+                fullName: true
+              }
+            },
+            job: {
+              select: {
+                title: true
+              }
+            }
           }
         },
         feedbacks: {
@@ -65,7 +108,9 @@ export async function getDashboardMetrics(organizationId: string) {
             id: true
           }
         }
-      }
+      },
+      orderBy: [{ endsAt: "desc" }],
+      take: 24
     })
   ]);
 
@@ -78,7 +123,7 @@ export async function getDashboardMetrics(organizationId: string) {
         type: "stalled_application" as const,
         severity: hoursOpen >= 24 * 7 ? "high" : "medium",
         title: `${application.candidate.fullName} parada em ${application.currentStage?.name || "Sem etapa"}`,
-        description: `${hoursOpen}h sem movimentacao na vaga ${application.job.title}.`,
+        description: `${hoursOpen}h sem movimentação na vaga ${application.job.title}.`,
         href: `/applications/${application.id}`,
         isTerminal: application.currentStage?.isTerminal ?? false
       };
@@ -118,9 +163,7 @@ export async function getDashboardMetrics(organizationId: string) {
     })
     .slice(0, 4);
 
-  const slaAlerts = [...stalledAlerts, ...missingFeedbackAlerts].slice(0, 6);
   const decisionNetwork = applications
-    .filter((application) => !(application.currentStage?.isTerminal ?? false))
     .map((application) => {
       const lastMovement = application.history[0]?.createdAt ?? application.appliedAt;
       const stagnantHours = Math.max(1, Math.round((Date.now() - lastMovement.getTime()) / (1000 * 60 * 60)));
@@ -150,8 +193,16 @@ export async function getDashboardMetrics(organizationId: string) {
     applicationCount: applicationAggregate._count._all,
     stages,
     recentJobs,
-    slaAlerts,
+    slaAlerts: [...stalledAlerts, ...missingFeedbackAlerts].slice(0, 6),
     intelligenceHighlights,
     decisionNetwork
   };
+}
+
+const getDashboardMetricsCached = unstable_cache(loadDashboardMetrics, ["dashboard-metrics"], {
+  revalidate: 15
+});
+
+export async function getDashboardMetrics(organizationId: string) {
+  return getDashboardMetricsCached(organizationId);
 }

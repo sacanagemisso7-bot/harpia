@@ -43,7 +43,7 @@ export async function uploadKnowledgeDocument(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o documento."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o documento."
     };
   }
 
@@ -86,7 +86,7 @@ export async function uploadKnowledgeDocument(
     action: "knowledge.document_uploaded",
     entityType: "knowledge_document",
     entityId: document.id,
-    summary: `Documento ${document.title} enviado para ingestao.`,
+    summary: `Documento ${document.title} enviado para ingestão.`,
     metadata: {
       type: document.type,
       fileName: document.fileName
@@ -97,7 +97,7 @@ export async function uploadKnowledgeDocument(
   revalidatePath("/dashboard");
 
   return {
-    success: "Documento enviado. A ingestao foi iniciada."
+    success: "Documento enviado. A ingestão foi iniciada."
   };
 }
 

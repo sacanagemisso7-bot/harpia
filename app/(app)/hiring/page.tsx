@@ -14,7 +14,7 @@ const modules = [
   {
     href: "/jobs",
     title: "Vagas",
-    description: "Requisicoes, scorecards e configuracao do pipeline.",
+    description: "Requisi??es, scorecards e configuração do pipeline.",
     icon: BriefcaseBusiness
   },
   {
@@ -26,7 +26,7 @@ const modules = [
   {
     href: "/pipeline",
     title: "Pipeline",
-    description: "Movimentacao, score e estado atual do funil.",
+    description: "Movimentação, score e estado atual do funil.",
     icon: Rows3
   },
   {
@@ -70,7 +70,7 @@ export default async function HiringHubPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Vagas</span>
           <strong className={styles.statValue}>{metrics.jobCount}</strong>
-          <p className={styles.statHint}>Requisicoes ativas na organizacao</p>
+          <p className={styles.statHint}>Requisi??es ativas na organização</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Candidatos</span>
@@ -78,7 +78,7 @@ export default async function HiringHubPage() {
           <p className={styles.statHint}>Perfis dentro da base</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacoes</span>
+          <span className={styles.statLabel}>Aplicações</span>
           <strong className={styles.statValue}>{metrics.applicationCount}</strong>
           <p className={styles.statHint}>Movimentos correntes no funil</p>
         </div>
@@ -93,7 +93,7 @@ export default async function HiringHubPage() {
         <div className={styles.column}>
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Modulos</span>
+              <span className={styles.panelEyebrow}>Módulos</span>
               <h2 className={styles.panelTitle}>Onde o time opera o hiring</h2>
               <p className={styles.panelDescription}>Cada area do recrutamento fica acessivel sem precisar navegar por uma home vazia de links.</p>
             </div>
@@ -109,7 +109,7 @@ export default async function HiringHubPage() {
                     </span>
                     <strong className={styles.itemTitle}>{module.title}</strong>
                     <p className={styles.itemDescription}>{module.description}</p>
-                    <span className={styles.inlineLink}>Abrir modulo</span>
+                    <span className={styles.inlineLink}>Abrir módulo</span>
                   </Link>
                 );
               })}
@@ -120,7 +120,7 @@ export default async function HiringHubPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Vagas recentes</span>
               <h2 className={styles.panelTitle}>Tracao atual do pipeline</h2>
-              <p className={styles.panelDescription}>As ultimas requisicoes aparecem com volume de aplicacoes para orientar a priorizacao do time.</p>
+              <p className={styles.panelDescription}>As ultimas requisi??es aparecem com volume de aplicações para orientar a priorizacao do time.</p>
             </div>
 
             <div className={styles.list}>
@@ -129,13 +129,13 @@ export default async function HiringHubPage() {
                   <Link key={job.id} href={`/jobs/${job.id}`} className={`${styles.listItem} ${styles.linkPanel}`}>
                     <div className={styles.rowBetween}>
                       <strong className={styles.itemTitle}>{job.title}</strong>
-                      <Badge variant="outline">{job._count.applications} aplicacoes</Badge>
+                      <Badge variant="outline">{job._count.applications} aplicações</Badge>
                     </div>
-                    <p className={styles.itemDescription}>Requisicao recente dentro da operacao de hiring.</p>
+                    <p className={styles.itemDescription}>Requisi??o recente dentro da operação de hiring.</p>
                   </Link>
                 ))
               ) : (
-                <div className={styles.emptyState}>Ainda nao ha vagas abertas.</div>
+                <div className={styles.emptyState}>Ainda não ha vagas abertas.</div>
               )}
             </div>
           </section>
@@ -145,7 +145,7 @@ export default async function HiringHubPage() {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Highlights</span>
-              <h2 className={styles.panelTitle}>Candidatos que pedem decisao</h2>
+              <h2 className={styles.panelTitle}>Candidatos que pedem decisão</h2>
               <p className={styles.panelDescription}>Perfis fortes que ja tem contexto suficiente para o time agir mais rapido.</p>
             </div>
 

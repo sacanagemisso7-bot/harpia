@@ -15,19 +15,19 @@ import styles from "./harpia-landing.module.css";
 const signalReadout = [
   { value: "14", label: "sinais" },
   { value: "03", label: "grupos" },
-  { value: "01", label: "decisao" }
+  { value: "01", label: "decisão" }
 ] as const;
 
 const criterionRows = [
   ["triagem", "sem ruido"],
   ["comparacao", "com contexto"],
-  ["acao", "sem friccao"]
+  ["ação", "sem friccao"]
 ] as const;
 
 const finaleSignals = [
   { icon: Radar, label: "campo vivo" },
-  { icon: Sparkles, label: "criterio ativo" },
-  { icon: Waypoints, label: "fluxo unico" },
+  { icon: Sparkles, label: "critério ativo" },
+  { icon: Waypoints, label: "fluxo único" },
   { icon: Layers3, label: "camadas reais" }
 ] as const;
 
@@ -88,7 +88,7 @@ export function HarpiaLanding() {
 
           <m.div className={styles.heroCluster} style={{ opacity: introOpacity, x: introX, y: introY }}>
             <p className={styles.heroEyebrow}>Harpia / Observation field</p>
-            <h1 className={styles.heroTitle}>Veja alem do curriculo</h1>
+            <h1 className={styles.heroTitle}>Veja alem do currículo</h1>
             <p className={styles.heroSubline}>Precisao para decidir melhor</p>
           </m.div>
 
@@ -137,7 +137,7 @@ export function HarpiaLanding() {
             style={{ opacity: analysisOpacity, x: analysisX, y: analysisY, rotate: analysisRotate }}
           >
             <p className={styles.planeEyebrow}>analysis drift</p>
-            <div className={styles.planeWord}>criterio</div>
+            <div className={styles.planeWord}>critério</div>
             <div className={styles.planeRows}>
               {criterionRows.map(([title, copy]) => (
                 <div key={title} className={styles.planeRow}>
@@ -172,7 +172,7 @@ export function HarpiaLanding() {
             style={{ opacity: finalOpacity, x: finalX, y: finalY }}
           >
             <p className={styles.planeEyebrow}>decision surface</p>
-            <h2 className={styles.finalTitle}>Nao mostra dados. Mostra criterio.</h2>
+            <h2 className={styles.finalTitle}>Não mostra dados. Mostra critério.</h2>
             <div className={styles.finalSignals}>
               {finaleSignals.map((signal) => {
                 const Icon = signal.icon;

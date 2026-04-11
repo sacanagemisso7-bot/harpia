@@ -59,7 +59,7 @@ export default async function CareersJobPage({
           <Card className="panel-hover">
             <CardHeader>
               <CardTitle>Candidatar-se</CardTitle>
-              <CardDescription>Preencha seus dados e envie seu curriculo para entrar no processo.</CardDescription>
+              <CardDescription>Preencha seus dados e envie seu currículo para entrar no processo.</CardDescription>
             </CardHeader>
             <CardContent>
               <PublicApplicationForm action={submitPublicApplication.bind(null, slug, job.id)} />

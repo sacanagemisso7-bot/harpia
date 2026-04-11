@@ -20,7 +20,7 @@ export async function reviewAgentApprovalAction(
 
   if (!approvalRequestId || (decisionValue !== "APPROVE" && decisionValue !== "REJECT")) {
     return {
-      error: "Solicitacao de aprovacao invalida."
+      error: "Solicitação de aprovação invalida."
     };
   }
 
@@ -28,7 +28,7 @@ export async function reviewAgentApprovalAction(
 
   if (!approval) {
     return {
-      error: "Solicitacao de aprovacao nao encontrada."
+      error: "Solicitação de aprovação não encontrada."
     };
   }
 

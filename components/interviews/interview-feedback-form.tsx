@@ -123,7 +123,7 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
       </div>
       <div className="workspace-form-grid workspace-form-grid-3">
         <div className="space-y-2">
-          <Label htmlFor="communicationScore">Comunicacao</Label>
+          <Label htmlFor="communicationScore">Comunicação</Label>
           <ScoreSelect id="communicationScore" name="communicationScore" defaultValue={defaultValues?.communicationScore} />
         </div>
         <div className="space-y-2">
@@ -131,7 +131,7 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
           <ScoreSelect id="roleFitScore" name="roleFitScore" defaultValue={defaultValues?.roleFitScore} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="technicalScore">Tecnico</Label>
+          <Label htmlFor="technicalScore">Técnico</Label>
           <ScoreSelect id="technicalScore" name="technicalScore" defaultValue={defaultValues?.technicalScore} />
         </div>
       </div>
@@ -183,7 +183,7 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
           name="strengths"
           className="min-h-24"
           defaultValue={defaultValues?.strengths}
-          placeholder="Descreva evidencias, repertorio, clareza de comunicacao e sinais positivos."
+          placeholder="Descreva evidencias, repertorio, clareza de comunicação e sinais positivos."
         />
       </div>
       <div className="space-y-2">

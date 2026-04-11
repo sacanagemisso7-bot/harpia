@@ -5,7 +5,9 @@ import { applyCompanyChatAction, sendCompanyChatMessage } from "@/app/(app)/chat
 import { reviewAgentApprovalAction } from "@/app/(app)/people/agent-approvals/actions";
 import { AgentApprovalReviewForm } from "@/components/ai-agent/agent-approval-review-form";
 import { CompanyChatComposer } from "@/components/chat/company-chat-composer";
+import { CompanyChatPromptStrip } from "@/components/chat/company-chat-prompt-strip";
 import { CompanyChatProposalForm } from "@/components/chat/company-chat-proposal-form";
+import { CompanyChatScrollArea } from "@/components/chat/company-chat-scroll-area";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { hasPermission } from "@/lib/auth/permission-matrix";
@@ -17,8 +19,8 @@ import type {
   CompanyChatAgentExecution,
   CompanyChatCitation,
   CompanyChatEmailDraft,
-  CompanyChatPolicyOperations,
   CompanyChatPolicyDraft,
+  CompanyChatPolicyOperations,
   CompanyChatRelatedEntity,
   CompanyChatToolTrace
 } from "@/types/company-chat";
@@ -31,6 +33,17 @@ function formatEnumLabel(value: string) {
     .split("_")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
+}
+
+function formatThreadScope(value: string) {
+  return formatEnumLabel(value);
+}
+
+function formatMessageTime(value: Date) {
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit"
+  }).format(value);
 }
 
 function parseMessageMetadata(metadata: unknown) {
@@ -179,46 +192,46 @@ export default async function CompanyChatPage({
     threadId
   });
 
-  const activeThreadId = workspace.activeThread?.id;
+  const activeThread = workspace.activeThread;
+  const activeThreadId = activeThread?.id;
+  const activeMessages = activeThread?.messages ?? [];
   const canReviewApprovals = hasPermission(user.role, "review_agent_approvals");
-  const latestAssistantMessage = [...(workspace.activeThread?.messages ?? [])].reverse().find((message) => message.role === "ASSISTANT");
+  const latestAssistantMessage = [...activeMessages].reverse().find((message) => message.role === "ASSISTANT");
   const latestAssistantMetadata = latestAssistantMessage ? parseMessageMetadata(latestAssistantMessage.metadata) : null;
-  const assistantCount = workspace.activeThread?.messages.filter((message) => message.role === "ASSISTANT").length ?? 0;
-  const messageCount = workspace.activeThread?.messages.length ?? 0;
-  const threadCount = workspace.threads.length;
-  const promptCount = latestAssistantMetadata?.suggestedPrompts.length ?? 4;
+  const assistantCount = activeMessages.filter((message) => message.role === "ASSISTANT").length;
+  const messageCount = activeMessages.length;
   const prompts =
     latestAssistantMetadata?.suggestedPrompts.length
       ? latestAssistantMetadata.suggestedPrompts.slice(0, 4)
       : [
-          "Quais pendencias do RH estao em risco agora?",
-          "Mostre o que exige decisao hoje.",
-          "Onde onboarding perdeu ritmo?",
-          "Quais politicas sustentam essa resposta?"
+          "Quais pendências do RH estão em risco agora?",
+          "Mostre o que exige decisão hoje.",
+          "Onde o onboarding perdeu ritmo?",
+          "Quais políticas sustentam essa resposta?"
         ];
 
   const focusSignals = [
-    { label: "threads", value: String(threadCount).padStart(2, "0") },
+    { label: "threads", value: String(workspace.threads.length).padStart(2, "0") },
     { label: "mensagens", value: String(messageCount).padStart(2, "0") },
-    { label: "assist", value: String(assistantCount).padStart(2, "0") },
+    { label: "respostas", value: String(assistantCount).padStart(2, "0") },
     { label: "fontes", value: String(latestAssistantMetadata?.citations.length ?? 0).padStart(2, "0") }
   ];
 
   return (
     <div className={styles.scene}>
       <PageHeader
-        eyebrow="Company chat"
+        eyebrow="Company Chat"
         ghost="COMPANY CHAT"
         title="Conversa com contexto operacional."
-        description="Threads, fontes, aprovacoes e rascunhos no mesmo fluxo para decidir mais rapido."
+        description="Um chat direto, claro e conectado ao workspace para responder, sugerir caminhos e transformar resposta em ação."
       />
 
       <div className={styles.workspace}>
         <aside className={styles.rail}>
           <div className={styles.panelHeader}>
             <span className={styles.panelEyebrow}>Threads</span>
-            <h2 className={styles.panelTitle}>Continuidades abertas</h2>
-            <p className={styles.panelDescription}>Acompanhe o que ja foi perguntado e retome o contexto certo sem reabrir o assunto do zero.</p>
+            <h2 className={styles.panelTitle}>Conversas abertas</h2>
+            <p className={styles.panelDescription}>Retome qualquer assunto sem perder o contexto já construído.</p>
           </div>
 
           <div className={styles.signalGrid}>
@@ -230,24 +243,33 @@ export default async function CompanyChatPage({
             ))}
           </div>
 
+          <Link href="/chat" className={styles.railAction}>
+            <Sparkles className="h-4 w-4" />
+            <span>Nova conversa</span>
+          </Link>
+
           <div className={styles.threadList}>
             {workspace.threads.length ? (
-              workspace.threads.map((thread) => (
-                <Link
-                  key={thread.id}
-                  href={`/chat?threadId=${thread.id}`}
-                  className={cn(styles.threadItem, workspace.activeThread?.id === thread.id && styles.threadItemActive)}
-                >
-                  <div className={styles.threadItemTop}>
-                    <strong>{thread.title}</strong>
-                    <Badge variant="outline">{thread.scope}</Badge>
-                  </div>
-                  <p>{thread.messages[0]?.content ?? "Sem mensagens ainda."}</p>
-                  <span>{thread.messages.length} mensagens</span>
-                </Link>
-              ))
+              workspace.threads.map((thread) => {
+                const preview = thread.messages.at(-1)?.content ?? "Sem mensagens ainda.";
+
+                return (
+                  <Link
+                    key={thread.id}
+                    href={`/chat?threadId=${thread.id}`}
+                    className={cn(styles.threadItem, activeThreadId === thread.id && styles.threadItemActive)}
+                  >
+                    <div className={styles.threadItemTop}>
+                      <strong>{thread.title}</strong>
+                      <Badge variant="outline">{formatThreadScope(thread.scope)}</Badge>
+                    </div>
+                    <p>{preview}</p>
+                    <span>{thread.messages.length} mensagens</span>
+                  </Link>
+                );
+              })
             ) : (
-              <div className={styles.emptyState}>Sua primeira conversa abre a trilha automaticamente.</div>
+              <div className={styles.emptyState}>Sua primeira pergunta já abre a trilha automaticamente.</div>
             )}
           </div>
         </aside>
@@ -257,13 +279,13 @@ export default async function CompanyChatPage({
             <div>
               <span className={styles.panelEyebrow}>Thread ativa</span>
               <div className={styles.conversationLead}>
-                <h2>{workspace.activeThread?.title ?? "Nova conversa"}</h2>
-                {workspace.activeThread?.scope ? <Badge variant="outline">{workspace.activeThread.scope}</Badge> : null}
+                <h2>{activeThread?.title ?? "Nova conversa"}</h2>
+                {activeThread?.scope ? <Badge variant="outline">{formatThreadScope(activeThread.scope)}</Badge> : null}
               </div>
               <p className={styles.panelDescription}>
-                {workspace.activeThread
-                  ? "Mensagens, evidencias e propostas aparecem em sequencia, sem dividir a leitura em paines artificiais."
-                  : "Comece perguntando sobre backlog, people ops, compliance ou conhecimento interno."}
+                {activeThread
+                  ? "A conversa flui em sequência: pergunta, contexto, resposta e próximos passos."
+                  : "Faça uma pergunta natural sobre backlog, pessoas, compliance, service desk ou contratação."}
               </p>
             </div>
 
@@ -278,166 +300,196 @@ export default async function CompanyChatPage({
               </span>
               <span>
                 <Bot className="h-4 w-4" />
-                {promptCount} gatilhos
+                {prompts.length} atalhos
               </span>
             </div>
           </div>
 
-          <div className={styles.messageRiver}>
-            {workspace.activeThread?.messages.length ? (
-              workspace.activeThread.messages.map((message) => {
-                const metadata = parseMessageMetadata(message.metadata);
-                const isAssistant = message.role === "ASSISTANT";
+          <CompanyChatScrollArea className={styles.messageRiver} threadId={activeThreadId} messageCount={messageCount}>
+            {activeMessages.length ? (
+              <div className={styles.messageStack}>
+                {activeMessages.map((message) => {
+                  const metadata = parseMessageMetadata(message.metadata);
+                  const isAssistant = message.role === "ASSISTANT";
+                  const isUser = message.role === "USER";
+                  const roleLabel = isAssistant ? "Harpia" : isUser ? "Você" : "Sistema";
 
-                return (
-                  <div
-                    key={message.id}
-                    className={`chat-message-shell ${
-                      isAssistant ? "assistant-message" : message.role === "USER" ? "user-message" : "system-message"
-                    }`}
-                  >
-                    <div className={cn("flex items-center gap-2 text-xs uppercase tracking-[0.22em] text-muted-foreground", styles.messageMeta)}>
-                      {isAssistant ? <Sparkles className="h-3.5 w-3.5" /> : <MessagesSquare className="h-3.5 w-3.5" />}
-                      {message.role}
-                    </div>
-                    <div className="mt-3 whitespace-pre-wrap text-sm leading-7">{message.content}</div>
-
-                    {metadata.agentExecution ? (
-                      <div className="data-row mt-4 p-4">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.status)}</Badge>
-                          <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.riskLevel)}</Badge>
-                          <Badge variant="outline">
-                            {metadata.agentExecution.requiresApproval ? "Com aprovacao" : "Execucao direta"}
-                          </Badge>
-                          {metadata.agentExecution.approvalStatus ? (
-                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.approvalStatus)}</Badge>
-                          ) : null}
-                          {metadata.agentExecution.executionStatus ? (
-                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.executionStatus)}</Badge>
-                          ) : null}
+                  return (
+                    <div
+                      key={message.id}
+                      data-testid="company-chat-message-row"
+                      className={cn(
+                        styles.messageRow,
+                        isAssistant && styles.messageAssistant,
+                        isUser && styles.messageUser,
+                        !isAssistant && !isUser && styles.messageSystem
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "chat-message-shell",
+                          isAssistant ? "assistant-message" : isUser ? "user-message" : "system-message",
+                          styles.messageBubble
+                        )}
+                        data-testid="company-chat-message"
+                      >
+                        <div className={cn(styles.messageMeta, "text-xs uppercase tracking-[0.22em] text-muted-foreground")}>
+                          <span className={styles.messageRole}>
+                            {isAssistant ? <Sparkles className="h-3.5 w-3.5" /> : <MessagesSquare className="h-3.5 w-3.5" />}
+                            {roleLabel}
+                          </span>
+                          <span>{formatMessageTime(message.createdAt)}</span>
                         </div>
-                        <p className="mt-3 text-sm text-muted-foreground">{metadata.agentExecution.summary}</p>
-                        {metadata.agentExecution.status === "WAITING_APPROVAL" &&
-                        canReviewApprovals &&
-                        metadata.agentExecution.approvalRequestId ? (
-                          <AgentApprovalReviewForm
-                            action={reviewAgentApprovalAction}
-                            approvalRequestId={metadata.agentExecution.approvalRequestId}
-                            compact
-                          />
-                        ) : null}
-                      </div>
-                    ) : null}
 
-                    {metadata.toolTraces.length ? (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {metadata.toolTraces.map((trace) => (
-                          <div key={`${message.id}-${trace.tool}`} className="trace-pill">
-                            {trace.tool}: {trace.summary}
-                          </div>
-                        ))}
-                      </div>
-                    ) : null}
+                        <div className={styles.messageBody}>{message.content}</div>
 
-                    {metadata.policyDraft ? (
-                      <div className="data-row mt-4 p-4">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="outline">Policy assistant</Badge>
-                          <Badge variant="outline">{formatEnumLabel(metadata.policyDraft.confidence)}</Badge>
-                        </div>
-                        <p className="mt-3 text-sm text-foreground">{metadata.policyDraft.response}</p>
-                        <p className="mt-2 text-sm text-muted-foreground">{metadata.policyDraft.summary}</p>
-                      </div>
-                    ) : null}
-
-                    {metadata.policyOperations ? (
-                      <div className="data-row mt-4 p-4">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <Badge variant="outline">Compliance operacional</Badge>
-                          <Badge variant="outline">{metadata.policyOperations.pendingAcknowledgements} pendentes</Badge>
-                          {metadata.policyOperations.overdueAcknowledgements > 0 ? (
-                            <Badge variant="outline">{metadata.policyOperations.overdueAcknowledgements} atrasados</Badge>
-                          ) : null}
-                        </div>
-                        <p className="mt-3 text-sm text-muted-foreground">{metadata.policyOperations.summary}</p>
-                      </div>
-                    ) : null}
-
-                    {metadata.citations.length ? (
-                      <div className="mt-4 data-stack">
-                        {metadata.citations.map((citation) => (
-                          <a
-                            key={`${message.id}-${citation.id}`}
-                            href={citation.href ?? "/knowledge"}
-                            className="command-link p-4"
-                          >
-                            <div className="flex items-center justify-between gap-3">
-                              <p className="font-semibold">{citation.title}</p>
-                              {citation.position !== null && citation.position !== undefined ? (
-                                <Badge variant="outline">Trecho {citation.position + 1}</Badge>
+                        {metadata.agentExecution ? (
+                          <div className="data-row mt-4 p-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.status)}</Badge>
+                              <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.riskLevel)}</Badge>
+                              <Badge variant="outline">
+                                {metadata.agentExecution.requiresApproval ? "Com aprovação" : "Execução direta"}
+                              </Badge>
+                              {metadata.agentExecution.approvalStatus ? (
+                                <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.approvalStatus)}</Badge>
+                              ) : null}
+                              {metadata.agentExecution.executionStatus ? (
+                                <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.executionStatus)}</Badge>
                               ) : null}
                             </div>
-                            <p className="mt-2 text-sm text-muted-foreground">{citation.excerpt}</p>
-                          </a>
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {metadata.relatedEntities.length ? (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {metadata.relatedEntities.map((entity) =>
-                          entity.href ? (
-                            <a
-                              key={`${message.id}-${entity.id}`}
-                              href={entity.href}
-                              className="interactive-chip text-xs text-muted-foreground"
-                            >
-                              <Link2 className="h-3.5 w-3.5" />
-                              {entity.label}
-                            </a>
-                          ) : null
-                        )}
-                      </div>
-                    ) : null}
-
-                    {metadata.actionProposals.length > 0 && activeThreadId ? (
-                      <div className="mt-4 grid gap-3">
-                        {metadata.actionProposals.map((proposal, index) => (
-                          <CompanyChatProposalForm
-                            key={`${message.id}-${proposal.type}-${index}`}
-                            action={applyCompanyChatAction}
-                            threadId={activeThreadId}
-                            proposal={proposal}
-                          />
-                        ))}
-                      </div>
-                    ) : null}
-
-                    {metadata.suggestedPrompts.length ? (
-                      <div className="mt-4 flex flex-wrap gap-2">
-                        {metadata.suggestedPrompts.map((prompt) => (
-                          <div key={`${message.id}-${prompt}`} className="interactive-chip text-xs text-muted-foreground">
-                            {prompt}
+                            <p className="mt-3 text-sm text-muted-foreground">{metadata.agentExecution.summary}</p>
+                            {metadata.agentExecution.status === "WAITING_APPROVAL" &&
+                            canReviewApprovals &&
+                            metadata.agentExecution.approvalRequestId ? (
+                              <AgentApprovalReviewForm
+                                action={reviewAgentApprovalAction}
+                                approvalRequestId={metadata.agentExecution.approvalRequestId}
+                                compact
+                              />
+                            ) : null}
                           </div>
-                        ))}
+                        ) : null}
+
+                        {metadata.toolTraces.length ? (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {metadata.toolTraces.map((trace) => (
+                              <div key={`${message.id}-${trace.tool}`} className="trace-pill">
+                                {trace.tool}: {trace.summary}
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        {metadata.policyDraft ? (
+                          <div className="data-row mt-4 p-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline">Policy assistant</Badge>
+                              <Badge variant="outline">{formatEnumLabel(metadata.policyDraft.confidence)}</Badge>
+                            </div>
+                            <p className="mt-3 text-sm text-foreground">{metadata.policyDraft.response}</p>
+                            <p className="mt-2 text-sm text-muted-foreground">{metadata.policyDraft.summary}</p>
+                          </div>
+                        ) : null}
+
+                        {metadata.policyOperations ? (
+                          <div className="data-row mt-4 p-4">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <Badge variant="outline">Compliance operacional</Badge>
+                              <Badge variant="outline">{metadata.policyOperations.pendingAcknowledgements} pendentes</Badge>
+                              {metadata.policyOperations.overdueAcknowledgements > 0 ? (
+                                <Badge variant="outline">{metadata.policyOperations.overdueAcknowledgements} atrasados</Badge>
+                              ) : null}
+                            </div>
+                            <p className="mt-3 text-sm text-muted-foreground">{metadata.policyOperations.summary}</p>
+                          </div>
+                        ) : null}
+
+                        {metadata.citations.length ? (
+                          <div className="mt-4 data-stack">
+                            {metadata.citations.map((citation) => (
+                              <a
+                                key={`${message.id}-${citation.id}`}
+                                href={citation.href ?? "/knowledge"}
+                                className="command-link p-4"
+                              >
+                                <div className="flex items-center justify-between gap-3">
+                                  <p className="font-semibold">{citation.title}</p>
+                                  {citation.position !== null && citation.position !== undefined ? (
+                                    <Badge variant="outline">Trecho {citation.position + 1}</Badge>
+                                  ) : null}
+                                </div>
+                                <p className="mt-2 text-sm text-muted-foreground">{citation.excerpt}</p>
+                              </a>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        {metadata.relatedEntities.length ? (
+                          <div className="mt-4 flex flex-wrap gap-2">
+                            {metadata.relatedEntities.map((entity) =>
+                              entity.href ? (
+                                <a
+                                  key={`${message.id}-${entity.id}`}
+                                  href={entity.href}
+                                  className="interactive-chip text-xs text-muted-foreground"
+                                >
+                                  <Link2 className="h-3.5 w-3.5" />
+                                  {entity.label}
+                                </a>
+                              ) : null
+                            )}
+                          </div>
+                        ) : null}
+
+                        {metadata.actionProposals.length > 0 && activeThreadId ? (
+                          <div className="mt-4 grid gap-3">
+                            {metadata.actionProposals.map((proposal, index) => (
+                              <CompanyChatProposalForm
+                                key={`${message.id}-${proposal.type}-${index}`}
+                                action={applyCompanyChatAction}
+                                threadId={activeThreadId}
+                                proposal={proposal}
+                              />
+                            ))}
+                          </div>
+                        ) : null}
+
                       </div>
-                    ) : null}
-                  </div>
-                );
-              })
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
-              <div className={styles.messageEmpty}>
-                <div className="empty-state-shell p-5 text-sm text-muted-foreground">
-                  Pergunte algo como &quot;quais tarefas do RH estao vencidas?&quot;, &quot;resuma o backlog de solicitacoes internas&quot; ou
-                  &quot;crie um onboarding para esse colaborador&quot;.
+              <div className={styles.welcomeState}>
+                <div className={styles.welcomeCopy}>
+                  <span className={styles.panelEyebrow}>Company Chat</span>
+                  <h2>Converse como no ChatGPT, mas com contexto do seu workspace.</h2>
+                  <p>Peça um resumo, encontre pendências, consulte políticas e transforme resposta em ação sem trocar de tela.</p>
                 </div>
+
+                <CompanyChatPromptStrip
+                  action={sendCompanyChatMessage}
+                  prompts={prompts}
+                  className={styles.welcomePromptStrip}
+                  buttonClassName={styles.welcomePromptButton}
+                />
               </div>
             )}
-          </div>
+          </CompanyChatScrollArea>
 
-          <div className={styles.composerWrap}>
-            <CompanyChatComposer action={sendCompanyChatMessage} threadId={workspace.activeThread?.id} />
+          <div className={styles.composerDock}>
+            <CompanyChatPromptStrip
+              action={sendCompanyChatMessage}
+              threadId={activeThreadId}
+              prompts={prompts}
+              className={styles.composerPromptStrip}
+              buttonClassName={styles.composerPromptButton}
+            />
+
+            <div className={styles.composerWrap}>
+              <CompanyChatComposer action={sendCompanyChatMessage} threadId={activeThreadId} />
+            </div>
           </div>
         </section>
 
@@ -445,14 +497,18 @@ export default async function CompanyChatPage({
           <div className={styles.contextSection}>
             <span className={styles.panelEyebrow}>Readout</span>
             <h3>Contexto atual</h3>
-            <p>{latestAssistantMessage ? "A ultima resposta ja deixou fontes, drafts e traces prontos para consulta." : "Quando a thread ganhar contexto, Harpia fixa tudo aqui."}</p>
+            <p>
+              {latestAssistantMessage
+                ? "A última resposta deixou fontes, rastros e próximos passos prontos para consulta."
+                : "Quando a conversa ganhar contexto, os sinais mais úteis aparecem aqui."}
+            </p>
           </div>
 
           {latestAssistantMetadata?.emailDraft ? (
             <div className={styles.contextSection}>
-              <span className={styles.panelEyebrow}>Draft</span>
+              <span className={styles.panelEyebrow}>Rascunho</span>
               <h3>{latestAssistantMetadata.emailDraft.subject}</h3>
-              <p>{latestAssistantMetadata.emailDraft.to ?? "Sem destinatario sugerido"}</p>
+              <p>{latestAssistantMetadata.emailDraft.to ?? "Sem destinatário sugerido"}</p>
             </div>
           ) : null}
 
@@ -505,15 +561,8 @@ export default async function CompanyChatPage({
           ) : null}
 
           <div className={styles.contextSection}>
-            <span className={styles.panelEyebrow}>Atalhos</span>
-            <div className={styles.promptList}>
-              {prompts.map((prompt) => (
-                <div key={prompt} className={styles.promptItem}>
-                  <WandSparkles className="h-4 w-4" />
-                  <span>{prompt}</span>
-                </div>
-              ))}
-            </div>
+            <span className={styles.panelEyebrow}>Próximo passo</span>
+            <p>Use os atalhos ao lado do composer para continuar a conversa sem quebrar o contexto.</p>
           </div>
         </aside>
       </div>

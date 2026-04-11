@@ -28,20 +28,20 @@ const plans = [
       "Pipeline, entrevistas e templates de email",
       "2 membros do time"
     ],
-    limitations: ["Sem automacoes avancadas", "Sem onboarding dedicado"]
+    limitations: ["Sem automações avancadas", "Sem onboarding dedicado"]
   },
   {
     name: "Growth",
     price: "R$ 1.290",
     cadence: "/mes",
     annualPrice: "R$ 12.900/ano",
-    description: "Para operacoes com mais volume, mais participantes e necessidade de visibilidade constante.",
+    description: "Para operações com mais volume, mais participantes e necessidade de visibilidade constante.",
     badge: "Mais escolhido",
     highlight: true,
     features: [
       "Ate 12 vagas ativas",
       "Ate 2.500 candidatos",
-      "Automacoes por vaga e scorecards",
+      "Automações por vaga e scorecards",
       "Analytics, SLA e produtividade",
       "8 membros do time",
       "SMTP e storage configuraveis"
@@ -53,7 +53,7 @@ const plans = [
     price: "Sob consulta",
     cadence: "",
     annualPrice: "Sob consulta anual",
-    description: "Para ambientes com mais governanca, onboarding proximo e fluxos mais adaptados por area.",
+    description: "Para ambientes com mais governan?a, onboarding próximo e fluxos mais adaptados por area.",
     badge: "Custom",
     features: [
       "Escala customizada de vagas e candidatos",
@@ -76,7 +76,7 @@ const comparisonRows = [
     values: ["Sim", "Sim", "Sim"]
   },
   {
-    label: "Automacoes por vaga",
+    label: "Automações por vaga",
     values: ["-", "Sim", "Sim"]
   },
   {
@@ -96,7 +96,7 @@ const comparisonRows = [
 const buyingReasons = [
   "Estrutura comercial direta para avaliar valor sem excesso de complexidade.",
   "Caminho claro de adocao: provar valor, consolidar padrao e expandir com controle.",
-  "Recursos desenhados para problemas reais de operacao, nao para checklists de marketing."
+  "Recursos desenhados para problemas reais de operação, não para checklists de marketing."
 ];
 
 function getPricingNotice(code?: string) {
@@ -104,7 +104,7 @@ function getPricingNotice(code?: string) {
     case "cancelled":
       return {
         variant: "warning" as const,
-        message: "Checkout cancelado. Voce pode retomar quando quiser."
+        message: "Checkout cancelado. Você pode retomar quando quiser."
       };
     case "job-limit":
     case "candidate-limit":
@@ -159,7 +159,7 @@ export default async function PricingPage({
                 <p className="font-semibold">Atualizacao comercial</p>
                 <p className="text-sm text-muted-foreground">{notice.message}</p>
               </div>
-              <Badge variant={notice.variant}>{notice.variant === "warning" ? "Atencao" : "Info"}</Badge>
+              <Badge variant={notice.variant}>{notice.variant === "warning" ? "Aten??o" : "Info"}</Badge>
             </div>
           ) : null}
         </div>
@@ -261,16 +261,16 @@ export default async function PricingPage({
           <Card className="overflow-hidden">
             <div className="grid gap-0 lg:grid-cols-[minmax(0,1.05fr)_360px]">
               <div className="bg-[linear-gradient(135deg,rgba(14,35,29,0.98),rgba(20,47,38,0.94),rgba(46,44,36,0.92))] p-8 text-primary-foreground lg:p-10">
-                <p className="section-intro text-primary-foreground/72">Confianca de compra</p>
+                <p className="section-intro text-primary-foreground/72">Confian?a de compra</p>
                 <h2 className="mt-3 max-w-2xl font-display text-4xl font-semibold">
-                  Uma plataforma pronta para impressionar na avaliacao e sustentar o uso depois da decisao.
+                  Uma plataforma pronta para impressionar na avaliação e sustentar o uso depois da decisão.
                 </h2>
                 <div className="mt-8 grid gap-4 sm:grid-cols-2">
                   <div className="rounded-[1.25rem] border border-white/15 bg-white/10 p-5">
                     <CircleGauge className="h-5 w-5" />
                     <p className="mt-4 font-semibold">Clareza operacional</p>
                     <p className="mt-2 text-sm text-primary-foreground/72">
-                      Interface, fluxo e linguagem pensados para trabalho serio, nao para demonstracao vazia.
+                      Interface, fluxo e linguagem pensados para trabalho serio, não para demonstracao vazia.
                     </p>
                   </div>
                   <div className="rounded-[1.25rem] border border-white/15 bg-white/10 p-5">

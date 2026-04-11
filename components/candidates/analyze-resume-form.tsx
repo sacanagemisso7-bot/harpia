@@ -32,7 +32,7 @@ export function AnalyzeResumeForm({ action }: AnalyzeResumeFormProps) {
     <form action={formAction} className="space-y-4">
       <Button type="submit" disabled={pending} className="w-full">
         <Sparkles className="mr-2 h-4 w-4" />
-        {pending ? "Analisando..." : "Analisar curriculo com IA"}
+        {pending ? "Analisando..." : "Analisar currículo com IA"}
       </Button>
       <FormMessage message={state.error} />
       {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}

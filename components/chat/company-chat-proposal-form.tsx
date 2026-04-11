@@ -29,19 +29,19 @@ export function CompanyChatProposalForm({ action, threadId, proposal }: CompanyC
       <input type="hidden" name="actionType" value={proposal.type} />
       <input type="hidden" name="payload" value={JSON.stringify(proposal.payload)} />
       <div className="space-y-3">
-        <p className="section-intro">Action proposal</p>
+        <p className="section-intro">Ação sugerida</p>
         <div>
           <div className="flex flex-wrap items-center gap-2">
             <p className="font-semibold">{proposal.label}</p>
             {proposal.riskLevel ? <Badge variant="outline">{proposal.riskLevel}</Badge> : null}
-            {proposal.requiresApproval ? <Badge variant="outline">Requer aprovacao</Badge> : null}
+            {proposal.requiresApproval ? <Badge variant="outline">Requer aprovação</Badge> : null}
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{proposal.description}</p>
         </div>
         <FormMessage message={state.error} />
         {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
         <Button type="submit" variant="secondary" disabled={pending}>
-          {pending ? "Aplicando..." : "Confirmar acao"}
+          {pending ? "Aplicando..." : proposal.requiresApproval ? "Enviar para aprovação" : "Confirmar ação"}
         </Button>
       </div>
     </form>

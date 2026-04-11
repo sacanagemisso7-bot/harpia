@@ -1,6 +1,6 @@
-# HireFlow AI
+# Harpia
 
-HireFlow AI is evolving into a People & Internal Operations OS: a premium SaaS platform for internal people operations, employee management, service workflows, company knowledge, corporate AI assistance, desktop productivity, and hiring as a complementary module. This repository contains the working production-oriented foundation built with Next.js, Prisma, protected routes, real persistence, a native desktop client, and connected operational flows across recruiting, people ops, chat, billing, and internal operations.
+Harpia is a People & Internal Operations OS: a premium SaaS platform for internal people operations, employee management, service workflows, company knowledge, corporate AI assistance, desktop productivity, and hiring as a complementary module. This repository contains the working production-oriented foundation built with Next.js, Prisma, protected routes, real persistence, a native desktop client, and connected operational flows across recruiting, people ops, chat, billing, and internal operations.
 
 ## Current MVP coverage
 

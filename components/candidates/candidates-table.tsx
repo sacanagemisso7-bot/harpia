@@ -29,7 +29,7 @@ export function CandidatesTable({ candidates }: CandidatesTableProps) {
           <div className="space-y-2">
             <h3 className="font-display text-2xl font-semibold">Nenhum candidato ainda</h3>
             <p className="max-w-md text-sm text-muted-foreground">
-              Cadastre perfis e suba curriculos em PDF para comecar a consolidar a base de talentos.
+              Cadastre perfis e suba currículos em PDF para comecar a consolidar a base de talentos.
             </p>
           </div>
         </CardContent>
@@ -47,8 +47,8 @@ export function CandidatesTable({ candidates }: CandidatesTableProps) {
                 <th className="px-6 py-4 font-medium">Candidato</th>
                 <th className="px-6 py-4 font-medium">Cargo atual</th>
                 <th className="px-6 py-4 font-medium">Origem</th>
-                <th className="px-6 py-4 font-medium">Curriculos</th>
-                <th className="px-6 py-4 font-medium">Aplicacoes</th>
+                <th className="px-6 py-4 font-medium">Currículos</th>
+                <th className="px-6 py-4 font-medium">Aplicações</th>
               </tr>
             </thead>
             <tbody>

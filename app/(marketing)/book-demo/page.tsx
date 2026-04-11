@@ -14,19 +14,19 @@ export const metadata: Metadata = {
 };
 
 const demoPoints = [
-  "A conversa parte do seu processo atual, nao de um roteiro generico.",
+  "A conversa parte do seu processo atual, não de um roteiro generico.",
   "Mostramos onde a plataforma reduz ruido operacional sem tirar o julgamento do time.",
-  "Voce sai com uma leitura clara do melhor ponto de entrada para adocao."
+  "Você sai com uma leitura clara do melhor ponto de entrada para adocao."
 ];
 
 const demoAgenda = [
   {
     title: "Entendimento do momento atual",
-    description: "Volume de vagas, atores envolvidos, gargalos e onde a operacao perde consistencia hoje."
+    description: "Volume de vagas, atores envolvidos, gargalos e onde a operação perde consistencia hoje."
   },
   {
     title: "Tour guiado no produto",
-    description: "Requisicoes, triagem, pipeline, entrevistas, people ops, operacao interna e trilha de decisao."
+    description: "Requisi??es, triagem, pipeline, entrevistas, people ops, operação interna e trilha de decisão."
   },
   {
     title: "Plano de entrada",
@@ -38,17 +38,17 @@ const reassurance = [
   {
     icon: ShieldCheck,
     title: "Produto de uso real",
-    text: "A apresentacao acontece sobre uma base funcional, com operacao, persistencia e fluxos prontos para evoluir."
+    text: "A apresentacao acontece sobre uma base funcional, com operação, persistencia e fluxos prontos para evoluir."
   },
   {
     icon: UsersRound,
-    title: "Pensado para RH e lideranca",
+    title: "Pensado para RH e liderança",
     text: "A conversa cobre tanto quem opera no dia a dia quanto quem precisa de visibilidade e previsibilidade."
   },
   {
     icon: CalendarClock,
-    title: "Foco em decisao",
-    text: "Nao mostramos apenas interface. Mostramos como o time ganha criterio, ritmo e memoria operacional."
+    title: "Foco em decisão",
+    text: "Não mostramos apenas interface. Mostramos como o time ganha critério, ritmo e memoria operacional."
   }
 ];
 
@@ -70,7 +70,7 @@ export default function BookDemoPage() {
                 Uma conversa guiada para entender onde o Harpia realmente encaixa.
               </h1>
               <p className="max-w-3xl text-lg leading-8 text-muted-foreground">
-                Conte seu contexto e adaptamos a demonstracao ao seu processo, aos seus gargalos e ao ritmo de decisao
+                Conte seu contexto e adaptamos a demonstracao ao seu processo, aos seus gargalos e ao ritmo de decisão
                 do seu time.
               </p>
             </div>
@@ -122,7 +122,7 @@ export default function BookDemoPage() {
           <Card className="aurora">
             <CardHeader>
               <CardTitle>O que ajuda trazer para a conversa</CardTitle>
-              <CardDescription>Com isso, a demo fica mais objetiva e mais proxima do uso real.</CardDescription>
+              <CardDescription>Com isso, a demo fica mais objetiva e mais próxima do uso real.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="rounded-[1.25rem] border border-white/70 bg-white/75 p-5 shadow-soft">

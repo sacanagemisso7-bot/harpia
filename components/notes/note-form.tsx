@@ -39,7 +39,7 @@ export function NoteForm({ title, action, placeholder }: NoteFormProps) {
         <Textarea
           id="content"
           name="content"
-          placeholder={placeholder || "Adicione contexto para o time sobre este perfil ou aplicacao."}
+          placeholder={placeholder || "Adicione contexto para o time sobre este perfil ou aplicação."}
           className="min-h-28"
         />
       </div>

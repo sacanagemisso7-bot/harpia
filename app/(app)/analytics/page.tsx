@@ -20,7 +20,7 @@ export default async function AnalyticsPage() {
         <PageHeader
           eyebrow="Analytics"
           title="Analytics avancado faz parte do Growth"
-          description="Starter cobre dashboard e operacao diaria. Os sinais profundos de performance, volume e SLA ficam disponiveis a partir do Growth."
+          description="Starter cobre dashboard e operação di?ria. Os sinais profundos de performance, volume e SLA ficam disponíveis a partir do Growth."
           actions={
             <Button asChild>
               <Link href="/settings/billing">
@@ -57,7 +57,7 @@ export default async function AnalyticsPage() {
       <PageHeader
         eyebrow="Analytics"
         title="Leitura de volume, score e SLA"
-        description="Fontes, etapas, produtividade e gargalos do hiring em uma visao clara do que esta performando e do que esta travando."
+        description="Fontes, etapas, produtividade e gargalos do hiring em uma visão clara do que esta performando e do que esta travando."
         actions={
           <Button asChild variant="outline">
             <Link href="/pipeline">
@@ -70,7 +70,7 @@ export default async function AnalyticsPage() {
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Primeira revisao</span>
+          <span className={styles.statLabel}>Primeira revisão</span>
           <strong className={styles.statValue}>{analytics.sla.averageTimeToFirstReviewHours}h</strong>
           <p className={styles.statHint}>Da candidatura ate a primeira mudanca relevante</p>
         </div>
@@ -80,9 +80,9 @@ export default async function AnalyticsPage() {
           <p className={styles.statHint}>Media operacional entre movimentos</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacoes estagnadas</span>
+          <span className={styles.statLabel}>Aplicações estagnadas</span>
           <strong className={styles.statValue}>{analytics.sla.stalledApplications}</strong>
-          <p className={styles.statHint}>Sem movimentacao ha 7 dias ou mais</p>
+          <p className={styles.statHint}>Sem movimentação ha 7 dias ou mais</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Lead time de entrevista</span>
@@ -107,7 +107,7 @@ export default async function AnalyticsPage() {
                     <div className={styles.itemLead}>
                       <strong className={styles.itemTitle}>{source.source}</strong>
                       <span className={styles.itemMeta}>
-                        {source.candidates} candidatos • {source.applications} aplicacoes
+                        {source.candidates} candidatos • {source.applications} aplicações
                       </span>
                     </div>
                     <Badge variant="outline">{formatScore(source.averageScore)}</Badge>
@@ -120,7 +120,7 @@ export default async function AnalyticsPage() {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Vagas</span>
-              <h2 className={styles.panelTitle}>Maior tracao</h2>
+              <h2 className={styles.panelTitle}>Maior tração</h2>
               <p className={styles.panelDescription}>As vagas com mais volume e melhor qualidade media aparecem aqui para ajudar na priorizacao.</p>
             </div>
 
@@ -128,7 +128,7 @@ export default async function AnalyticsPage() {
               {analytics.topJobs.map((job) => (
                 <Link key={job.id} href={`/jobs/${job.id}`} className={`${styles.listItem} ${styles.linkPanel}`}>
                   <strong className={styles.itemTitle}>{job.title}</strong>
-                  <p className={styles.itemDescription}>{job.applications} aplicacoes</p>
+                  <p className={styles.itemDescription}>{job.applications} aplicações</p>
                   <span className={styles.itemMeta}>Media de score {formatScore(job.averageScore)}</span>
                 </Link>
               ))}
@@ -158,7 +158,7 @@ export default async function AnalyticsPage() {
                     <div className={styles.subGrid2}>
                       <div className={styles.summaryTile}>
                         <strong>{member.applicationsCreated}</strong>
-                        <span>Aplicacoes criadas</span>
+                        <span>Aplicações criadas</span>
                       </div>
                       <div className={styles.summaryTile}>
                         <strong>{member.stageMoves}</strong>
@@ -176,7 +176,7 @@ export default async function AnalyticsPage() {
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyState}>Ainda nao ha atividade suficiente para montar o ranking de produtividade.</div>
+                <div className={styles.emptyState}>Ainda não ha atividade suficiente para montar o ranking de produtividade.</div>
               )}
             </div>
           </section>
@@ -187,7 +187,7 @@ export default async function AnalyticsPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Score bands</span>
               <h2 className={styles.panelTitle}>Distribuicao de score</h2>
-              <p className={styles.panelDescription}>Veja como a qualidade das aplicacoes se distribui ao longo da faixa de score.</p>
+              <p className={styles.panelDescription}>Veja como a qualidade das aplicações se distribui ao longo da faixa de score.</p>
             </div>
 
             <div className={styles.list}>

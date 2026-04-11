@@ -70,6 +70,98 @@ export async function getHrRequestQueueSummary(organizationId: string) {
   };
 }
 
+export async function getHrRequestDashboardSnapshot(organizationId: string, limit = 6) {
+  const openStatuses: HrRequestStatus[] = [HrRequestStatus.OPEN, HrRequestStatus.IN_PROGRESS, HrRequestStatus.WAITING_ON_REQUESTER];
+  const now = new Date();
+  const atRiskThreshold = new Date(now.getTime() + 1000 * 60 * 60 * 24);
+
+  const [open, atRisk, breached, requests] = await Promise.all([
+    prisma.hrRequest.count({
+      where: {
+        organizationId,
+        status: {
+          in: openStatuses
+        }
+      }
+    }),
+    prisma.hrRequest.count({
+      where: {
+        organizationId,
+        status: {
+          in: openStatuses
+        },
+        dueAt: {
+          gt: now,
+          lte: atRiskThreshold
+        }
+      }
+    }),
+    prisma.hrRequest.count({
+      where: {
+        organizationId,
+        status: {
+          in: openStatuses
+        },
+        dueAt: {
+          lte: now
+        }
+      }
+    }),
+    prisma.hrRequest.findMany({
+      where: {
+        organizationId,
+        status: {
+          in: openStatuses
+        },
+        dueAt: {
+          not: null,
+          lte: atRiskThreshold
+        }
+      },
+      select: {
+        id: true,
+        title: true,
+        category: true,
+        priority: true,
+        status: true,
+        dueAt: true,
+        assigneeUser: {
+          select: {
+            name: true
+          }
+        },
+        requesterUser: {
+          select: {
+            name: true
+          }
+        },
+        requesterEmployee: {
+          select: {
+            fullName: true
+          }
+        }
+      },
+      orderBy: [{ dueAt: "asc" }, { createdAt: "desc" }],
+      take: limit
+    })
+  ]);
+
+  return {
+    requests: requests.map((request) => ({
+      ...request,
+      effectiveSlaStatus: getEffectiveSlaStatus({
+        dueAt: request.dueAt,
+        status: request.status
+      })
+    })),
+    metrics: {
+      open,
+      atRisk,
+      breached
+    }
+  };
+}
+
 function calculateAverageResolutionHours(
   requests: Array<{
     createdAt: Date;

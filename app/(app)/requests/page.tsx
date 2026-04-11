@@ -42,15 +42,15 @@ export default async function RequestsPage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="Internal RH service desk"
-        title="Fila interna de solicitacoes"
-        description="Demandas, SLA, ownership e historico curto no mesmo fluxo para o RH operar sem perder contexto."
+        title="Fila interna de solicitações"
+        description="Demandas, SLA, ownership e histórico curto no mesmo fluxo para o RH operar sem perder contexto."
       />
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Abertas</span>
           <strong className={styles.statValue}>{queue.metrics.open}</strong>
-          <p className={styles.statHint}>Solicitacoes ainda em curso</p>
+          <p className={styles.statHint}>Solicitações ainda em curso</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>SLA em risco</span>
@@ -60,7 +60,7 @@ export default async function RequestsPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>SLA estourado</span>
           <strong className={styles.statValue}>{queue.metrics.breached}</strong>
-          <p className={styles.statHint}>Casos que pedem acao imediata</p>
+          <p className={styles.statHint}>Casos que pedem ação imediata</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Resolucao media</span>
@@ -74,8 +74,8 @@ export default async function RequestsPage() {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Queue</span>
-              <h2 className={styles.panelTitle}>Solicitacoes em operacao</h2>
-              <p className={styles.panelDescription}>Cada item aparece com categoria, SLA, ownership, historico curto e proximas acoes na mesma linha de trabalho.</p>
+              <h2 className={styles.panelTitle}>Solicitações em operação</h2>
+              <p className={styles.panelDescription}>Cada item aparece com categoria, SLA, ownership, histórico curto e próximas ações na mesma linha de trabalho.</p>
             </div>
 
             <div className={styles.list}>
@@ -147,7 +147,7 @@ export default async function RequestsPage() {
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyState}>Nenhuma solicitacao interna aberta agora.</div>
+                <div className={styles.emptyState}>Nenhuma solicitação interna aberta agora.</div>
               )}
             </div>
           </section>
@@ -156,13 +156,13 @@ export default async function RequestsPage() {
         <aside className={styles.column}>
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Nova solicitacao</span>
+              <span className={styles.panelEyebrow}>Nova solicitação</span>
               <h2 className={styles.panelTitle}>Abrir um caso</h2>
               <p className={styles.panelDescription}>Ative o service desk com dono, categoria, prioridade e contexto desde o primeiro envio.</p>
             </div>
 
             <form action={createHrRequestAction} className={styles.formGrid}>
-              <input name="title" required placeholder="Titulo da solicitacao" className={`${styles.field} ${styles.span2}`} />
+              <input name="title" required placeholder="Titulo da solicitação" className={`${styles.field} ${styles.span2}`} />
               <select name="category" defaultValue={HrRequestCategory.GENERAL_SUPPORT} className={styles.select}>
                 {Object.values(HrRequestCategory).map((category) => (
                   <option key={category} value={category}>
@@ -194,9 +194,9 @@ export default async function RequestsPage() {
                   </option>
                 ))}
               </select>
-              <textarea name="description" required placeholder="Descricao detalhada da solicitacao" className={`${styles.textarea} ${styles.span2}`} />
+              <textarea name="description" required placeholder="Descricao detalhada da solicitação" className={`${styles.textarea} ${styles.span2}`} />
               <div className={styles.span2}>
-                <Button type="submit">Criar solicitacao</Button>
+                <Button type="submit">Criar solicitação</Button>
               </div>
             </form>
           </section>

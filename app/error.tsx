@@ -25,7 +25,7 @@ export default function GlobalError({
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            Houve um problema ao carregar a aplicacao. Tente novamente ou revise a configuracao do ambiente.
+            Houve um problema ao carregar a aplicação. Tente novamente ou revise a configuração do ambiente.
           </p>
           <Button onClick={reset}>Tentar de novo</Button>
         </CardContent>

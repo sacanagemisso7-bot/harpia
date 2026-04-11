@@ -71,7 +71,7 @@ export default async function CandidatesPage({
       <PageHeader
         eyebrow="Talent pool"
         title="Base viva de candidatos"
-        description="Perfis, curriculos, origem e movimentacao em uma visao clara para triagem e decisao."
+        description="Perfis, currículos, origem e movimentação em uma visão clara para triagem e decisão."
         actions={
           canManageCandidates ? (
             <Button asChild>
@@ -91,14 +91,14 @@ export default async function CandidatesPage({
           <p className={styles.statHint}>Perfis encontrados com os filtros ativos</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Curriculos</span>
+          <span className={styles.statLabel}>Currículos</span>
           <strong className={styles.statValue}>{totalResumes}</strong>
           <p className={styles.statHint}>Arquivos associados aos perfis visiveis</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacoes</span>
+          <span className={styles.statLabel}>Aplicações</span>
           <strong className={styles.statValue}>{totalApplications}</strong>
-          <p className={styles.statHint}>Movimentos totais ligados aos perfis da pagina</p>
+          <p className={styles.statHint}>Movimentos totais ligados aos perfis da página</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Cargo atual</span>
@@ -123,7 +123,7 @@ export default async function CandidatesPage({
                   { label: "Importacao manual", value: CandidateSource.MANUAL_IMPORT },
                   { label: "LinkedIn", value: CandidateSource.LINKEDIN },
                   { label: "Indicacao", value: CandidateSource.REFERRAL },
-                  { label: "Pagina de carreiras", value: CandidateSource.CAREERS_PAGE }
+                  { label: "Página de carreiras", value: CandidateSource.CAREERS_PAGE }
                 ]
               },
               {
@@ -134,7 +134,7 @@ export default async function CandidatesPage({
                 options: [
                   { label: "Mais recentes", value: "recent" },
                   { label: "Nome A-Z", value: "name" },
-                  { label: "Mais experiencia", value: "experience" }
+                  { label: "Mais experiência", value: "experience" }
                 ]
               }
             ]}
@@ -178,8 +178,8 @@ export default async function CandidatesPage({
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Resumo</span>
-              <h2 className={styles.panelTitle}>Origens e tracao</h2>
-              <p className={styles.panelDescription}>Veja rapidamente de onde os perfis estao vindo e quais aparecem mais ligados a aplicacoes.</p>
+              <h2 className={styles.panelTitle}>Origens e tração</h2>
+              <p className={styles.panelDescription}>Veja rapidamente de onde os perfis estao vindo e quais aparecem mais ligados a aplicações.</p>
             </div>
 
             <div className={styles.summaryGrid}>

@@ -87,6 +87,48 @@ export async function getComplianceSummary(organizationId: string) {
   };
 }
 
+export async function getComplianceDashboardSnapshot(organizationId: string, limit = 6) {
+  const [pendingRequirements, pendingAcknowledgements, requirements] = await Promise.all([
+    prisma.complianceRequirement.count({
+      where: {
+        organizationId,
+        status: ComplianceStatus.PENDING
+      }
+    }),
+    prisma.policyAcknowledgement.count({
+      where: {
+        organizationId,
+        acknowledgedAt: null
+      }
+    }),
+    prisma.complianceRequirement.findMany({
+      where: {
+        organizationId,
+        status: ComplianceStatus.PENDING
+      },
+      select: {
+        id: true,
+        title: true,
+        dueAt: true,
+        employee: {
+          select: {
+            fullName: true
+          }
+        }
+      },
+      orderBy: [{ dueAt: "asc" }, { createdAt: "desc" }],
+      take: limit
+    })
+  ]);
+
+  return {
+    requirements,
+    metrics: {
+      pending: pendingRequirements + pendingAcknowledgements
+    }
+  };
+}
+
 export async function getPolicyOperationalSnapshot(input: {
   organizationId: string;
   documentIds?: string[];

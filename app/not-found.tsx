@@ -8,11 +8,11 @@ export default function NotFound() {
     <div className="flex min-h-screen items-center justify-center p-6">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Pagina nao encontrada</CardTitle>
+          <CardTitle>Página não encontrada</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            O recurso que voce tentou acessar nao existe ou nao esta disponivel para esta organizacao.
+            O recurso que você tentou acessar não existe ou não está disponível para esta organização.
           </p>
           <Button asChild>
             <Link href="/dashboard">Voltar ao dashboard</Link>

@@ -181,7 +181,7 @@ export async function updateBillingCommercialTerms(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar os termos comerciais."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar os termos comerciais."
     };
   }
 
@@ -225,7 +225,7 @@ export async function updateBillingProfile(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o perfil fiscal."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o perfil fiscal."
     };
   }
 
@@ -269,7 +269,7 @@ export async function createBillingUpgradeRequest(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o pedido de upgrade."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o pedido de upgrade."
     };
   }
 
@@ -304,7 +304,7 @@ export async function createBillingUpgradeRequest(
   revalidatePath("/ops/revenue");
 
   return {
-    success: "Pedido de upgrade enviado para aprovacao."
+    success: "Pedido de upgrade enviado para aprovação."
   };
 }
 
@@ -410,7 +410,7 @@ export async function updateOrganizationSettings(formData: FormData) {
     action: "organization.settings_updated",
     entityType: "organization",
     entityId: user.organizationId,
-    summary: "Configuracoes da organizacao atualizadas.",
+    summary: "Configurações da organização atualizadas.",
     metadata: payload
   });
 
@@ -527,7 +527,7 @@ export async function inviteTeamMember(
 
   if (!organization) {
     return {
-      error: "Organizacao nao encontrada."
+      error: "Organização não encontrada."
     };
   }
 
@@ -547,7 +547,7 @@ export async function inviteTeamMember(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o convite."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o convite."
     };
   }
 
@@ -555,7 +555,7 @@ export async function inviteTeamMember(
 
   if (!canAssignRole(user.role, parsed.data.role)) {
     return {
-      error: "Seu papel atual nao permite convidar esse nivel de acesso."
+      error: "Seu papel atual não permite convidar esse n?vel de acesso."
     };
   }
 
@@ -618,8 +618,8 @@ export async function inviteTeamMember(
         from: env.EMAIL_FROM,
         to: invite.email,
         subject: `Convite para acessar ${invite.organization.name} no Harpia`,
-        html: `<p>Ola,</p><p>Voce recebeu um convite para acessar o workspace <strong>${invite.organization.name}</strong> no <strong>Harpia</strong> como <strong>${getRoleLabel(invite.role)}</strong>.</p><p><a href="${acceptUrl}">Aceitar convite</a></p><p>${invite.message ?? "Sem mensagem adicional."}</p><p>Este link expira em 7 dias.</p>`,
-        text: `Voce recebeu um convite para acessar ${invite.organization.name} no Harpia como ${getRoleLabel(invite.role)}.\nAceite aqui: ${acceptUrl}\n\n${invite.message ?? ""}\n\nEste link expira em 7 dias.`
+        html: `<p>Ola,</p><p>Você recebeu um convite para acessar o workspace <strong>${invite.organization.name}</strong> no <strong>Harpia</strong> como <strong>${getRoleLabel(invite.role)}</strong>.</p><p><a href="${acceptUrl}">Aceitar convite</a></p><p>${invite.message ?? "Sem mensagem adicional."}</p><p>Este link expira em 7 dias.</p>`,
+        text: `Você recebeu um convite para acessar ${invite.organization.name} no Harpia como ${getRoleLabel(invite.role)}.\nAceite aqui: ${acceptUrl}\n\n${invite.message ?? ""}\n\nEste link expira em 7 dias.`
       });
     } catch (error) {
       logError("Failed to send team invite email", error, { inviteId: invite.id }, "settings");
@@ -662,7 +662,7 @@ export async function updateTeamMemberRole(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o novo papel."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o novo papel."
     };
   }
 
@@ -678,7 +678,7 @@ export async function updateTeamMemberRole(
 
   if (!member) {
     return {
-      error: "Membro nao encontrado."
+      error: "Membro não encontrado."
     };
   }
 
@@ -690,7 +690,7 @@ export async function updateTeamMemberRole(
 
   if (!canManageTeamMember(user.role, member.role) || !canAssignRole(user.role, parsed.data.role)) {
     return {
-      error: "Seu papel atual nao permite essa alteracao."
+      error: "Seu papel atual não permite essa alteracao."
     };
   }
 
@@ -708,7 +708,7 @@ export async function updateTeamMemberRole(
 
     if (ownerCount <= 1) {
       return {
-        error: "A organizacao precisa manter pelo menos um owner."
+        error: "A organização precisa manter pelo menos um owner."
       };
     }
   }

@@ -100,7 +100,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
     { label: "Base ativa", value: data.metrics.employees, hint: `${data.metrics.onboardingActive} entradas em curso` },
     { label: "Fila interna", value: data.metrics.openRequests, hint: `${data.metrics.requestsAtRisk} com risco de SLA` },
     { label: "Pendencias", value: data.metrics.overdueTasks, hint: `${data.metrics.pendingCompliance} pontos de compliance` },
-    { label: "Agenda", value: data.metrics.eventsToday, hint: `${data.metrics.offboardingActive} saidas ativas` }
+    { label: "Agenda", value: data.metrics.eventsToday, hint: `${data.metrics.offboardingActive} saídas ativas` }
   ];
 
   const quickLinks = [
@@ -117,8 +117,8 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
       <section className={styles.hero}>
         <div className={styles.heroIntro}>
           <span className={styles.eyebrow}>Live overview</span>
-          <h2 className={styles.heroTitle}>Tudo que pede acao hoje.</h2>
-          <p className={styles.heroDescription}>O command center junta fila, workflows, agenda e compliance numa leitura direta da operacao.</p>
+          <h2 className={styles.heroTitle}>Tudo que pede ação hoje.</h2>
+          <p className={styles.heroDescription}>O command center junta fila, workflows, agenda e compliance numa leitura direta da operação.</p>
         </div>
 
         <div className={styles.metricStrip}>
@@ -161,7 +161,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                     <div className={styles.listRow}>
                       <strong>{alert.title}</strong>
                       <Badge variant={alert.severity === "high" ? "destructive" : "warning"}>
-                        {alert.severity === "high" ? "Critico" : "Atencao"}
+                        {alert.severity === "high" ? "Critico" : "Aten??o"}
                       </Badge>
                     </div>
                     <p>{alert.description}</p>
@@ -233,7 +233,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Workflows</span>
-              <h3 className={styles.panelTitle}>Entradas e saidas em curso</h3>
+              <h3 className={styles.panelTitle}>Entradas e saídas em curso</h3>
               <p className={styles.panelDescription}>Acompanhe progresso, ownership e o ponto em que cada fluxo esta parado.</p>
             </div>
 
@@ -307,7 +307,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Agenda</span>
-              <h3 className={styles.panelTitle}>Hoje e proximos marcos</h3>
+              <h3 className={styles.panelTitle}>Hoje e próximos marcos</h3>
               <p className={styles.panelDescription}>Eventos do dia e pontos que pedem acompanhamento antes de escalar.</p>
             </div>
 
@@ -334,7 +334,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Compliance</span>
-              <h3 className={styles.panelTitle}>Itens que merecem revisao</h3>
+              <h3 className={styles.panelTitle}>Itens que merecem revisão</h3>
               <p className={styles.panelDescription}>Controles, pendencias e janelas de vencimento em uma unica lista.</p>
             </div>
 
@@ -362,7 +362,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Hiring</span>
               <h3 className={styles.panelTitle}>Snapshot de recrutamento</h3>
-              <p className={styles.panelDescription}>Leitura rapida de vagas, candidatos e alertas de SLA ligados ao hiring.</p>
+              <p className={styles.panelDescription}>Leitura r?pida de vagas, candidatos e alertas de SLA ligados ao hiring.</p>
             </div>
 
             <div className={styles.snapshotList}>
@@ -370,14 +370,14 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                 <BriefcaseBusiness className="h-4 w-4" />
                 <div>
                   <strong>{data.hiring.jobCount} vagas</strong>
-                  <p>Vagas em operacao</p>
+                  <p>Vagas em operação</p>
                 </div>
               </div>
               <div className={styles.snapshotItem}>
                 <UsersRound className="h-4 w-4" />
                 <div>
                   <strong>{data.hiring.applicationCount} candidatos</strong>
-                  <p>Aplicacoes ativas</p>
+                  <p>Aplicações ativas</p>
                 </div>
               </div>
               <div className={styles.snapshotItem}>

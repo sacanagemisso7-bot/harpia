@@ -63,7 +63,7 @@ export function DepartmentPlaybookForm({ action, defaultValues, submitLabel }: D
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor={`decisionGuidance-${defaultValues?.id ?? "new"}`}>Guia de decisao</Label>
+        <Label htmlFor={`decisionGuidance-${defaultValues?.id ?? "new"}`}>Guia de decisão</Label>
         <Textarea
           id={`decisionGuidance-${defaultValues?.id ?? "new"}`}
           name="decisionGuidance"

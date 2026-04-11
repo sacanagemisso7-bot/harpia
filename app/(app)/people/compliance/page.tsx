@@ -37,7 +37,7 @@ export default async function CompliancePage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Pendentes</span>
           <strong className={styles.statValue}>{compliance.metrics.pending}</strong>
-          <span className={styles.statHint}>Ainda aguardando conclusao ou aceite.</span>
+          <span className={styles.statHint}>Ainda aguardando conclus?o ou aceite.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Atrasados</span>
@@ -57,17 +57,17 @@ export default async function CompliancePage() {
             <div className={styles.panel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelEyebrow}>Policy assignment</span>
-                <h2 className={styles.panelTitle}>Distribuir politica</h2>
+                <h2 className={styles.panelTitle}>Distribuir política</h2>
                 <p className={styles.panelDescription}>Atribua uma policy, gere o requirement correlato e marque prazo.</p>
               </div>
               <form action={assignPolicyAction} className={styles.actionCluster}>
                 <select name="documentId" required className={styles.select}>
-                  <option value="">Selecione uma politica</option>
+                  <option value="">Selecione uma política</option>
                   {policyDocuments.map((document) => (
                     <option key={document.id} value={document.id}>
                       {document.title}
                       {document.versionLabel ? ` · ${document.versionLabel}` : ""}
-                      {!document.publishedAt ? " · nao publicada" : ""}
+                      {!document.publishedAt ? " · não publicada" : ""}
                     </option>
                   ))}
                 </select>
@@ -80,7 +80,7 @@ export default async function CompliancePage() {
                 </select>
                 <div className={styles.subGrid2}>
                   <input name="dueAt" type="date" className={styles.field} />
-                  <Button type="submit">Atribuir politica</Button>
+                  <Button type="submit">Atribuir política</Button>
                 </div>
               </form>
             </div>
@@ -120,7 +120,7 @@ export default async function CompliancePage() {
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Acknowledgements</span>
-              <h2 className={styles.panelTitle}>Aceites de politica</h2>
+              <h2 className={styles.panelTitle}>Aceites de política</h2>
               <p className={styles.panelDescription}>Quem ja confirmou e quem ainda precisa responder.</p>
             </div>
             {compliance.policyAcknowledgements.length ? (
@@ -161,7 +161,7 @@ export default async function CompliancePage() {
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Nenhum aceite de politica pendente no momento.</div>
+              <div className={styles.emptyState}>Nenhum aceite de política pendente no momento.</div>
             )}
           </div>
         </div>

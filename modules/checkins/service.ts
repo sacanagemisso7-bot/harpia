@@ -15,7 +15,7 @@ export async function createEmployeeCheckIn(input: {
   });
 
   if (!employee) {
-    throw new Error("Colaborador nao encontrado.");
+    throw new Error("Colaborador não encontrado.");
   }
 
   const checkIn = await prisma.employeeCheckIn.create({

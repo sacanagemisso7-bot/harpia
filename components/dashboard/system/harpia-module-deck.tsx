@@ -43,7 +43,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
       key: "hiring",
       eyebrow: "Hiring",
       title: "Pipeline ativo",
-      subtitle: "Vagas, candidatos quentes e sinais que pedem decisao.",
+      subtitle: "Vagas, candidatos quentes e sinais que pedem decisão.",
       stats: [`${data.hiring.jobCount} vagas`, `${data.hiring.applicationCount} candidatos`, `${data.hiring.slaAlerts} alertas`],
       items: data.hiring.intelligenceHighlights.slice(0, 3).map((entry) => ({
         id: entry.id,
@@ -57,7 +57,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
       key: "requests",
       eyebrow: "Desk",
       title: "Fila de requests",
-      subtitle: "Solicitacoes abertas, SLAs e responsaveis mais ativos.",
+      subtitle: "Solicitações abertas, SLAs e responsaveis mais ativos.",
       stats: [`${data.metrics.openRequests} abertas`, `${data.metrics.requestsAtRisk} em risco`],
       items: data.requests.slice(0, 3).map((request) => ({
         id: request.id,
@@ -71,7 +71,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
       key: "workflows",
       eyebrow: "People ops",
       title: "Workflows ativos",
-      subtitle: "Entradas e saidas em curso com progresso visivel.",
+      subtitle: "Entradas e saídas em curso com progresso visivel.",
       stats: [`${data.metrics.onboardingActive} onboarding`, `${data.metrics.offboardingActive} offboarding`],
       items: workflowItems
     },
@@ -79,7 +79,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
       key: "tasks",
       eyebrow: "Tasks",
       title: "Pendencias operacionais",
-      subtitle: "Tarefas vencidas e pontos que travam execucao diaria.",
+      subtitle: "Tarefas vencidas e pontos que travam execucao di?ria.",
       stats: [`${data.metrics.overdueTasks} vencidas`],
       items: data.overdueTasks.slice(0, 3).map((task) => ({
         id: task.id,
@@ -92,8 +92,8 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
     {
       key: "calendar",
       eyebrow: "Calendar",
-      title: "Agenda proxima",
-      subtitle: "Eventos do time e movimentacoes do dia na operacao.",
+      title: "Agenda próxima",
+      subtitle: "Eventos do time e movimentacoes do dia na operação.",
       stats: [`${data.metrics.eventsToday} hoje`],
       items: data.events.slice(0, 3).map((event) => ({
         id: event.id,
@@ -107,7 +107,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
       key: "compliance",
       eyebrow: "Compliance",
       title: "Leituras pendentes",
-      subtitle: "Documentos e requisitos com janela de acao aberta.",
+      subtitle: "Documentos e requisitos com janela de ação aberta.",
       stats: [`${data.metrics.pendingCompliance} pendencias`],
       items: data.compliance.slice(0, 3).map((entry) => ({
         id: entry.id,

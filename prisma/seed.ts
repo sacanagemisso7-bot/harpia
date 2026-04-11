@@ -36,6 +36,7 @@ async function main() {
   const organization = await prisma.organization.upsert({
     where: { slug: "hireflow-demo" },
     update: {
+      name: "Atlas Meridian",
       billingPlan: BillingPlan.GROWTH,
       billingStatus: BillingStatus.TRIALING,
       billingTrialEndsAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 14),
@@ -43,7 +44,7 @@ async function main() {
       billingAiAddonUnits: 1
     },
     create: {
-      name: "HireFlow Demo",
+      name: "Atlas Meridian",
       slug: "hireflow-demo",
       sizeRange: "10-200",
       billingPlan: BillingPlan.GROWTH,
@@ -100,12 +101,13 @@ async function main() {
   const secondOrganization = await prisma.organization.upsert({
     where: { slug: "hireflow-labs" },
     update: {
+      name: "Meridian Works",
       billingPlan: BillingPlan.BUSINESS,
       billingStatus: BillingStatus.ACTIVE,
       billingContractedMrrCents: 590000
     },
     create: {
-      name: "HireFlow Labs",
+      name: "Meridian Works",
       slug: "hireflow-labs",
       sizeRange: "50-120",
       billingPlan: BillingPlan.BUSINESS,
@@ -254,14 +256,14 @@ async function main() {
       summary:
         "Pessoa engenheira de produto para liderar entregas end-to-end em uma plataforma SaaS B2B com forte uso de IA.",
       description:
-        "Voce vai atuar do discovery ao deploy, colaborando com produto, design e operacoes para construir fluxos de recrutamento com alta confiabilidade e excelente experiencia de uso.",
+        "Você vai atuar do discovery ao deploy, colaborando com produto, design e operações para construir fluxos de recrutamento com alta confiabilidade e excelente experiência de uso.",
       educationLevel: "Ensino superior completo",
       minExperienceYears: 5,
       criteria: {
         create: [
           {
             type: CriterionType.MUST_HAVE,
-            label: "Experiencia com Next.js, TypeScript e arquitetura full-stack",
+            label: "Experiência com Next.js, TypeScript e arquitetura full-stack",
             weight: 10,
             order: 0
           },
@@ -310,7 +312,7 @@ async function main() {
       jobId: defaultJob.id,
       label: "Product sense",
       category: "Discovery",
-      description: "Capacidade de traduzir contexto de negocio em decisoes de produto e trade-offs claros.",
+      description: "Capacidade de traduzir contexto de negócio em decisoes de produto e trade-offs claros.",
       weight: 8,
       isRequired: true,
       order: 0
@@ -340,9 +342,9 @@ async function main() {
       id: "seed-scorecard-collaboration",
       organizationId: organization.id,
       jobId: defaultJob.id,
-      label: "Colaboracao cross-functional",
+      label: "Colaboração cross-functional",
       category: "Collaboration",
-      description: "Qualidade da parceria com design, produto e operacoes em ambientes ambiciosos.",
+      description: "Qualidade da parceria com design, produto e operações em ambientes ambiciosos.",
       weight: 7,
       isRequired: false,
       order: 2
@@ -380,20 +382,20 @@ async function main() {
       department: "Product & Engineering",
       title: "Playbook para product engineers",
       screeningGuidance:
-        "Priorize ownership end-to-end, repertorio em SaaS B2B e sinais de colaboracao forte com design e produto.",
+        "Priorize ownership end-to-end, repertorio em SaaS B2B e sinais de colaboração forte com design e produto.",
       interviewGuidance:
         "Explore trade-offs de produto, qualidade tecnica, velocidade de entrega e maturidade para operar com contexto incompleto.",
       decisionGuidance:
-        "Avance perfis que combinem criterio tecnico, pensamento de produto e alta autonomia. Segure quando houver potencial, mas faltarem evidencias de execucao real.",
+        "Avance perfis que combinem critério técnico, pensamento de produto e alta autonomia. Segure quando houver potencial, mas faltarem evidencias de execucao real.",
       strongSignals: [
         "Exemplos concretos de discovery ate deploy",
-        "Boa articulacao entre usuario, negocio e arquitetura",
+        "Boa articulacao entre usuário, negócio e arquitetura",
         "Ownership cross-functional consistente"
       ],
       riskSignals: [
         "Discurso forte, mas sem exemplos de entrega real",
         "Baixa clareza sobre priorizacao e trade-offs",
-        "Experiencia muito especializada sem contexto de produto"
+        "Experiência muito especializada sem contexto de produto"
       ]
     }
   });
@@ -410,9 +412,9 @@ async function main() {
       type: KnowledgeDocumentType.PLAYBOOK,
       status: "READY",
       summary:
-        "Documento orienta triagem de product engineers, destacando ownership end-to-end, repertorio em SaaS B2B, criterio tecnico e clareza em trade-offs de produto.",
+        "Documento orienta triagem de product engineers, destacando ownership end-to-end, repertorio em SaaS B2B, critério técnico e clareza em trade-offs de produto.",
       extractedText:
-        "Priorize ownership end-to-end, repertorio em SaaS B2B, colaboracao com design e produto, clareza de trade-offs e exemplos concretos de discovery ate deploy. Riscos incluem baixa capacidade de priorizacao, ausencia de evidencias de entrega real e pouca articulacao com negocio.",
+        "Priorize ownership end-to-end, repertorio em SaaS B2B, colaboração com design e produto, clareza de trade-offs e exemplos concretos de discovery ate deploy. Riscos incluem baixa capacidade de priorizacao, ausencia de evidencias de entrega real e pouca articulacao com negócio.",
       processedAt: new Date()
     }
   });
@@ -430,7 +432,7 @@ async function main() {
       documentId: "seed-knowledge-playbook-product",
       position: 0,
       content:
-        "Priorize ownership end-to-end, repertorio em SaaS B2B, colaboracao com design e produto, clareza de trade-offs e exemplos concretos de discovery ate deploy.",
+        "Priorize ownership end-to-end, repertorio em SaaS B2B, colaboração com design e produto, clareza de trade-offs e exemplos concretos de discovery ate deploy.",
       tokenCount: 36,
       keywords: ["ownership", "saas", "produto", "trade-offs", "discovery"]
     }
@@ -464,7 +466,7 @@ async function main() {
       email: "ana.costa@example.com",
       phone: "+55 11 99999-1111",
       location: "Sao Paulo, BR",
-      summary: "Engenheira de produto com foco em SaaS B2B e automacoes de RH.",
+      summary: "Engenheira de produto com foco em SaaS B2B e automações de RH.",
       yearsExperience: 7,
       highestEducation: "Ciencia da Computacao",
       currentTitle: "Senior Software Engineer",
@@ -491,18 +493,18 @@ async function main() {
       currentStageId: appliedStage.id,
       score: 88,
       scoreJustification:
-        "Alta aderencia em stack, senioridade e contexto de produto. Gap pequeno em lideranca formal de time.",
+        "Alta aderência em stack, senioridade e contexto de produto. Gap pequeno em liderança formal de time.",
       executiveSummary:
-        "Perfil forte para fase de triagem. Demonstra experiencia relevante em SaaS e boa aderencia tecnica.",
-      strengths: ["Experiencia em produto", "Stack aderente", "Contexto em RH tech"],
-      gaps: ["Sem historico claro de gestao formal"],
+        "Perfil forte para fase de triagem. Demonstra experiência relevante em SaaS e boa aderência tecnica.",
+      strengths: ["Experiência em produto", "Stack aderente", "Contexto em RH tech"],
+      gaps: ["Sem histórico claro de gestão formal"],
       detectedSkills: ["Next.js", "TypeScript", "Prisma", "OpenAI"],
       detectedExperience: {
         years: 7,
         highlights: ["SaaS B2B", "Fluxos de recrutamento"]
       },
       suggestedQuestions: [
-        "Como voce prioriza trade-offs entre velocidade de entrega e qualidade arquitetural?",
+        "Como você prioriza trade-offs entre velocidade de entrega e qualidade arquitetural?",
         "Conte um caso em que usou IA para reduzir trabalho operacional em um produto."
       ],
       history: {
@@ -548,7 +550,7 @@ async function main() {
       employmentType: "CLT",
       status: EmployeeStatus.ACTIVE,
       startDate: new Date("2025-08-11T09:00:00.000Z"),
-      notes: "Responsavel pela operacao diaria de RH, service desk e onboarding."
+      notes: "Responsavel pela operação di?ria de RH, service desk e onboarding."
     }
   });
 
@@ -576,7 +578,7 @@ async function main() {
       employmentType: "CLT",
       status: EmployeeStatus.ACTIVE,
       startDate: new Date("2025-05-05T09:00:00.000Z"),
-      notes: "Gestora responsavel pelo periodo inicial do time de produto."
+      notes: "Gestora responsavel pelo período inicial do time de produto."
     }
   });
 
@@ -610,7 +612,7 @@ async function main() {
       employmentType: "CLT",
       status: EmployeeStatus.ONBOARDING,
       startDate: new Date("2026-03-24T09:00:00.000Z"),
-      notes: "Nova contratacao vinda do modulo de hiring, agora acompanhada pelo People Ops Hub."
+      notes: "Nova contratacao vinda do módulo de hiring, agora acompanhada pelo People Ops Hub."
     }
   });
 
@@ -640,7 +642,7 @@ async function main() {
       status: EmployeeStatus.OFFBOARDING,
       startDate: new Date("2024-11-04T09:00:00.000Z"),
       endDate: new Date("2026-03-28T18:00:00.000Z"),
-      notes: "Fluxo de desligamento criado para validar checklist, acessos e entrevista de saida."
+      notes: "Fluxo de desligamento criado para validar checklist, acessos e entrevista de saída."
     }
   });
 
@@ -698,7 +700,7 @@ async function main() {
       id: "seed-task-manager-checkin",
       organizationId: organization.id,
       title: "Registrar alinhamento inicial com Ana Costa",
-      description: "Coletar contexto dos primeiros dias, riscos do periodo inicial e proximos passos com a nova contratacao.",
+      description: "Coletar contexto dos primeiros dias, riscos do período inicial e próximos passos com a nova contratacao.",
       assigneeUserId: managerUser.id,
       relatedEmployeeId: hiredEmployee.id,
       createdById: peopleOpsUser.id,
@@ -739,7 +741,7 @@ async function main() {
       employeeId: hiredEmployee.id,
       authorId: managerUser.id,
       type: EmployeeCheckInType.PROBATION,
-      title: "Check-in de periodo inicial",
+      title: "Check-in de período inicial",
       summary: "Ana comecou bem, mas ainda depende da finalizacao de acessos e do alinhamento do plano de 30 dias.",
       followUpAt: new Date("2026-04-22T15:00:00.000Z")
     },
@@ -749,7 +751,7 @@ async function main() {
       employeeId: hiredEmployee.id,
       authorId: managerUser.id,
       type: EmployeeCheckInType.PROBATION,
-      title: "Check-in de periodo inicial",
+      title: "Check-in de período inicial",
       summary: "Ana comecou bem, mas ainda depende da finalizacao de acessos e do alinhamento do plano de 30 dias.",
       followUpAt: new Date("2026-04-22T15:00:00.000Z")
     }
@@ -782,7 +784,7 @@ async function main() {
       requesterEmployeeId: hiredEmployee.id,
       assigneeUserId: peopleOpsUser.id,
       title: "Adicionar dependente ao plano de saude",
-      description: "Solicitacao aberta pela nova colaboradora para completar configuracao de beneficios.",
+      description: "Solicitação aberta pela nova colaboradora para completar configuração de benefícios.",
       category: HrRequestCategory.BENEFITS,
       priority: PeopleTaskPriority.HIGH,
       status: HrRequestStatus.OPEN,
@@ -795,7 +797,7 @@ async function main() {
       requesterEmployeeId: hiredEmployee.id,
       assigneeUserId: peopleOpsUser.id,
       title: "Adicionar dependente ao plano de saude",
-      description: "Solicitacao aberta pela nova colaboradora para completar configuracao de beneficios.",
+      description: "Solicitação aberta pela nova colaboradora para completar configuração de benefícios.",
       category: HrRequestCategory.BENEFITS,
       priority: PeopleTaskPriority.HIGH,
       status: HrRequestStatus.OPEN,
@@ -836,7 +838,7 @@ async function main() {
     update: {
       requestId: "seed-request-benefits-ana",
       authorId: peopleOpsUser.id,
-      message: "Solicitacao recebida. Aguardando comprovante final do dependente.",
+      message: "Solicitação recebida. Aguardando comprovante final do dependente.",
       isInternal: false
     },
     create: {
@@ -844,7 +846,7 @@ async function main() {
       organizationId: organization.id,
       requestId: "seed-request-benefits-ana",
       authorId: peopleOpsUser.id,
-      message: "Solicitacao recebida. Aguardando comprovante final do dependente.",
+      message: "Solicitação recebida. Aguardando comprovante final do dependente.",
       isInternal: false
     }
   });
@@ -860,16 +862,16 @@ async function main() {
       id: "seed-knowledge-policy-hybrid",
       organizationId: organization.id,
       createdById: peopleOpsUser.id,
-      title: "Politica interna de trabalho hibrido",
-      description: "Regras praticas sobre presenca, equipamentos, reembolso e janelas de colaboracao.",
+      title: "Política interna de trabalho híbrido",
+      description: "Regras praticas sobre presen?a, equipamentos, reembolso e janelas de colaboração.",
       type: KnowledgeDocumentType.POLICY,
       status: "READY",
       versionLabel: "v1.0",
       publishedAt: new Date("2026-01-10T14:00:00.000Z"),
       requiresAcknowledgement: true,
-      summary: "Politica base para orientar regime hibrido, combinados de presenca e apoio operacional.",
+      summary: "Política base para orientar regime híbrido, combinados de presen?a e apoio operacional.",
       extractedText:
-        "Funcionarios em regime hibrido devem alinhar dias presenciais com a lideranca, registrar deslocamentos combinados e seguir os checklists de onboarding e seguranca da informacao.",
+        "Funcionarios em regime híbrido devem alinhar dias presenciais com a liderança, registrar deslocamentos combinados e seguir os checklists de onboarding e seguranca da informação.",
       processedAt: new Date()
     }
   });
@@ -886,7 +888,7 @@ async function main() {
       id: "seed-knowledge-policy-hybrid-v2",
       organizationId: organization.id,
       createdById: peopleOpsUser.id,
-      title: "Politica interna de trabalho hibrido",
+      title: "Política interna de trabalho híbrido",
       description: "Versao atualizada com regras de deslocamento, janelas presenciais e suporte de equipamento.",
       type: KnowledgeDocumentType.POLICY,
       status: "READY",
@@ -894,9 +896,9 @@ async function main() {
       publishedAt: new Date("2026-03-15T14:00:00.000Z"),
       requiresAcknowledgement: true,
       supersedesDocumentId: "seed-knowledge-policy-hybrid",
-      summary: "Versao atualizada da politica hibrida, com reforco de dias presenciais, reembolso e seguranca da informacao.",
+      summary: "Versao atualizada da política hibrida, com reforco de dias presenciais, reembolso e seguranca da informação.",
       extractedText:
-        "Funcionarios em regime hibrido devem alinhar dias presenciais com a lideranca, registrar deslocamentos combinados, respeitar a janela principal de colaboracao presencial e confirmar o aceite da nova versao da politica pelo portal interno.",
+        "Funcionarios em regime híbrido devem alinhar dias presenciais com a liderança, registrar deslocamentos combinados, respeitar a janela principal de colaboração presencial e confirmar o aceite da nova versao da política pelo portal interno.",
       processedAt: new Date()
     }
   });
@@ -904,7 +906,7 @@ async function main() {
   await prisma.policyRollout.upsert({
     where: { id: "seed-policy-rollout-hybrid-v2" },
     update: {
-      title: "Politica interna de trabalho hibrido · v2.0",
+      title: "Política interna de trabalho híbrido · v2.0",
       dueAt: new Date("2026-03-26T18:00:00.000Z")
     },
     create: {
@@ -912,7 +914,7 @@ async function main() {
       organizationId: organization.id,
       documentId: "seed-knowledge-policy-hybrid-v2",
       createdById: peopleOpsUser.id,
-      title: "Politica interna de trabalho hibrido · v2.0",
+      title: "Política interna de trabalho híbrido · v2.0",
       dueAt: new Date("2026-03-26T18:00:00.000Z")
     }
   });
@@ -923,7 +925,7 @@ async function main() {
       employeeId: hiredEmployee.id,
       documentId: "seed-knowledge-policy-hybrid-v2",
       policyRolloutId: "seed-policy-rollout-hybrid-v2",
-      title: "Aceite da politica de trabalho hibrido (v2.0)",
+      title: "Aceite da política de trabalho híbrido (v2.0)",
       dueAt: new Date("2026-03-26T18:00:00.000Z"),
       acknowledgedAt: null
     },
@@ -933,7 +935,7 @@ async function main() {
       employeeId: hiredEmployee.id,
       documentId: "seed-knowledge-policy-hybrid-v2",
       policyRolloutId: "seed-policy-rollout-hybrid-v2",
-      title: "Aceite da politica de trabalho hibrido (v2.0)",
+      title: "Aceite da política de trabalho híbrido (v2.0)",
       dueAt: new Date("2026-03-26T18:00:00.000Z")
     }
   });
@@ -943,7 +945,7 @@ async function main() {
     update: {
       employeeId: hiredEmployee.id,
       documentId: "seed-knowledge-policy-hybrid",
-      title: "Aceite da politica de trabalho hibrido (v1.0)",
+      title: "Aceite da política de trabalho híbrido (v1.0)",
       acknowledgedAt: new Date("2026-02-12T16:00:00.000Z")
     },
     create: {
@@ -951,7 +953,7 @@ async function main() {
       organizationId: organization.id,
       employeeId: hiredEmployee.id,
       documentId: "seed-knowledge-policy-hybrid",
-      title: "Aceite da politica de trabalho hibrido (v1.0)",
+      title: "Aceite da política de trabalho híbrido (v1.0)",
       acknowledgedAt: new Date("2026-02-12T16:00:00.000Z")
     }
   });
@@ -960,8 +962,8 @@ async function main() {
     where: { id: "seed-compliance-policy-hybrid-v2" },
     update: {
       employeeId: hiredEmployee.id,
-      title: "Aceite da politica: Politica interna de trabalho hibrido (v2.0)",
-      description: "Confirmar leitura e aceite da versao atual da politica de trabalho hibrido.",
+      title: "Aceite da política: Política interna de trabalho híbrido (v2.0)",
+      description: "Confirmar leitura e aceite da versao atual da política de trabalho híbrido.",
       type: ComplianceRequirementType.POLICY,
       status: "PENDING",
       dueAt: new Date("2026-03-26T18:00:00.000Z"),
@@ -973,8 +975,8 @@ async function main() {
       id: "seed-compliance-policy-hybrid-v2",
       organizationId: organization.id,
       employeeId: hiredEmployee.id,
-      title: "Aceite da politica: Politica interna de trabalho hibrido (v2.0)",
-      description: "Confirmar leitura e aceite da versao atual da politica de trabalho hibrido.",
+      title: "Aceite da política: Política interna de trabalho híbrido (v2.0)",
+      description: "Confirmar leitura e aceite da versao atual da política de trabalho híbrido.",
       type: ComplianceRequirementType.POLICY,
       status: "PENDING",
       dueAt: new Date("2026-03-26T18:00:00.000Z"),
@@ -987,7 +989,7 @@ async function main() {
     where: { id: "seed-event-people-ops-sync" },
     update: {
       title: "People Ops sync da semana",
-      description: "Revisao de onboarding, fila de requests, compliance leve e gargalos operacionais.",
+      description: "Revisão de onboarding, fila de requests, compliance leve e gargalos operacionais.",
       type: PeopleEventType.INTERNAL_EVENT,
       startsAt: new Date("2026-03-19T14:00:00.000Z"),
       endsAt: new Date("2026-03-19T15:00:00.000Z"),
@@ -997,7 +999,7 @@ async function main() {
       id: "seed-event-people-ops-sync",
       organizationId: organization.id,
       title: "People Ops sync da semana",
-      description: "Revisao de onboarding, fila de requests, compliance leve e gargalos operacionais.",
+      description: "Revisão de onboarding, fila de requests, compliance leve e gargalos operacionais.",
       type: PeopleEventType.INTERNAL_EVENT,
       startsAt: new Date("2026-03-19T14:00:00.000Z"),
       endsAt: new Date("2026-03-19T15:00:00.000Z"),
@@ -1014,7 +1016,7 @@ async function main() {
       authorId: admin.id,
       applicationId: seededApplication.id,
       candidateId: candidate.id,
-      content: "Perfil com boa aderencia inicial. Vale aprofundar experiencia em lideranca de discovery e ownership cross-functional."
+      content: "Perfil com boa aderência inicial. Vale aprofundar experiência em liderança de discovery e ownership cross-functional."
     }
   });
 
@@ -1031,7 +1033,7 @@ async function main() {
       endsAt: new Date(new Date().getTime() + 1000 * 60 * 60 * 25),
       location: "Google Meet",
       meetingUrl: "https://meet.google.com/demo-hireflow-ai",
-      notes: "Explorar repertorio em arquitetura de produto e colaboracao com design."
+      notes: "Explorar repertorio em arquitetura de produto e colaboração com design."
     }
   });
 
@@ -1052,9 +1054,9 @@ async function main() {
       roleFitScore: 4,
       technicalScore: 4,
       recommendation: InterviewRecommendation.YES,
-      strengths: "Comunicacao clara, repertorio forte em SaaS B2B e ownership consistente de produto.",
-      concerns: "Vale aprofundar experiencia em lideranca formal de squad.",
-      notes: "Candidata com boa maturidade para seguir para painel tecnico.",
+      strengths: "Comunicação clara, repertorio forte em SaaS B2B e ownership consistente de produto.",
+      concerns: "Vale aprofundar experiência em liderança formal de squad.",
+      notes: "Candidata com boa maturidade para seguir para painel técnico.",
       scorecardRatings: [
         { scorecardItemId: "seed-scorecard-product-sense", score: 4 },
         { scorecardItemId: "seed-scorecard-execution", score: 4 },
@@ -1109,7 +1111,7 @@ async function main() {
       action: "interview.created",
       entityType: "interview",
       entityId: "seed-interview-screening",
-      summary: 'Entrevista "Entrevista de triagem" agendada para a aplicacao.',
+      summary: 'Entrevista "Entrevista de triagem" agendada para a aplicação.',
       metadata: {
         interviewId: "seed-interview-screening",
         applicationId: seededApplication.id
@@ -1150,7 +1152,7 @@ async function main() {
       threadId: "seed-chat-thread-ops",
       role: ChatMessageRole.ASSISTANT,
       content:
-        "Ana Costa aparece como o principal perfil para priorizacao imediata na vaga de Senior Product Engineer, com score alto e boa aderencia ao playbook de Product & Engineering.",
+        "Ana Costa aparece como o principal perfil para priorizacao imediata na vaga de Senior Product Engineer, com score alto e boa aderência ao playbook de Product & Engineering.",
       metadata: {
         suggestedPrompts: [
           "Monte uma shortlist inicial para esta vaga.",
@@ -1197,7 +1199,7 @@ async function main() {
       metadata: {
         suggestedPrompts: [
           "Monte um resumo executivo do command center.",
-          "Quais tarefas vencem nas proximas 48 horas?"
+          "Quais tarefas vencem nas próximas 48 horas?"
         ]
       }
     }
@@ -1218,7 +1220,7 @@ async function main() {
       status: AgentRunStatus.WAITING_APPROVAL,
       riskLevel: AgentRiskLevel.HIGH,
       requiresApproval: true,
-      summary: "Aprovacao solicitada para iniciar o offboarding de Pedro Lima."
+      summary: "Aprovação solicitada para iniciar o offboarding de Pedro Lima."
     },
     create: {
       id: "seed-agent-run-offboarding-approval",
@@ -1234,7 +1236,7 @@ async function main() {
       status: AgentRunStatus.WAITING_APPROVAL,
       riskLevel: AgentRiskLevel.HIGH,
       requiresApproval: true,
-      summary: "Aprovacao solicitada para iniciar o offboarding de Pedro Lima."
+      summary: "Aprovação solicitada para iniciar o offboarding de Pedro Lima."
     }
   });
 
@@ -1268,14 +1270,14 @@ async function main() {
     update: {
       agentRunId: "seed-agent-run-offboarding-approval",
       kind: "approval",
-      title: "Aguardar aprovacao para Criar offboarding",
+      title: "Aguardar aprovação para Criar offboarding",
       status: AgentStepStatus.WAITING_APPROVAL
     },
     create: {
       id: "seed-agent-step-offboarding-approval",
       agentRunId: "seed-agent-run-offboarding-approval",
       kind: "approval",
-      title: "Aguardar aprovacao para Criar offboarding",
+      title: "Aguardar aprovação para Criar offboarding",
       status: AgentStepStatus.WAITING_APPROVAL
     }
   });
@@ -1320,7 +1322,7 @@ async function main() {
       threadId: "seed-chat-thread-people-ops",
       authorId: peopleOpsUser.id,
       role: ChatMessageRole.SYSTEM,
-      content: "Aprovacao solicitada: Criar o plano de offboarding de Pedro Lima.",
+      content: "Aprovação solicitada: Criar o plano de offboarding de Pedro Lima.",
       metadata: {
         actionType: "create_offboarding_plan",
         agentExecution: {
@@ -1333,7 +1335,7 @@ async function main() {
           approvalRequestId: "seed-agent-approval-offboarding",
           approvalStatus: "PENDING",
           executionStatus: null,
-          summary: "Aprovacao solicitada para iniciar o offboarding de Pedro Lima."
+          summary: "Aprovação solicitada para iniciar o offboarding de Pedro Lima."
         }
       }
     }
@@ -1448,11 +1450,11 @@ async function main() {
     {
       type: EmailTemplateType.STAGE_ADVANCED,
       name: "Avanco de etapa",
-      subject: "Voce avancou no processo para {{job_title}}",
+      subject: "Você avancou no processo para {{job_title}}",
       bodyHtml:
-        "<p>Oi {{candidate_name}},</p><p>Seu perfil avancou para a proxima etapa da vaga <strong>{{job_title}}</strong>. Em breve compartilharemos os proximos passos.</p>",
+        "<p>Oi {{candidate_name}},</p><p>Seu perfil avancou para a próxima etapa da vaga <strong>{{job_title}}</strong>. Em breve compartilharemos os próximos passos.</p>",
       bodyText:
-        "Oi {{candidate_name}}, seu perfil avancou para a proxima etapa da vaga {{job_title}}. Em breve compartilharemos os proximos passos."
+        "Oi {{candidate_name}}, seu perfil avancou para a próxima etapa da vaga {{job_title}}. Em breve compartilharemos os próximos passos."
     },
     {
       type: EmailTemplateType.REJECTION,

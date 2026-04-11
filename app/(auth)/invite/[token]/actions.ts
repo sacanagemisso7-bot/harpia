@@ -23,7 +23,7 @@ export async function acceptInvite(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar seus dados."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar seus dados."
     };
   }
 
@@ -35,7 +35,7 @@ export async function acceptInvite(
 
   if (!invite || invite.revokedAt || invite.acceptedAt || invite.expiresAt <= new Date()) {
     return {
-      error: "Esse convite nao esta mais disponivel."
+      error: "Esse convite não esta mais disponível."
     };
   }
 
@@ -103,7 +103,7 @@ export async function acceptInvite(
   } catch (error) {
     if (error instanceof AuthError) {
       return {
-        error: "Convite aceito, mas nao foi possivel autenticar automaticamente."
+        error: "Convite aceito, mas não foi possível autenticar automaticamente."
       };
     }
 

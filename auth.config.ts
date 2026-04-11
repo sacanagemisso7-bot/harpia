@@ -1,6 +1,9 @@
 import type { NextAuthConfig } from "next-auth";
 
+import { DEFAULT_AUTH_REDIRECT, normalizeCallbackUrl } from "@/lib/auth/callback-url";
+
 const authConfig = {
+  trustHost: true,
   pages: {
     signIn: "/login"
   },
@@ -30,10 +33,13 @@ const authConfig = {
       }
 
       if (isAuthRoute && isLoggedIn) {
-        return Response.redirect(new URL("/dashboard", request.nextUrl));
+        return Response.redirect(new URL(DEFAULT_AUTH_REDIRECT, request.nextUrl));
       }
 
       return true;
+    },
+    redirect({ url, baseUrl }) {
+      return normalizeCallbackUrl(url, baseUrl);
     }
   },
   providers: []

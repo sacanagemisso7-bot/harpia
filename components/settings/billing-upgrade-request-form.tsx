@@ -60,7 +60,7 @@ export function BillingUpgradeRequestForm({ action }: BillingUpgradeRequestFormP
             id="note"
             name="note"
             className="min-h-28"
-            placeholder="Descreva volume, urgencia comercial, condicoes negociadas ou contexto para aprovacao."
+            placeholder="Descreva volume, urgencia comercial, condicoes negociadas ou contexto para aprovação."
           />
         </div>
       </div>
@@ -70,7 +70,7 @@ export function BillingUpgradeRequestForm({ action }: BillingUpgradeRequestFormP
 
       <div className="workspace-form-actions">
         <Button type="submit" disabled={pending}>
-          {pending ? "Enviando..." : "Solicitar aprovacao comercial"}
+          {pending ? "Enviando..." : "Solicitar aprovação comercial"}
         </Button>
       </div>
     </form>

@@ -218,7 +218,7 @@ async function executeAgentRun(input: {
       executionStatus: AgentExecutionStatus.SUCCEEDED
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Falha ao executar a acao do agente.";
+    const message = error instanceof Error ? error.message : "Falha ao executar a ação do agente.";
 
     await finalizeAgentRunFailure({
       agentRunId: input.agentRunId,
@@ -235,7 +235,7 @@ export async function applyAgentAction(input: ApplyAgentActionInput): Promise<Ag
   const definition = getAgentActionDefinition(input.type);
 
   if (definition.requiredPermission && !hasPermission(input.userRole, definition.requiredPermission)) {
-    throw new Error("Seu papel atual nao tem permissao para essa acao do agente.");
+    throw new Error("Seu papel atual não tem permissao para essa ação do agente.");
   }
 
   const preview = await definition.buildPreview({
@@ -289,7 +289,7 @@ export async function applyAgentAction(input: ApplyAgentActionInput): Promise<Ag
     await createAgentStep({
       agentRunId: agentRun.id,
       kind: "approval",
-      title: `Aguardar aprovacao para ${definition.label}`,
+      title: `Aguardar aprovação para ${definition.label}`,
       status: AgentStepStatus.WAITING_APPROVAL
     });
 
@@ -308,7 +308,7 @@ export async function applyAgentAction(input: ApplyAgentActionInput): Promise<Ag
 
     return {
       kind: "approval_requested",
-      summary: `Aprovacao solicitada: ${preview}`,
+      summary: `Aprovação solicitada: ${preview}`,
       agentRunId: agentRun.id,
       approvalRequestId: approval.id,
       approvalStatus: approval.status,
@@ -340,7 +340,7 @@ export async function applyAgentAction(input: ApplyAgentActionInput): Promise<Ag
 
 export async function reviewAgentApproval(input: ReviewAgentApprovalInput): Promise<AgentExecutionResult> {
   if (!hasPermission(input.approverRole, "review_agent_approvals")) {
-    throw new Error("Seu papel atual nao pode revisar acoes do agente.");
+    throw new Error("Seu papel atual não pode revisar ações do agente.");
   }
 
   const approval = await prisma.agentApprovalRequest.findFirst({
@@ -354,17 +354,17 @@ export async function reviewAgentApproval(input: ReviewAgentApprovalInput): Prom
   });
 
   if (!approval) {
-    throw new Error("Solicitacao de aprovacao nao encontrada.");
+    throw new Error("Solicitação de aprovação não encontrada.");
   }
 
   if (approval.status !== AgentApprovalStatus.PENDING) {
-    throw new Error("Essa solicitacao de aprovacao ja foi resolvida.");
+    throw new Error("Essa solicitação de aprovação ja foi resolvida.");
   }
 
   const runActionType = approval.agentRun.actionType as CompanyChatActionType | null;
 
   if (!runActionType) {
-    throw new Error("A execucao do agente nao possui tipo de acao valido.");
+    throw new Error("A execucao do agente não possui tipo de ação valido.");
   }
 
   const definition = getAgentActionDefinition(runActionType);
@@ -411,15 +411,15 @@ export async function reviewAgentApproval(input: ReviewAgentApprovalInput): Prom
       },
       data: {
         status: AgentRunStatus.REJECTED,
-        summary: `Acao rejeitada em aprovacao: ${approval.summary}`,
-        error: input.notes ?? "Acao rejeitada em aprovacao.",
+        summary: `Ação rejeitada em aprovação: ${approval.summary}`,
+        error: input.notes ?? "Ação rejeitada em aprovação.",
         completedAt: new Date()
       }
     });
 
     return {
       kind: "rejected",
-      summary: `Aprovacao rejeitada para: ${approval.summary}`,
+      summary: `Aprovação rejeitada para: ${approval.summary}`,
       agentRunId: approval.agentRunId,
       approvalRequestId: approval.id,
       approvalStatus: AgentApprovalStatus.REJECTED,

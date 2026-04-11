@@ -1,0 +1,11 @@
+.git
+.gitignore
+.next
+node_modules
+.env
+.env.local
+.env.production
+coverage
+dist
+uploads
+*.log

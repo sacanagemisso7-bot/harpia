@@ -57,7 +57,7 @@ export function KnowledgeUploadForm({ action }: KnowledgeUploadFormProps) {
       <div className="space-y-2">
         <Label htmlFor="document">Arquivo</Label>
         <Input id="document" name="document" type="file" accept=".pdf,.txt,.md" />
-        <p className="workspace-form-note">Aceita PDF, Markdown e texto puro para ingestao e indexacao automatica.</p>
+        <p className="workspace-form-note">Aceita PDF, Markdown e texto puro para ingestão e indexacao automatica.</p>
       </div>
 
       <FormMessage message={state.error} />

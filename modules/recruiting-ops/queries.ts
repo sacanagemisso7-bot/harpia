@@ -75,7 +75,7 @@ export async function getRecruitingOpsInbox(organizationId: string) {
     .map((application) => ({
       type: "stalled_application",
       title: `${application.candidate.fullName} parado em ${application.currentStage?.name ?? "sem etapa"}`,
-      description: `${application.job.title} sem movimentacao recente.`,
+      description: `${application.job.title} sem movimentação recente.`,
       href: `/applications/${application.id}`,
       severity: "high" as const
     }));
@@ -98,7 +98,7 @@ export async function getRecruitingOpsInbox(organizationId: string) {
     .map((job) => ({
       type: "quiet_job",
       title: `Vaga sem atividade recente: ${job.title}`,
-      description: `${job.department} sem movimentacao relevante nos ultimos dias.`,
+      description: `${job.department} sem movimentação relevante nos ultimos dias.`,
       href: `/jobs/${job.id}`,
       severity: "medium" as const
     }));
@@ -106,7 +106,7 @@ export async function getRecruitingOpsInbox(organizationId: string) {
   const failedKnowledge = knowledgeDocuments.map((document) => ({
     type: "knowledge",
     title: `${document.title} - ${document.status}`,
-    description: document.lastError || "Documento aguardando ingestao.",
+    description: document.lastError || "Documento aguardando ingestão.",
     href: "/knowledge",
     severity: document.status === "FAILED" ? ("high" as const) : ("medium" as const)
   }));

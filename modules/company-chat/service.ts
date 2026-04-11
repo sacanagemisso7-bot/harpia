@@ -2,7 +2,14 @@ import { HrRequestCategory, HrRequestStatus, PeopleTaskPriority, PeopleTaskStatu
 import { zodResponseFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
-import { getAiChatModel, isAiConfigured } from "@/lib/ai/config";
+import {
+  clearAiTemporaryUnavailable,
+  getAiChatModel,
+  getAiTemporaryUnavailableReason,
+  isAiConfigured,
+  isAiTemporarilyUnavailable,
+  markAiTemporarilyUnavailable
+} from "@/lib/ai/config";
 import { getOpenAIClient } from "@/lib/ai/openai";
 import { prisma } from "@/lib/prisma/client";
 import type { CompanyChatActionProposal, CompanyChatMessageMetadata } from "@/types/company-chat";
@@ -52,8 +59,8 @@ const actionProposalSchema = z.object({
   label: z.string(),
   description: z.string(),
   payload: z.record(z.any()),
-  riskLevel: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]).optional(),
-  requiresApproval: z.boolean().optional()
+  riskLevel: z.enum(["LOW", "MEDIUM", "HIGH", "CRITICAL"]).nullable(),
+  requiresApproval: z.boolean().nullable()
 });
 
 const toolTraceSchema = z.object({
@@ -81,6 +88,17 @@ type CompanyChatReply = z.infer<typeof companyChatReplySchema> & {
   policyDraft?: CompanyChatMessageMetadata["policyDraft"];
   policyOperations?: CompanyChatMessageMetadata["policyOperations"];
 };
+
+function isRateLimitError(error: unknown) {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+
+  const status = "status" in error ? Number((error as { status?: unknown }).status) : null;
+  const message = error instanceof Error ? error.message : String(error);
+
+  return status === 429 || message.includes("429") || /rate limit/i.test(message);
+}
 
 function summarizeContext(context: Awaited<ReturnType<typeof buildCompanyChatContext>>) {
   return {
@@ -262,12 +280,12 @@ function buildPolicyOperationsMetadata(context: Awaited<ReturnType<typeof buildC
   }
 
   if (snapshot.pendingPolicyRequirements > 0) {
-    fragments.push(`${snapshot.pendingPolicyRequirements} requisito(s) de compliance ligados a politica`);
+    fragments.push(`${snapshot.pendingPolicyRequirements} requisito(s) de compliance ligados a política`);
   }
 
   if (!fragments.length) {
     return {
-      summary: "Nenhuma pendencia operacional relevante foi encontrada para essa politica.",
+      summary: "Nenhuma pendencia operacional relevante foi encontrada para essa política.",
       pendingAcknowledgements: 0,
       overdueAcknowledgements: 0,
       pendingPolicyRequirements: 0,
@@ -276,7 +294,7 @@ function buildPolicyOperationsMetadata(context: Awaited<ReturnType<typeof buildC
   }
 
   return {
-    summary: `Contexto operacional da politica: ${fragments.join(", ")}.`,
+    summary: `Contexto operacional da política: ${fragments.join(", ")}.`,
     pendingAcknowledgements: snapshot.pendingAcknowledgements,
     overdueAcknowledgements: snapshot.overdueAcknowledgements,
     pendingPolicyRequirements: snapshot.pendingPolicyRequirements,
@@ -308,7 +326,7 @@ function inferRequestCategory(message: string) {
     return HrRequestCategory.DOCUMENTS;
   }
 
-  if (normalized.includes("politica")) {
+  if (normalized.includes("política")) {
     return HrRequestCategory.POLICY;
   }
 
@@ -338,18 +356,27 @@ function inferPriority(message: string) {
 
 async function buildActionProposals(organizationId: string, message: string, context: Awaited<ReturnType<typeof buildCompanyChatContext>>) {
   const proposals: CompanyChatReply["actionProposals"] = [];
+  const addProposal = (
+    proposal: Omit<CompanyChatReply["actionProposals"][number], "riskLevel" | "requiresApproval">
+  ) => {
+    proposals.push({
+      ...proposal,
+      riskLevel: null,
+      requiresApproval: null
+    });
+  };
   const normalized = message.toLowerCase();
   const policyOperations = buildPolicyOperationsMetadata(context);
   const firstPolicyItem = policyOperations?.items[0] ?? null;
   const isPolicyConversation =
-    normalized.includes("politica") ||
+    normalized.includes("política") ||
     normalized.includes("policy") ||
     normalized.includes("aceite") ||
     normalized.includes("compliance");
 
   if ((normalized.includes("shortlist") || normalized.includes("top")) && context.applications.length >= 2) {
     const topApplications = context.applications.slice(0, 3);
-    proposals.push({
+    addProposal({
       type: "save_shortlist",
       label: "Salvar shortlist sugerida",
       description: "Cria uma shortlist com as melhores candidaturas encontradas para esta conversa.",
@@ -362,7 +389,7 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("onboarding") || normalized.includes("admiss")) && context.employees[0]) {
-    proposals.push({
+    addProposal({
       type: "create_onboarding_plan",
       label: `Criar onboarding para ${context.employees[0].fullName}`,
       description: "Gera um plano operacional com checklist, tarefas e marcos iniciais.",
@@ -373,10 +400,10 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("offboarding") || normalized.includes("deslig")) && context.employees[0]) {
-    proposals.push({
+    addProposal({
       type: "create_offboarding_plan",
       label: `Criar offboarding para ${context.employees[0].fullName}`,
-      description: "Inicia o fluxo de saida com responsabilidades e checkpoints.",
+      description: "Inicia o fluxo de saída com responsabilidades e checkpoints.",
       payload: {
         employeeId: context.employees[0].id
       }
@@ -389,10 +416,10 @@ async function buildActionProposals(organizationId: string, message: string, con
     normalized.includes("ferias") ||
     normalized.includes("benef")
   ) {
-    proposals.push({
+    addProposal({
       type: "create_hr_request",
-      label: "Abrir solicitacao interna",
-      description: "Cria um item no service desk interno com categoria, prioridade e historico inicial.",
+      label: "Abrir solicitação interna",
+      description: "Cria um item no service desk interno com categoria, prioridade e histórico inicial.",
       payload: {
         requesterEmployeeId: context.employees[0]?.id ?? null,
         title: message.slice(0, 90),
@@ -410,15 +437,15 @@ async function buildActionProposals(organizationId: string, message: string, con
       normalized.includes("como") ||
       normalized.includes("explica") ||
       normalized.includes("esclare") ||
-      normalized.includes("nao entendi"))
+      normalized.includes("não entendi"))
   ) {
-    proposals.push({
+    addProposal({
       type: "create_hr_request",
-      label: "Abrir solicitacao de esclarecimento de politica",
-      description: "Transforma a duvida sobre a politica em um chamado rastreavel no RH interno.",
+      label: "Abrir solicitação de esclarecimento de política",
+      description: "Transforma a duvida sobre a política em um chamado rastreavel no RH interno.",
       payload: {
         requesterEmployeeId: context.employees[0]?.id ?? null,
-        title: `Esclarecimento sobre ${context.policyDraft.citations[0]?.title ?? "politica interna"}`.slice(0, 90),
+        title: `Esclarecimento sobre ${context.policyDraft.citations[0]?.title ?? "política interna"}`.slice(0, 90),
         description: `${message}\n\nBase interna localizada: ${context.policyDraft.summary}`,
         category: HrRequestCategory.POLICY,
         priority: inferPriority(message),
@@ -431,7 +458,7 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("tarefa") || normalized.includes("pendencia") || normalized.includes("follow-up")) && (context.employees[0] || context.hrRequests[0])) {
-    proposals.push({
+    addProposal({
       type: "create_people_task",
       label: "Criar people task",
       description: "Transforma a necessidade descrita em uma tarefa operacional rastreavel.",
@@ -454,18 +481,18 @@ async function buildActionProposals(organizationId: string, message: string, con
       normalized.includes("pendente") ||
       normalized.includes("atras"))
   ) {
-    proposals.push({
+    addProposal({
       type: "create_people_task",
       label:
         firstPolicyItem.status === "OVERDUE"
           ? `Criar follow-up urgente para ${firstPolicyItem.employeeName}`
           : `Criar follow-up de aceite para ${firstPolicyItem.employeeName}`,
-      description: "Abre uma tarefa operacional para acompanhar aceite de politica ou pendencia de compliance relacionada.",
+      description: "Abre uma tarefa operacional para acompanhar aceite de política ou pendencia de compliance relacionada.",
       payload: {
         title:
           firstPolicyItem.status === "OVERDUE"
             ? `Escalar aceite pendente: ${firstPolicyItem.employeeName}`
-            : `Acompanhar aceite de politica: ${firstPolicyItem.employeeName}`,
+            : `Acompanhar aceite de política: ${firstPolicyItem.employeeName}`,
         description: `${firstPolicyItem.title}${firstPolicyItem.documentTitle ? ` · ${firstPolicyItem.documentTitle}` : ""}. ${policyOperations.summary}`,
         relatedEmployeeId: firstPolicyItem.employeeId ?? null,
         priority: firstPolicyItem.status === "OVERDUE" ? PeopleTaskPriority.HIGH : inferPriority(message),
@@ -477,10 +504,10 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("resolver solicit") || normalized.includes("fechar solicit")) && context.hrRequests[0]) {
-    proposals.push({
+    addProposal({
       type: "update_hr_request",
-      label: `Resolver solicitacao ${context.hrRequests[0].title}`,
-      description: "Atualiza o status da solicitacao para resolvida.",
+      label: `Resolver solicitação ${context.hrRequests[0].title}`,
+      description: "Atualiza o status da solicitação para resolvida.",
       payload: {
         requestId: context.hrRequests[0].id,
         status: HrRequestStatus.RESOLVED
@@ -489,7 +516,7 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("concluir tarefa") || normalized.includes("finalizar tarefa")) && context.peopleTasks[0]) {
-    proposals.push({
+    addProposal({
       type: "update_people_task",
       label: `Concluir tarefa ${context.peopleTasks[0].title}`,
       description: "Marca a tarefa operacional como concluida.",
@@ -521,7 +548,7 @@ async function buildActionProposals(organizationId: string, message: string, con
       });
 
       if (stage) {
-        proposals.push({
+        addProposal({
           type: "move_stage",
           label: `Mover ${context.applications[0].candidate.fullName} para ${stage.name}`,
           description: "Aplica uma mudanca de etapa com confirmacao.",
@@ -535,7 +562,7 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if (normalized.includes("nota") && (context.applications[0] || context.candidates[0])) {
-    proposals.push({
+    addProposal({
       type: "create_note",
       label: "Salvar nota operacional",
       description: "Cria uma nota interna baseada no contexto desta conversa.",
@@ -548,7 +575,7 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("email") || normalized.includes("mensagem")) && context.emailDraft) {
-    proposals.push({
+    addProposal({
       type: "draft_email",
       label: "Salvar rascunho de email",
       description: "Registra um rascunho estruturado para o fluxo atual.",
@@ -557,10 +584,10 @@ async function buildActionProposals(organizationId: string, message: string, con
   }
 
   if ((normalized.includes("agendar") || normalized.includes("entrevista")) && context.applications[0]) {
-    proposals.push({
+    addProposal({
       type: "schedule_interview",
       label: "Preparar agendamento de entrevista",
-      description: "Cria uma entrevista de 45 minutos para a aplicacao mais relevante desta conversa.",
+      description: "Cria uma entrevista de 45 minutos para a aplicação mais relevante desta conversa.",
       payload: {
         applicationId: context.applications[0].id,
         title: `Entrevista - ${context.applications[0].candidate.fullName}`,
@@ -578,7 +605,7 @@ function buildToolTraces(context: Awaited<ReturnType<typeof buildCompanyChatCont
   const policyOperations = buildPolicyOperationsMetadata(context);
   const traces: CompanyChatMessageMetadata["toolTraces"] = [
     { tool: "search_employees", summary: `${context.employees.length} colaboradores localizados` },
-    { tool: "search_hr_requests", summary: `${context.hrRequests.length} solicitacoes relacionadas encontradas` },
+    { tool: "search_hr_requests", summary: `${context.hrRequests.length} solicitações relacionadas encontradas` },
     { tool: "search_people_tasks", summary: `${context.peopleTasks.length} tarefas operacionais correlatas` },
     { tool: "get_people_dashboard", summary: `${context.peopleDashboard.alerts.length} alertas no command center` },
     { tool: "get_compliance_summary", summary: `${context.compliance.metrics.pending} itens pendentes em compliance leve` },
@@ -590,7 +617,7 @@ function buildToolTraces(context: Awaited<ReturnType<typeof buildCompanyChatCont
       tool: "get_policy_operations",
       summary: policyOperations
         ? `${policyOperations.pendingAcknowledgements} aceite(s) pendentes e ${policyOperations.overdueAcknowledgements} em atraso`
-        : "Sem pendencias operacionais de politica relevantes"
+        : "Sem pendencias operacionais de política relevantes"
     },
     { tool: "search_candidates", summary: `${context.candidates.length} candidatos relevantes encontrados` },
     { tool: "search_jobs", summary: `${context.jobs.length} vagas relacionadas encontradas` },
@@ -638,7 +665,8 @@ function buildToolTraces(context: Awaited<ReturnType<typeof buildCompanyChatCont
 function buildFallbackReply(
   _message: string,
   context: Awaited<ReturnType<typeof buildCompanyChatContext>>,
-  proposals: CompanyChatReply["actionProposals"]
+  proposals: CompanyChatReply["actionProposals"],
+  fallbackNotice?: string
 ): CompanyChatReply {
   const sections: string[] = [];
   const toolTraces = buildToolTraces(context);
@@ -646,9 +674,13 @@ function buildFallbackReply(
   const policyDraft = buildPolicyDraftMetadata(context);
   const policyOperations = buildPolicyOperationsMetadata(context);
 
+  if (fallbackNotice) {
+    sections.push(fallbackNotice);
+  }
+
   if (context.policyDraft) {
     sections.push(
-      `${context.policyDraft.response}\n\nConfianca desta leitura: ${context.policyDraft.confidence.toLowerCase()}. ${context.policyDraft.summary}`
+      `${context.policyDraft.response}\n\nConfian?a desta leitura: ${context.policyDraft.confidence.toLowerCase()}. ${context.policyDraft.summary}`
     );
   }
 
@@ -657,7 +689,7 @@ function buildFallbackReply(
   }
 
   sections.push(
-    `Hoje a operacao interna mostra ${context.peopleDashboard.metrics.openRequests} solicitacoes abertas, ${context.peopleDashboard.metrics.overdueTasks} tarefas vencidas, ${context.peopleDashboard.metrics.onboardingActive} onboardings ativos e ${context.compliance.metrics.pending} itens de compliance pendentes.`
+    `Hoje a operação interna mostra ${context.peopleDashboard.metrics.openRequests} solicitações abertas, ${context.peopleDashboard.metrics.overdueTasks} tarefas vencidas, ${context.peopleDashboard.metrics.onboardingActive} onboardings ativos e ${context.compliance.metrics.pending} itens de compliance pendentes.`
   );
 
   if (context.employees.length) {
@@ -665,7 +697,7 @@ function buildFallbackReply(
   }
 
   if (context.hrRequests.length) {
-    sections.push(`Encontrei ${context.hrRequests.length} solicitacoes internas conectadas ao assunto, incluindo "${context.hrRequests[0].title}".`);
+    sections.push(`Encontrei ${context.hrRequests.length} solicitações internas conectadas ao assunto, incluindo "${context.hrRequests[0].title}".`);
   }
 
   if (context.peopleTasks.length) {
@@ -678,7 +710,7 @@ function buildFallbackReply(
 
   if (context.applications.length) {
     sections.push(
-      `No modulo de hiring, a melhor aplicacao relacionada agora parece ser ${context.applications[0].candidate.fullName} para ${context.applications[0].job.title}, com score ${context.applications[0].score ?? "--"}.`
+      `No módulo de hiring, a melhor aplicação relacionada agora parece ser ${context.applications[0].candidate.fullName} para ${context.applications[0].job.title}, com score ${context.applications[0].score ?? "--"}.`
     );
   }
 
@@ -715,7 +747,7 @@ function buildFallbackReply(
       "Resuma o backlog do RH desta semana.",
       "Quais colaboradore precisam de onboarding agora?",
       "Onde o SLA interno esta em risco?",
-      "Que politicas temos sobre esse tema?"
+      "Que políticas temos sobre esse tema?"
     ],
     relatedEntities,
     actionProposals: proposals,
@@ -740,7 +772,7 @@ async function generateAiReply(
       {
         role: "system",
         content:
-          "You are HireFlow AI, an internal company operations copilot. Answer in Brazilian Portuguese. Prioritize employees, people operations, internal requests, tasks, knowledge, compliance, and operational risks. Hiring exists as a supporting module, not the main lens. When policy or knowledge evidence is provided, treat it as the source of truth, cite uncertainty clearly, and never invent a rule that is not grounded in the provided internal documents."
+          "You are Harpia, an internal company operations copilot. Answer in Brazilian Portuguese. Prioritize employees, people operations, internal requests, tasks, knowledge, compliance, and operational risks. Hiring exists as a supporting module, not the main lens. When policy or knowledge evidence is provided, treat it as the source of truth, cite uncertainty clearly, and never invent a rule that is not grounded in the provided internal documents."
       },
       {
         role: "user",
@@ -757,8 +789,14 @@ async function generateAiReply(
   return completion.choices[0]?.message.parsed;
 }
 
-function normalizeReplyProposals(proposals: CompanyChatActionProposal[]) {
-  return enrichCompanyChatActionProposals(proposals).slice(0, 6);
+function normalizeReplyProposals(proposals: CompanyChatActionProposal[]): CompanyChatReply["actionProposals"] {
+  return enrichCompanyChatActionProposals(proposals)
+    .map((proposal) => ({
+      ...proposal,
+      riskLevel: proposal.riskLevel ?? null,
+      requiresApproval: proposal.requiresApproval ?? null
+    }))
+    .slice(0, 6);
 }
 
 export async function buildCompanyChatReply(organizationId: string, message: string) {
@@ -773,23 +811,53 @@ export async function buildCompanyChatReply(organizationId: string, message: str
     policyOperations: buildPolicyOperationsMetadata(context)
   };
 
+  const temporaryUnavailableReason = getAiTemporaryUnavailableReason();
+
   if (!isAiConfigured()) {
     return buildFallbackReply(message, context, proposals);
   }
 
-  const reply = await generateAiReply(message, context, proposals);
-
-  if (reply) {
-    reply.actionProposals = normalizeReplyProposals(reply.actionProposals);
-    return {
-      ...reply,
-      toolTraces,
-      ...sharedArtifacts
-    };
+  if (isAiTemporarilyUnavailable()) {
+    return buildFallbackReply(
+      message,
+      context,
+      proposals,
+      temporaryUnavailableReason ?? "A IA externa esta temporariamente indisponivel. Segui com a resposta operacional interna."
+    );
   }
 
+  try {
+    const reply = await generateAiReply(message, context, proposals);
+
+    if (reply) {
+      clearAiTemporaryUnavailable();
+      reply.actionProposals = normalizeReplyProposals(reply.actionProposals);
+      return {
+        ...reply,
+        toolTraces,
+        ...sharedArtifacts
+      };
+    }
+  } catch (error) {
+    if (isRateLimitError(error)) {
+      markAiTemporarilyUnavailable(
+        "A IA externa atingiu o limite agora. O Harpia continuara respondendo com o contexto operacional interno por alguns minutos."
+      );
+      console.warn("company-chat.ai-rate-limited");
+    } else {
+      console.error("company-chat.ai-failed", error);
+    }
+  }
+
+  const fallbackNotice = getAiTemporaryUnavailableReason() ?? temporaryUnavailableReason ?? undefined;
+
   return {
-    ...buildFallbackReply(message, context, proposals),
+    ...buildFallbackReply(
+      message,
+      context,
+      proposals,
+      fallbackNotice
+    ),
     actionProposals: proposals,
     toolTraces,
     ...sharedArtifacts

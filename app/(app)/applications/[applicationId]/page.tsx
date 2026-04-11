@@ -105,7 +105,7 @@ export default async function ApplicationDetailPage({
       <PageHeader
         eyebrow="Application detail"
         title={`${application.candidate.fullName} x ${application.job.title}`}
-        description={application.executiveSummary || "Aplicacao pronta para triagem, score, pipeline e decisao."}
+        description={application.executiveSummary || "Aplicação pronta para triagem, score, pipeline e decisão."}
         actions={
           <>
             <Badge variant="success">{application.currentStage?.name || "Sem etapa"}</Badge>
@@ -118,7 +118,7 @@ export default async function ApplicationDetailPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Score</span>
           <strong className={styles.statValue}>{formatScore(application.score)}</strong>
-          <span className={styles.statHint}>Leitura atual de aderencia desta candidatura.</span>
+          <span className={styles.statHint}>Leitura atual de aderência desta candidatura.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Entrevistas</span>
@@ -128,7 +128,7 @@ export default async function ApplicationDetailPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Skills</span>
           <strong className={styles.statValue}>{skills.length}</strong>
-          <span className={styles.statHint}>Sinais detectados a partir do curriculo e do processo.</span>
+          <span className={styles.statHint}>Sinais detectados a partir do currículo e do processo.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Notas</span>
@@ -142,7 +142,7 @@ export default async function ApplicationDetailPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Assessment</span>
-              <h2 className={styles.panelTitle}>Resumo da avaliacao</h2>
+              <h2 className={styles.panelTitle}>Resumo da avaliação</h2>
             </div>
             <div className={styles.surfaceMuted}>
               <strong className={styles.itemTitle}>Justificativa do score</strong>
@@ -184,7 +184,7 @@ export default async function ApplicationDetailPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Copilot</span>
-              <h2 className={styles.panelTitle}>Decisao por etapa</h2>
+              <h2 className={styles.panelTitle}>Decisão por etapa</h2>
               <p className={styles.panelDescription}>Leitura orientada para avancar, segurar ou encerrar nesta fase.</p>
             </div>
             <div className={styles.spotlight}>
@@ -207,12 +207,12 @@ export default async function ApplicationDetailPage({
                 </div>
               </div>
               <div className={styles.surfaceMuted}>
-                <strong className={styles.itemTitle}>Proximas acoes</strong>
+                <strong className={styles.itemTitle}>Próximas ações</strong>
                 <div className={styles.list}>
                   {copilotDecision.nextActions.length ? (
                     copilotDecision.nextActions.map((action) => <span key={action} className={styles.itemDescription}>{action}</span>)
                   ) : (
-                    <span className={styles.itemDescription}>Sem proximas acoes sugeridas.</span>
+                    <span className={styles.itemDescription}>Sem próximas ações sugeridas.</span>
                   )}
                 </div>
               </div>
@@ -224,7 +224,7 @@ export default async function ApplicationDetailPage({
               </div>
             ) : (
               <div className={styles.surfaceMuted}>
-                Nenhum playbook do departamento encontrado. Cadastre um playbook em settings para guiar melhor essa decisao.
+                Nenhum playbook do departamento encontrado. Cadastre um playbook em settings para guiar melhor essa decisão.
               </div>
             )}
           </div>
@@ -232,7 +232,7 @@ export default async function ApplicationDetailPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>History</span>
-              <h2 className={styles.panelTitle}>Movimentacao no pipeline</h2>
+              <h2 className={styles.panelTitle}>Movimentação no pipeline</h2>
             </div>
             {application.history.length ? (
               <div className={styles.timeline}>
@@ -255,7 +255,7 @@ export default async function ApplicationDetailPage({
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Sem historico de etapa registrado ainda.</div>
+              <div className={styles.emptyState}>Sem histórico de etapa registrado ainda.</div>
             )}
           </div>
 
@@ -267,10 +267,10 @@ export default async function ApplicationDetailPage({
             <div className={styles.column}>
               {canCreateNotes ? (
                 <div className={styles.surfaceMuted}>
-                  <NoteForm title="Nova nota da aplicacao" action={createApplicationNote.bind(null, application.id)} />
+                  <NoteForm title="Nova nota da aplicação" action={createApplicationNote.bind(null, application.id)} />
                 </div>
               ) : null}
-              <NoteFeed notes={application.notes} emptyMessage="Ainda nao ha notas internas nesta aplicacao." />
+              <NoteFeed notes={application.notes} emptyMessage="Ainda não ha notas internas nesta aplicação." />
             </div>
           </div>
         </div>
@@ -279,7 +279,7 @@ export default async function ApplicationDetailPage({
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Current score</span>
             <strong className={styles.spotlightValue}>{formatScore(application.score)}</strong>
-            <p className={styles.panelDescription}>Fit score atual desta aplicacao dentro da vaga.</p>
+            <p className={styles.panelDescription}>Fit score atual desta aplicação dentro da vaga.</p>
           </div>
 
           <div className={styles.panel}>

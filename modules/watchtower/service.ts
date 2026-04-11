@@ -105,7 +105,7 @@ async function resolveWatchtowerActorId(organizationId: string) {
   });
 
   if (!memberships.length) {
-    throw new Error("Nao foi encontrado um usuario para atuar como fallback do Watchtower.");
+    throw new Error("Não foi encontrado um usuário para atuar como fallback do Watchtower.");
   }
 
   const roleWeight: Record<string, number> = {
@@ -267,13 +267,13 @@ async function collectRequestSlaFindings(organizationId: string, defaultAssignee
         ruleId: "hr_request_sla",
         title: isBreached ? `SLA estourado em ${request.title}` : `SLA em risco em ${request.title}`,
         description: isBreached
-          ? "A fila interna tem uma solicitacao sem resposta no tempo esperado e precisa de dono imediato."
-          : "A solicitacao interna esta perto de estourar o SLA e pede priorizacao operacional.",
+          ? "A fila interna tem uma solicitação sem resposta no tempo esperado e precisa de dono imediato."
+          : "A solicitação interna esta perto de estourar o SLA e pede priorizacao operacional.",
         severity: isBreached ? AgentRiskLevel.CRITICAL : AgentRiskLevel.HIGH,
         href: "/requests",
         taskInput: {
           title: `${isBreached ? "Tratar agora" : "Priorizar"}: ${request.title}`,
-          description: `Watchtower detectou ${isBreached ? "SLA estourado" : "SLA em risco"} na solicitacao "${request.title}".`,
+          description: `Watchtower detectou ${isBreached ? "SLA estourado" : "SLA em risco"} na solicitação "${request.title}".`,
           assigneeUserId: request.assigneeUserId ?? defaultAssigneeUserId,
           relatedEmployeeId: request.requesterEmployeeId ?? null,
           priority: isBreached ? PeopleTaskPriority.URGENT : PeopleTaskPriority.HIGH,
@@ -328,7 +328,7 @@ async function collectComplianceFindings(organizationId: string, defaultAssignee
         ruleId: "compliance_pending",
         title: isOverdue ? `Compliance vencido: ${requirement.title}` : `Compliance perto do prazo: ${requirement.title}`,
         description: isOverdue
-          ? "Existe item obrigatorio pendente que ja passou do prazo e precisa de acao operacional."
+          ? "Existe item obrigatorio pendente que ja passou do prazo e precisa de ação operacional."
           : "Existe item obrigatorio prestes a vencer e o RH deve atuar antes de virar atraso.",
         severity: isOverdue ? AgentRiskLevel.HIGH : AgentRiskLevel.MEDIUM,
         href: "/people/compliance",
@@ -396,15 +396,15 @@ async function collectPolicyAcknowledgementFindings(organizationId: string, defa
 
       return {
         ruleId: "policy_acknowledgement_pending",
-        title: isOverdue ? `Aceite de politica vencido: ${policyLabel}` : `Aceite de politica perto do prazo: ${policyLabel}`,
+        title: isOverdue ? `Aceite de política vencido: ${policyLabel}` : `Aceite de política perto do prazo: ${policyLabel}`,
         description: isOverdue
-          ? "Existe um aceite de politica em atraso e o RH deve acionar follow-up imediato."
-          : "Existe um aceite de politica prestes a vencer e vale lembrar o colaborador antes do atraso.",
+          ? "Existe um aceite de política em atraso e o RH deve acionar follow-up imediato."
+          : "Existe um aceite de política prestes a vencer e vale lembrar o colaborador antes do atraso.",
         severity: isOverdue ? AgentRiskLevel.CRITICAL : AgentRiskLevel.MEDIUM,
         href: "/people/compliance",
         taskInput: isOverdue
           ? {
-              title: `Follow-up de politica: ${acknowledgement.employee.fullName}`,
+              title: `Follow-up de política: ${acknowledgement.employee.fullName}`,
               description: `Watchtower detectou aceite em atraso para ${policyLabel}.`,
               assigneeUserId: defaultAssigneeUserId,
               relatedEmployeeId: acknowledgement.employeeId,
@@ -469,7 +469,7 @@ async function collectWorkflowFindings(organizationId: string, defaultAssigneeUs
           title: blocked
             ? `${run.employee.fullName} com etapa bloqueada`
             : `${run.employee.fullName} com etapa atrasada`,
-          description: `${step.title} no fluxo de ${isOffboarding ? "offboarding" : "onboarding"} precisa de acao imediata.`,
+          description: `${step.title} no fluxo de ${isOffboarding ? "offboarding" : "onboarding"} precisa de ação imediata.`,
           severity: blocked || isOffboarding ? AgentRiskLevel.HIGH : AgentRiskLevel.MEDIUM,
           href: isOffboarding ? "/people/offboarding" : "/people/onboarding",
           taskInput: {
@@ -537,12 +537,12 @@ async function collectMissingCheckInFindings(organizationId: string, defaultAssi
     .map<WatchtowerFinding>((employee) => ({
       ruleId: "missing_initial_checkin",
       title: `Falta check-in inicial para ${employee.fullName}`,
-      description: "Nao ha registro recente de acompanhamento inicial, o que aumenta risco de onboarding silenciosamente travado.",
+      description: "Não ha registro recente de acompanhamento inicial, o que aumenta risco de onboarding silenciosamente travado.",
       severity: AgentRiskLevel.MEDIUM,
       href: `/employees/${employee.id}`,
       taskInput: {
         title: `Registrar check-in inicial com ${employee.fullName}`,
-        description: "Watchtower detectou ausencia de check-in no periodo inicial e abriu acompanhamento para gestor ou RH.",
+        description: "Watchtower detectou ausencia de check-in no período inicial e abriu acompanhamento para gestor ou RH.",
         assigneeUserId: employee.manager?.linkedUserId ?? defaultAssigneeUserId,
         relatedEmployeeId: employee.id,
         priority: PeopleTaskPriority.MEDIUM,
@@ -596,7 +596,7 @@ async function collectBacklogFindings(organizationId: string) {
     findings.push({
       ruleId: "backlog_overload",
       title: "Backlog operacional acima do saudavel",
-      description: `Watchtower encontrou ${openRequests} solicitacoes abertas, ${overdueTasks} tarefas vencidas e ${riskRequests.length} SLAs sob pressao.`,
+      description: `Watchtower encontrou ${openRequests} solicitações abertas, ${overdueTasks} tarefas vencidas e ${riskRequests.length} SLAs sob pressao.`,
       severity: openRequests >= 16 || overdueTasks >= 10 ? AgentRiskLevel.HIGH : AgentRiskLevel.MEDIUM,
       href: "/people/command-center"
     });
@@ -665,7 +665,7 @@ export async function processWatchtowerSweepJob(
       organizationId: job.organizationId,
       startedByUserId: actorId,
       mode: AgentRunMode.WATCHTOWER,
-      goal: "Monitorar riscos operacionais de people ops e abrir acoes proativas.",
+      goal: "Monitorar riscos operacionais de people ops e abrir ações proativas.",
       actionType: "watchtower_sweep",
       actionPayload: asJsonValue(payload),
       status: AgentRunStatus.EXECUTING,
@@ -709,7 +709,7 @@ export async function processWatchtowerSweepJob(
     const actionStep = await createAgentStep({
       agentRunId: agentRun.id,
       kind: "act",
-      title: "Abrir acoes proativas",
+      title: "Abrir ações proativas",
       status: AgentStepStatus.IN_PROGRESS,
       startedAt: new Date()
     });
@@ -791,7 +791,7 @@ export async function processWatchtowerSweepJob(
 
     const summary = findings.length
       ? `Watchtower detectou ${findings.length} risco(s), abriu ${createdTasks.length} tarefa(s) e enfileirou ${queuedJobs.length} alerta(s).`
-      : "Watchtower nao encontrou riscos operacionais acionaveis nesta varredura.";
+      : "Watchtower não encontrou riscos operacionais acionaveis nesta varredura.";
 
     await prisma.agentRun.update({
       where: {
@@ -922,23 +922,23 @@ export async function processPeopleReminderJob(
         : [];
     const reasonLabel =
       payload.reason === "policy_assignment"
-        ? "Uma nova politica interna foi atribuida para aceite."
+        ? "Uma nova política interna foi atribuida para aceite."
         : payload.reason === "policy_ack_due_soon"
-          ? "Seu aceite de politica esta se aproximando do prazo."
+          ? "Seu aceite de política esta se apróximando do prazo."
           : `Motivo: ${payload.reason ?? "general"}.`;
     const subject = task
-      ? `Watchtower: tarefa requer atencao - ${task.title}`
+      ? `Watchtower: tarefa requer aten??o - ${task.title}`
       : payload.reason === "policy_assignment"
-        ? "HireFlow: nova politica aguardando seu aceite"
+        ? "Harpia: nova política aguardando seu aceite"
         : payload.reason === "policy_ack_due_soon"
-          ? "HireFlow: lembrete de aceite de politica"
-          : "HireFlow: lembrete operacional";
+          ? "Harpia: lembrete de aceite de política"
+          : "Harpia: lembrete operacional";
     const html = task
-      ? `<p>O Watchtower identificou uma acao que requer atencao imediata.</p><p><strong>${task.title}</strong></p><p>${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}.` : ""}</p><p>${reasonLabel}</p>`
-      : `<p>O HireFlow registrou uma pendencia operacional ligada a voce.</p><p><strong>${employee?.fullName ?? "Colaborador"}</strong></p><p>${reasonLabel}</p><p>Abra o portal interno para revisar suas politicas e pendencias.</p>`;
+      ? `<p>O Watchtower identificou uma ação que requer aten??o imediata.</p><p><strong>${task.title}</strong></p><p>${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}.` : ""}</p><p>${reasonLabel}</p>`
+      : `<p>A Harpia registrou uma pendencia operacional ligada a você.</p><p><strong>${employee?.fullName ?? "Colaborador"}</strong></p><p>${reasonLabel}</p><p>Abra o portal interno para revisar suas políticas e pendencias.</p>`;
     const text = task
-      ? `O Watchtower identificou uma acao que requer atencao imediata.\n\n${task.title}\n${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}\n` : ""}${reasonLabel}`
-      : `O HireFlow registrou uma pendencia operacional ligada a voce.\n\n${employee?.fullName ?? "Colaborador"}\n${reasonLabel}\nAbra o portal interno para revisar suas politicas e pendencias.`;
+      ? `O Watchtower identificou uma ação que requer aten??o imediata.\n\n${task.title}\n${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}\n` : ""}${reasonLabel}`
+      : `A Harpia registrou uma pendencia operacional ligada a você.\n\n${employee?.fullName ?? "Colaborador"}\n${reasonLabel}\nAbra o portal interno para revisar suas políticas e pendencias.`;
 
     await sendOperationalEmail({
       organizationId: job.organizationId,
@@ -1021,8 +1021,8 @@ export async function processHrRequestSlaAlertJob(
       organizationId: job.organizationId,
       recipients,
       subject: `Watchtower: SLA estourado - ${request.title}`,
-      html: `<p>Uma solicitacao interna estourou o SLA.</p><p><strong>${request.title}</strong></p><p>Acao recomendada: priorizar atendimento imediato no service desk.</p>`,
-      text: `Uma solicitacao interna estourou o SLA.\n\n${request.title}\n\nAcao recomendada: priorizar atendimento imediato no service desk.`,
+      html: `<p>Uma solicitação interna estourou o SLA.</p><p><strong>${request.title}</strong></p><p>Ação recomendada: priorizar atendimento imediato no service desk.</p>`,
+      text: `Uma solicitação interna estourou o SLA.\n\n${request.title}\n\nAcao recomendada: priorizar atendimento imediato no service desk.`,
       action: "watchtower.hr_request_sla_email_sent",
       entityType: "hr_request",
       entityId: request.id,
@@ -1078,8 +1078,8 @@ export async function processComplianceAlertJob(
     await sendOperationalEmail({
       organizationId: job.organizationId,
       subject: `Watchtower: compliance vencido - ${requirement.title}`,
-      html: `<p>Existe um item de compliance vencido na operacao.</p><p><strong>${requirement.title}</strong></p><p>${requirement.employee?.fullName ? `Colaborador: ${requirement.employee.fullName}.` : ""}</p><p>Acao recomendada: regularizar a pendencia hoje.</p>`,
-      text: `Existe um item de compliance vencido na operacao.\n\n${requirement.title}\n${requirement.employee?.fullName ? `Colaborador: ${requirement.employee.fullName}\n` : ""}Acao recomendada: regularizar a pendencia hoje.`,
+      html: `<p>Existe um item de compliance vencido na operação.</p><p><strong>${requirement.title}</strong></p><p>${requirement.employee?.fullName ? `Colaborador: ${requirement.employee.fullName}.` : ""}</p><p>Ação recomendada: regularizar a pendencia hoje.</p>`,
+      text: `Existe um item de compliance vencido na operação.\n\n${requirement.title}\n${requirement.employee?.fullName ? `Colaborador: ${requirement.employee.fullName}\n` : ""}Ação recomendada: regularizar a pendencia hoje.`,
       action: "watchtower.compliance_email_sent",
       entityType: "compliance_requirement",
       entityId: requirement.id,
@@ -1145,7 +1145,7 @@ export async function processInternalSummaryBuildJob(
     })
   ]);
 
-  const summary = `Resumo interno ${payload.scope ?? "company"}: ${openRequests} solicitacoes abertas, ${pendingCompliance} itens de compliance pendentes e ${activeOnboarding} onboardings ativos.`;
+  const summary = `Resumo interno ${payload.scope ?? "company"}: ${openRequests} solicitações abertas, ${pendingCompliance} itens de compliance pendentes e ${activeOnboarding} onboardings ativos.`;
 
   await createAuditEvent({
     organizationId: job.organizationId,

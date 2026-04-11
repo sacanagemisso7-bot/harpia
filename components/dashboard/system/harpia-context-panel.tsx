@@ -56,7 +56,7 @@ export function HarpiaContextPanel({
           <header className={styles.panelHeader}>
             <span className={styles.eyebrow}>Relacionados</span>
             <h3 className={styles.panelTitle}>Outros sinais fortes</h3>
-            <p className={styles.panelSubtitle}>Itens que normalmente merecem a mesma janela de atencao.</p>
+            <p className={styles.panelSubtitle}>Itens que normalmente merecem a mesma janela de aten??o.</p>
           </header>
 
           <div className={styles.candidateList}>
@@ -82,8 +82,8 @@ export function HarpiaContextPanel({
         </header>
 
         <div className={styles.insightList}>
-          <p className={styles.insightItem}>A coluna central junta prioridades, hiring e operacao em uma unica leitura.</p>
-          <p className={styles.insightItem}>A lateral direita existe para contexto, nao para competir com o restante da tela.</p>
+          <p className={styles.insightItem}>A coluna central junta prioridades, hiring e operação em uma unica leitura.</p>
+          <p className={styles.insightItem}>A lateral direita existe para contexto, não para competir com o restante da tela.</p>
         </div>
       </HarpiaSurface>
 
@@ -108,7 +108,7 @@ export function HarpiaContextPanel({
         <header className={styles.panelHeader}>
           <span className={styles.eyebrow}>Top signals</span>
           <h3 className={styles.panelTitle}>Candidatos fortes</h3>
-          <p className={styles.panelSubtitle}>Atalhos para os perfis que merecem decisao agora.</p>
+          <p className={styles.panelSubtitle}>Atalhos para os perfis que merecem decisão agora.</p>
         </header>
 
         <div className={styles.candidateList}>

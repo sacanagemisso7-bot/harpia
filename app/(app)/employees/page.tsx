@@ -91,7 +91,7 @@ export default async function EmployeesPage() {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Diretorio</span>
-              <h2 className={styles.panelTitle}>Colaboradores em operacao</h2>
+              <h2 className={styles.panelTitle}>Colaboradores em operação</h2>
               <p className={styles.panelDescription}>Cada pessoa aparece com status, gestor, time e fluxos ativos, sem virar uma ficha isolada do resto do produto.</p>
             </div>
 
@@ -114,7 +114,7 @@ export default async function EmployeesPage() {
                       </div>
                       <div className={styles.metaRow}>
                         <MapPin className="h-4 w-4 text-primary" />
-                        {employee.location || "Localizacao nao informada"}
+                        {employee.location || "Localização não informada"}
                       </div>
                       <div className={styles.metaRow}>
                         <UsersRound className="h-4 w-4 text-primary" />
@@ -160,7 +160,7 @@ export default async function EmployeesPage() {
                 ))
               ) : (
                 <div className={styles.emptyState}>
-                  Ainda nao ha colaboradores cadastrados. Esse modulo vira a base operacional para pessoas, ownership e historico.
+                  Ainda não ha colaboradores cadastrados. Esse módulo vira a base operacional para pessoas, ownership e histórico.
                 </div>
               )}
             </div>
@@ -172,7 +172,7 @@ export default async function EmployeesPage() {
             <section className={styles.panel}>
               <div className={styles.panelHeader}>
                 <span className={styles.panelEyebrow}>Novo colaborador</span>
-                <h2 className={styles.panelTitle}>Cadastrar pessoa na operacao</h2>
+                <h2 className={styles.panelTitle}>Cadastrar pessoa na operação</h2>
                 <p className={styles.panelDescription}>Crie o perfil e deixe o onboarding pronto para entrar no fluxo sem retrabalho manual.</p>
               </div>
 
@@ -183,7 +183,7 @@ export default async function EmployeesPage() {
                 <input name="personalEmail" type="email" placeholder="Email pessoal" className={styles.field} />
                 <input name="title" required placeholder="Cargo" className={styles.field} />
                 <input name="department" required placeholder="Time ou area" className={styles.field} />
-                <input name="location" placeholder="Localizacao" className={styles.field} />
+                <input name="location" placeholder="Localização" className={styles.field} />
                 <input name="employmentType" placeholder="Tipo de contratacao" className={styles.field} />
                 <input name="startDate" type="date" className={styles.field} />
                 <select name="status" defaultValue={EmployeeStatus.ONBOARDING} className={styles.select}>
@@ -212,9 +212,9 @@ export default async function EmployeesPage() {
 
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Leitura rapida</span>
+              <span className={styles.panelEyebrow}>Leitura r?pida</span>
               <h2 className={styles.panelTitle}>Composicao do time</h2>
-              <p className={styles.panelDescription}>Distribuicao por area e pontos onde ainda falta estrutura de gestao.</p>
+              <p className={styles.panelDescription}>Distribuicao por area e pontos onde ainda falta estrutura de gestão.</p>
             </div>
 
             <div className={styles.summaryGrid}>

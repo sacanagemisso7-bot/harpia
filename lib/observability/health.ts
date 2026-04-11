@@ -10,7 +10,7 @@ const bootedAt = Date.now();
 export function getLivenessPayload() {
   return {
     status: "ok",
-    service: "hireflow-ai",
+    service: "harpia",
     uptimeSeconds: Math.round((Date.now() - bootedAt) / 1000),
     timestamp: new Date().toISOString()
   };

@@ -20,12 +20,12 @@ export default async function NewJobPage() {
       <PageHeader
         eyebrow="Hiring setup"
         title="Nova vaga"
-        description="Abra a vaga com criterio claro, scorecard consistente e pipeline pronto para operar."
+        description="Abra a vaga com critério claro, scorecard consistente e pipeline pronto para operar."
         actions={
           <>
             <Badge variant="outline">{user.organizationBillingPlan}</Badge>
             <Badge variant={canUseAutomations ? "success" : "outline"}>
-              {canUseAutomations ? "Automacoes liberadas" : "Automacoes em Growth"}
+              {canUseAutomations ? "Automações liberadas" : "Automações em Growth"}
             </Badge>
           </>
         }
@@ -45,12 +45,12 @@ export default async function NewJobPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Scorecard</span>
           <strong className={styles.statValue}>5+</strong>
-          <span className={styles.statHint}>Sugestao de eixos para entrevista estruturada.</span>
+          <span className={styles.statHint}>Sugestão de eixos para entrevista estruturada.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Launch mode</span>
           <strong className={styles.statValue}>Live</strong>
-          <span className={styles.statHint}>Publicou, a operacao ja pode triar e entrevistar.</span>
+          <span className={styles.statHint}>Publicou, a operação ja pode triar e entrevistar.</span>
         </div>
       </section>
 
@@ -61,7 +61,7 @@ export default async function NewJobPage() {
               <span className={styles.panelEyebrow}>Setup</span>
               <h2 className={styles.panelTitle}>Estruture a vaga uma vez e opere com menos retrabalho.</h2>
               <p className={styles.panelDescription}>
-                Defina o sinal de aderencia, o roteiro de entrevista e as automacoes que movem o pipeline.
+                Defina o sinal de aderência, o roteiro de entrevista e as automações que movem o pipeline.
               </p>
             </div>
 
@@ -83,7 +83,7 @@ export default async function NewJobPage() {
             <div className={styles.list}>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Criterios para score</strong>
-                <span className={styles.itemDescription}>Base para triagem, ranking e analise automatica.</span>
+                <span className={styles.itemDescription}>Base para triagem, ranking e análise automatica.</span>
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Scorecard por eixo</strong>
@@ -100,7 +100,7 @@ export default async function NewJobPage() {
             <div className={styles.itemHeader}>
               <div className={styles.itemLead}>
                 <span className={styles.panelEyebrow}>Pipeline</span>
-                <h3 className={styles.panelTitle}>Etapas disponiveis</h3>
+                <h3 className={styles.panelTitle}>Etapas disponíveis</h3>
               </div>
               <span className={styles.iconLead}>
                 <Workflow className="h-4 w-4" />

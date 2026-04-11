@@ -29,15 +29,15 @@ export default async function KnowledgePage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="Knowledge base"
-        title="Memoria operacional da organizacao"
-        description="Playbooks, politicas, templates e briefings numa base preparada para retrieval, copiloto e operacao."
+        title="Memoria operacional da organização"
+        description="Playbooks, políticas, templates e briefings numa base preparada para retrieval, copiloto e operação."
       />
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Documentos</span>
           <strong className={styles.statValue}>{knowledge.metrics.totalDocuments}</strong>
-          <span className={styles.statHint}>Materiais registrados na base da organizacao.</span>
+          <span className={styles.statHint}>Materiais registrados na base da organização.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Prontos</span>
@@ -47,12 +47,12 @@ export default async function KnowledgePage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Processando</span>
           <strong className={styles.statValue}>{knowledge.metrics.processingCount}</strong>
-          <span className={styles.statHint}>Arquivos ainda em ingestao ou indexacao.</span>
+          <span className={styles.statHint}>Arquivos ainda em ingestão ou indexacao.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Chunks</span>
           <strong className={styles.statValue}>{knowledge.metrics.chunkCount}</strong>
-          <span className={styles.statHint}>Fragmentos disponiveis para busca semantica.</span>
+          <span className={styles.statHint}>Fragmentos disponíveis para busca semantica.</span>
         </div>
       </section>
 
@@ -61,7 +61,7 @@ export default async function KnowledgePage() {
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>New material</span>
-              <h2 className={styles.panelTitle}>Upload com ingestao automatica</h2>
+              <h2 className={styles.panelTitle}>Upload com ingestão automatica</h2>
               <p className={styles.panelDescription}>Envie playbooks, policies e PDFs com estrutura pronta para retrieval.</p>
             </div>
             <div className={styles.surfaceMuted}>
@@ -73,7 +73,7 @@ export default async function KnowledgePage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Policy publishing</span>
               <h2 className={styles.panelTitle}>Publicar versao de policy</h2>
-              <p className={styles.panelDescription}>Registre versao, supersessao e cadeia de aceite operacional.</p>
+              <p className={styles.panelDescription}>Registre versao, supersess?o e cadeia de aceite operacional.</p>
             </div>
             <form action={publishPolicyDocumentVersionAction} className={styles.actionCluster}>
               <select name="documentId" required className={styles.select}>
@@ -87,7 +87,7 @@ export default async function KnowledgePage() {
               </select>
               <input name="versionLabel" placeholder="Ex.: v2.0" className={styles.field} />
               <select name="supersedesDocumentId" className={styles.select}>
-                <option value="">Nao supersede outra versao</option>
+                <option value="">Não supersede outra versao</option>
                 {policyDocuments.map((document) => (
                   <option key={`supersede-${document.id}`} value={document.id}>
                     {document.title}
@@ -156,7 +156,7 @@ export default async function KnowledgePage() {
                             {document.status === "PROCESSING" ? <LoaderCircle className="mr-2 inline h-4 w-4 animate-spin" /> : <ScanSearch className="mr-2 inline h-4 w-4" />}
                             {document.processedAt
                               ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(document.processedAt)
-                              : "Ingestao em andamento"}
+                              : "Ingestão em andamento"}
                           </span>
                         </div>
                       </div>
@@ -178,7 +178,7 @@ export default async function KnowledgePage() {
                 })}
               </div>
             ) : (
-              <div className={styles.emptyState}>Ainda nao ha materiais na knowledge base desta organizacao.</div>
+              <div className={styles.emptyState}>Ainda não ha materiais na knowledge base desta organização.</div>
             )}
           </div>
         </div>

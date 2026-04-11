@@ -164,7 +164,7 @@ export default async function PeopleTasksPage() {
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Ainda nao ha tarefas operacionais registradas.</div>
+              <div className={styles.emptyState}>Ainda não ha tarefas operacionais registradas.</div>
             )}
           </div>
         </div>
@@ -173,7 +173,7 @@ export default async function PeopleTasksPage() {
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Queue health</span>
             <strong className={styles.spotlightValue}>{taskSummary.metrics.overdue}</strong>
-            <p className={styles.panelDescription}>Itens vencidos que mais pressionam a operacao.</p>
+            <p className={styles.panelDescription}>Itens vencidos que mais pressionam a operação.</p>
           </div>
           <div className={styles.panel}>
             <div className={styles.list}>
@@ -183,7 +183,7 @@ export default async function PeopleTasksPage() {
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Comente na tarefa</strong>
-                <span className={styles.itemDescription}>Deixe contexto curto e evite perder decisao no chat.</span>
+                <span className={styles.itemDescription}>Deixe contexto curto e evite perder decisão no chat.</span>
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Owner visivel</strong>

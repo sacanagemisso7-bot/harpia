@@ -35,7 +35,7 @@ export default async function EditJobPage({
       <PageHeader
         eyebrow="Job edit"
         title={`Editar ${job.title}`}
-        description="Atualize a vaga sem perder criterios, scorecard e automacoes ja ligados a operacao."
+        description="Atualize a vaga sem perder criterios, scorecard e automações ja ligados a operação."
         actions={
           <>
             <Badge variant={job.status === "OPEN" ? "success" : "outline"}>{job.status}</Badge>
@@ -58,7 +58,7 @@ export default async function EditJobPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Criterios</span>
           <strong className={styles.statValue}>{job.criteria.length}</strong>
-          <span className={styles.statHint}>Sinais ativos para score de aderencia.</span>
+          <span className={styles.statHint}>Sinais ativos para score de aderência.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Scorecard</span>
@@ -66,7 +66,7 @@ export default async function EditJobPage({
           <span className={styles.statHint}>Eixos configurados para entrevista.</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Automacoes</span>
+          <span className={styles.statLabel}>Automações</span>
           <strong className={styles.statValue}>{canUseAutomations ? activeRules : 0}</strong>
           <span className={styles.statHint}>Regras atualmente ativas no pipeline.</span>
         </div>
@@ -77,7 +77,7 @@ export default async function EditJobPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Revision</span>
-              <h2 className={styles.panelTitle}>Ajuste a vaga sem desmontar a operacao ja em curso.</h2>
+              <h2 className={styles.panelTitle}>Ajuste a vaga sem desmontar a operação ja em curso.</h2>
               <p className={styles.panelDescription}>
                 Mantenha criterios claros, pipeline atualizado e o scorecard calibrado para a equipe.
               </p>
@@ -201,10 +201,10 @@ export default async function EditJobPage({
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Criterios obrigatorios</strong>
-                <span className={styles.itemDescription}>Nao deixe o score pesar demais em sinais secundarios.</span>
+                <span className={styles.itemDescription}>Não deixe o score pesar demais em sinais secundarios.</span>
               </div>
               <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Automacoes</strong>
+                <strong className={styles.itemTitle}>Automações</strong>
                 <span className={styles.itemDescription}>Ative so onde o time realmente confia na regra.</span>
               </div>
             </div>

@@ -25,15 +25,15 @@ export default async function OffboardingPage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="Offboarding"
-        title="Saidas com rastreio operacional"
-        description="Checklist de desligamento, devolucao de acessos e equipamentos e pendencias finais em um unico fluxo."
+        title="Saídas com rastreio operacional"
+        description="Checklist de desligamento, devolucao de acessos e equipamentos e pendencias finais em um único fluxo."
       />
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Ativos</span>
           <strong className={styles.statValue}>{runs.length}</strong>
-          <span className={styles.statHint}>Planos de saida acompanhados agora.</span>
+          <span className={styles.statHint}>Planos de saída acompanhados agora.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Concluidos</span>
@@ -43,12 +43,12 @@ export default async function OffboardingPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Bloqueios</span>
           <strong className={styles.statValue}>{blockedSteps}</strong>
-          <span className={styles.statHint}>Etapas travadas que pedem decisao ou follow-up.</span>
+          <span className={styles.statHint}>Etapas travadas que pedem decisão ou follow-up.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Base</span>
           <strong className={styles.statValue}>{employees.length}</strong>
-          <span className={styles.statHint}>Colaboradores disponiveis para iniciar fluxo.</span>
+          <span className={styles.statHint}>Colaboradores disponíveis para iniciar fluxo.</span>
         </div>
       </section>
 
@@ -59,7 +59,7 @@ export default async function OffboardingPage() {
               <div className={styles.panelHeader}>
                 <span className={styles.panelEyebrow}>Start flow</span>
                 <h2 className={styles.panelTitle}>Iniciar offboarding</h2>
-                <p className={styles.panelDescription}>Crie um fluxo de saida com etapas operacionais e dono claro.</p>
+                <p className={styles.panelDescription}>Crie um fluxo de saída com etapas operacionais e dono claro.</p>
               </div>
               <form action={startEmployeeWorkflowAction} className={styles.actionCluster}>
                 <input type="hidden" name="kind" value={PeopleWorkflowKind.OFFBOARDING} />
@@ -84,7 +84,7 @@ export default async function OffboardingPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Active plans</span>
               <h2 className={styles.panelTitle}>Planos em andamento</h2>
-              <p className={styles.panelDescription}>Fluxos de saida com status por etapa e historico do processo.</p>
+              <p className={styles.panelDescription}>Fluxos de saída com status por etapa e histórico do processo.</p>
             </div>
             {runs.length ? (
               <div className={styles.timeline}>
@@ -147,20 +147,20 @@ export default async function OffboardingPage() {
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Exit flow</span>
             <strong className={styles.spotlightValue}>{runs.length}</strong>
-            <p className={styles.panelDescription}>Saidas que ainda exigem coordenacao operacional.</p>
+            <p className={styles.panelDescription}>Saídas que ainda exigem coordenacao operacional.</p>
           </div>
           <div className={styles.panel}>
             <div className={styles.list}>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Acessos e ativos</strong>
-                <span className={styles.itemDescription}>Use a fila para nao perder nenhum handoff sensivel.</span>
+                <span className={styles.itemDescription}>Use a fila para não perder nenhum handoff sensivel.</span>
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Prazos visiveis</strong>
                 <span className={styles.itemDescription}>Cada etapa mostra dono e data quando existir urgencia.</span>
               </div>
               <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Saida sem caos</strong>
+                <strong className={styles.itemTitle}>Saída sem caos</strong>
                 <span className={styles.itemDescription}>O objetivo e fechar desligamentos com last-mile controlado.</span>
               </div>
             </div>

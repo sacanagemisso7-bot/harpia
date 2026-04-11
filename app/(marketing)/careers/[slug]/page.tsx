@@ -28,7 +28,7 @@ export default async function CareersPage({
         <section className="panel aurora px-8 py-10">
           <p className="section-intro">{organization.name}</p>
           <h1 className="mt-4 max-w-4xl font-display text-5xl font-semibold tracking-tight">
-            Oportunidades abertas para construir a proxima geracao do time.
+            Oportunidades abertas para construir a próxima geracao do time.
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
             Explore as vagas e candidate-se em poucos minutos. Sua candidatura entra direto no fluxo operacional do Harpia.

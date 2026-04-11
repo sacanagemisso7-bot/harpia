@@ -34,7 +34,7 @@ export function HarpiaHeroContent() {
           animate={reducedMotion ? undefined : { opacity: 1, y: 0, clipPath: "inset(0 0 0% 0)" }}
           transition={{ duration: 1.1, delay: 0.08, ease }}
         >
-          Veja alem do curriculo
+          Veja alem do currículo
         </m.h1>
         <m.p
           className={styles.heroLine}

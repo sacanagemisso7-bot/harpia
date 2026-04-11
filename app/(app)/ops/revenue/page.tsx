@@ -24,8 +24,8 @@ export default async function RevenueOpsPage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="Revenue Ops"
-        title="Receita, risco e aprovacoes"
-        description="Visao consolidada multi-tenant para operacao interna de billing, contratos e aprovacoes comerciais."
+        title="Receita, risco e aprovações"
+        description="Visão consolidada multi-tenant para operação interna de billing, contratos e aprovações comerciais."
       />
 
       <section className={styles.statsGrid}>
@@ -37,12 +37,12 @@ export default async function RevenueOpsPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Ativas</span>
           <strong className={styles.statValue}>{snapshot.summary.activeOrganizations}</strong>
-          <span className={styles.statHint}>Organizacoes com operacao comercial saudavel.</span>
+          <span className={styles.statHint}>Organizações com operação comercial saudavel.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Trials</span>
           <strong className={styles.statValue}>{snapshot.summary.trialOrganizations}</strong>
-          <span className={styles.statHint}>Contas ainda no periodo de avaliacao.</span>
+          <span className={styles.statHint}>Contas ainda no período de avaliação.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>MRR projetado</span>
@@ -56,7 +56,7 @@ export default async function RevenueOpsPage() {
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Pending approvals</span>
-              <h2 className={styles.panelTitle}>Aprovacoes pendentes</h2>
+              <h2 className={styles.panelTitle}>Aprovações pendentes</h2>
               <p className={styles.panelDescription}>Pedidos de upgrade ou condicao comercial aguardando resposta.</p>
             </div>
             {snapshot.pendingRequests.length ? (
@@ -86,7 +86,7 @@ export default async function RevenueOpsPage() {
                     {request.note ? <span className={styles.itemDescription}>{request.note}</span> : null}
                     <div className={styles.subGrid2}>
                       <form action={reviewBillingUpgradeRequest.bind(null, request.id, "approve")} className={styles.actionCluster}>
-                        <textarea name="responseNote" className={styles.textarea} placeholder="Notas de aprovacao" />
+                        <textarea name="responseNote" className={styles.textarea} placeholder="Notas de aprovação" />
                         <Button type="submit">Aprovar</Button>
                       </form>
                       <form action={reviewBillingUpgradeRequest.bind(null, request.id, "reject")} className={styles.actionCluster}>
@@ -108,7 +108,7 @@ export default async function RevenueOpsPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Tenant watch</span>
               <h2 className={styles.panelTitle}>Tenants monitorados</h2>
-              <p className={styles.panelDescription}>Leitura consolidada de receita, overage de IA e risco operacional por organizacao.</p>
+              <p className={styles.panelDescription}>Leitura consolidada de receita, overage de IA e risco operacional por organização.</p>
             </div>
             <div className={styles.list}>
               {snapshot.organizations.map((item) => (

@@ -31,7 +31,7 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
     kind: PeopleWorkflowKind.ONBOARDING,
     steps: [
       {
-        title: "Enviar comunicacao de boas-vindas",
+        title: "Enviar comunicação de boas-vindas",
         description: "Confirme data de inicio, contatos principais e fluxo inicial com o colaborador.",
         ownerLabel: "People Ops",
         dueInDays: 0,
@@ -45,8 +45,8 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
         category: "provisioning"
       },
       {
-        title: "Coletar documentos obrigatorios e politicas",
-        description: "Rastreie documentos pendentes e aceite das principais politicas internas.",
+        title: "Coletar documentos obrigatorios e políticas",
+        description: "Rastreie documentos pendentes e aceite das principais políticas internas.",
         ownerLabel: "Collaborator",
         dueInDays: 2,
         category: "documentation"
@@ -60,7 +60,7 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
       },
       {
         title: "Rodar check-in de 30 dias",
-        description: "Registrar adaptacao inicial, riscos e follow-ups do periodo inicial.",
+        description: "Registrar adaptacao inicial, riscos e follow-ups do período inicial.",
         ownerLabel: "Manager",
         dueInDays: 30,
         category: "probation"
@@ -72,7 +72,7 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
     kind: PeopleWorkflowKind.OFFBOARDING,
     steps: [
       {
-        title: "Confirmar documentacao e comunicacao de desligamento",
+        title: "Confirmar documentacao e comunicação de desligamento",
         description: "Organize a documentacao obrigatoria e os responsaveis pela execucao do processo.",
         ownerLabel: "People Ops",
         dueInDays: 0,
@@ -93,8 +93,8 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
         category: "handover"
       },
       {
-        title: "Realizar entrevista de saida",
-        description: "Registrar aprendizados, pontos de atencao e sinais operacionais relevantes.",
+        title: "Realizar entrevista de saída",
+        description: "Registrar aprendizados, pontos de aten??o e sinais operacionais relevantes.",
         ownerLabel: "People Ops",
         dueInDays: 3,
         category: "exit_interview"
@@ -183,7 +183,7 @@ export async function createWorkflowRunFromTemplate(input: {
   });
 
   if (!employee) {
-    throw new Error("Colaborador nao encontrado.");
+    throw new Error("Colaborador não encontrado.");
   }
 
   const existingRun = await prisma.peopleWorkflowRun.findFirst({
@@ -232,7 +232,7 @@ export async function createWorkflowRunFromTemplate(input: {
     }));
 
   if (!template) {
-    throw new Error("Template operacional nao encontrado.");
+    throw new Error("Template operacional não encontrado.");
   }
 
   const anchorDate = employee.startDate ?? new Date();
@@ -384,7 +384,7 @@ export async function updateWorkflowStepStatus(input: {
   });
 
   if (!step) {
-    throw new Error("Etapa operacional nao encontrada.");
+    throw new Error("Etapa operacional não encontrada.");
   }
 
   const updatedStep = await prisma.peopleWorkflowStep.update({

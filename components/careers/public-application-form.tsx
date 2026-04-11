@@ -50,7 +50,7 @@ export function PublicApplicationForm({ action }: PublicApplicationFormProps) {
           <Input id="linkedinUrl" name="linkedinUrl" type="url" />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="location">Localizacao</Label>
+          <Label htmlFor="location">Localização</Label>
           <Input id="location" name="location" />
         </div>
         <div className="space-y-2 md:col-span-2">
@@ -58,7 +58,7 @@ export function PublicApplicationForm({ action }: PublicApplicationFormProps) {
           <Textarea id="summary" name="summary" className="min-h-32" />
         </div>
         <div className="space-y-2 md:col-span-2">
-          <Label htmlFor="resume">Curriculo em PDF</Label>
+          <Label htmlFor="resume">Currículo em PDF</Label>
           <Input id="resume" name="resume" type="file" accept="application/pdf" />
         </div>
       </div>

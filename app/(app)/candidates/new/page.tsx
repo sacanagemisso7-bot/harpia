@@ -16,7 +16,7 @@ export default async function NewCandidatePage() {
       <PageHeader
         eyebrow="Talent intake"
         title="Novo candidato"
-        description="Cadastre um perfil manualmente e deixe a base pronta para curriculo, score e aplicacao."
+        description="Cadastre um perfil manualmente e deixe a base pronta para currículo, score e aplicação."
         actions={<Badge variant="outline">Manual import</Badge>}
       />
 
@@ -32,7 +32,7 @@ export default async function NewCandidatePage() {
           <span className={styles.statHint}>Pode ser enviado depois para parsing e IA.</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacao</span>
+          <span className={styles.statLabel}>Aplicação</span>
           <strong className={styles.statValue}>Open</strong>
           <span className={styles.statHint}>O perfil pode ser vinculado a qualquer vaga aberta.</span>
         </div>
@@ -50,7 +50,7 @@ export default async function NewCandidatePage() {
               <span className={styles.panelEyebrow}>Profile setup</span>
               <h2 className={styles.panelTitle}>Crie o perfil com o minimo necessario para operar rapido.</h2>
               <p className={styles.panelDescription}>
-                Nome, contato, contexto atual e origem ja deixam o candidato pronto para os proximos passos.
+                Nome, contato, contexto atual e origem ja deixam o candidato pronto para os próximos passos.
               </p>
             </div>
 
@@ -71,15 +71,15 @@ export default async function NewCandidatePage() {
             </div>
             <div className={styles.list}>
               <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Upload do curriculo</strong>
+                <strong className={styles.itemTitle}>Upload do currículo</strong>
                 <span className={styles.itemDescription}>Armazena o PDF e prepara o perfil para parsing estruturado.</span>
               </div>
               <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Analise com IA</strong>
+                <strong className={styles.itemTitle}>Análise com IA</strong>
                 <span className={styles.itemDescription}>Gera resumo, skills, gaps e perguntas sugeridas.</span>
               </div>
               <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Aplicacao em vaga</strong>
+                <strong className={styles.itemTitle}>Aplicação em vaga</strong>
                 <span className={styles.itemDescription}>Entra no pipeline com score inicial e etapa definida.</span>
               </div>
             </div>
@@ -105,7 +105,7 @@ export default async function NewCandidatePage() {
                 <strong>sim</strong>
               </div>
               <div className={styles.metricRow}>
-                <span>Localizacao</span>
+                <span>Localização</span>
                 <strong>sim</strong>
               </div>
             </div>
@@ -122,7 +122,7 @@ export default async function NewCandidatePage() {
               </span>
             </div>
             <div className={styles.surfaceMuted}>
-              Crie primeiro o perfil. Em seguida, suba o curriculo e vincule a uma vaga para o score inicial entrar no fluxo.
+              Crie primeiro o perfil. Em seguida, suba o currículo e vincule a uma vaga para o score inicial entrar no fluxo.
             </div>
           </div>
         </aside>

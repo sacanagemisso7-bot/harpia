@@ -42,7 +42,7 @@ export function DemoRequestForm({ action, sourcePage, compact = false }: DemoReq
         </div>
         <div className="space-y-2">
           <Label htmlFor={`${sourcePage}-email`}>Email</Label>
-          <Input id={`${sourcePage}-email`} name="email" type="email" placeholder="voce@empresa.com" />
+          <Input id={`${sourcePage}-email`} name="email" type="email" placeholder="você@empresa.com" />
         </div>
       </div>
       <div className={`grid gap-4 ${compact ? "" : "md:grid-cols-2"}`}>

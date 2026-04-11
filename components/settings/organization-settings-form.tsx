@@ -18,7 +18,7 @@ export function OrganizationSettingsForm({
   return (
     <form action={action} className="space-y-5">
       <div className="space-y-2">
-        <Label htmlFor="name">Nome da organizacao</Label>
+        <Label htmlFor="name">Nome da organização</Label>
         <Input id="name" name="name" defaultValue={defaultValues.name} />
       </div>
       <div className="space-y-2">
@@ -29,7 +29,7 @@ export function OrganizationSettingsForm({
         <Label htmlFor="sizeRange">Faixa de tamanho</Label>
         <Input id="sizeRange" name="sizeRange" defaultValue={defaultValues.sizeRange ?? ""} />
       </div>
-      <Button type="submit">Salvar configuracoes</Button>
+      <Button type="submit">Salvar configurações</Button>
     </form>
   );
 }

@@ -2,21 +2,21 @@ import { AgentApprovalStatus } from "@prisma/client";
 
 import { listAgentApprovalRequests, listRecentAgentRuns } from "@/modules/ai-agent/queries";
 import { getPeopleDashboard, listUpcomingPeopleEvents } from "@/modules/people-ops/queries";
-import { getHrRequestQueueSummary } from "@/modules/hr-requests/queries";
-import { listPeopleTasks } from "@/modules/people-tasks/queries";
+import { getHrRequestDashboardSnapshot } from "@/modules/hr-requests/queries";
+import { getPeopleTaskDashboardSnapshot } from "@/modules/people-tasks/queries";
 
 export async function getDesktopOperationalHome(organizationId: string) {
   const [dashboard, tasks, requests, events] = await Promise.all([
     getPeopleDashboard(organizationId),
-    listPeopleTasks(organizationId),
-    getHrRequestQueueSummary(organizationId),
+    getPeopleTaskDashboardSnapshot(organizationId, 8),
+    getHrRequestDashboardSnapshot(organizationId, 8),
     listUpcomingPeopleEvents(organizationId, 8)
   ]);
 
   return {
     dashboard,
-    tasks: tasks.slice(0, 8),
-    requests: requests.requests.slice(0, 8),
+    tasks: tasks.tasks,
+    requests: requests.requests,
     events: events.slice(0, 8)
   };
 }

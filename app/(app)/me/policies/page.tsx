@@ -19,14 +19,14 @@ export default async function MyPoliciesPage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="My policies"
-        title="Aceites e politicas internas"
-        description="Resolva rapidamente politicas pendentes, acompanhe o que ja foi confirmado e reduza atrito operacional com o RH."
+        title="Aceites e políticas internas"
+        description="Resolva rapidamente políticas pendentes, acompanhe o que ja foi confirmado e reduza atrito operacional com o RH."
       />
 
       {!workspace ? (
         <div className={styles.panel}>
           <div className={styles.surfaceMuted}>
-            Seu usuario ainda nao esta vinculado a um perfil de colaborador nesta organizacao.
+            Seu usuário ainda não esta vinculado a um perfil de colaborador nesta organização.
           </div>
         </div>
       ) : (
@@ -40,7 +40,7 @@ export default async function MyPoliciesPage() {
             <div className={styles.statCard}>
               <span className={styles.statLabel}>Pendentes</span>
               <strong className={styles.statValue}>{workspace.pendingAcknowledgements.length}</strong>
-              <span className={styles.statHint}>Politicas que ainda precisam da sua confirmacao.</span>
+              <span className={styles.statHint}>Políticas que ainda precisam da sua confirmacao.</span>
             </div>
             <div className={styles.statCard}>
               <span className={styles.statLabel}>Requisitos ligados</span>
@@ -48,7 +48,7 @@ export default async function MyPoliciesPage() {
               <span className={styles.statHint}>Itens de compliance associados a essas policies.</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statLabel}>Historico</span>
+              <span className={styles.statLabel}>Histórico</span>
               <strong className={styles.statValue}>{workspace.acknowledged.length}</strong>
               <span className={styles.statHint}>Aceites ja registrados para o seu perfil.</span>
             </div>
@@ -60,7 +60,7 @@ export default async function MyPoliciesPage() {
                 <div className={styles.panelHeader}>
                   <span className={styles.panelEyebrow}>Pending acknowledgements</span>
                   <h2 className={styles.panelTitle}>Pendencias de aceite</h2>
-                  <p className={styles.panelDescription}>Politicas que ainda precisam da sua confirmacao.</p>
+                  <p className={styles.panelDescription}>Políticas que ainda precisam da sua confirmacao.</p>
                 </div>
                 {workspace.pendingAcknowledgements.length ? (
                   <div className={styles.list}>
@@ -88,15 +88,15 @@ export default async function MyPoliciesPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className={styles.emptyState}>Nenhuma politica pendente para voce no momento.</div>
+                  <div className={styles.emptyState}>Nenhuma política pendente para você no momento.</div>
                 )}
               </div>
 
               <div className={styles.panel}>
                 <div className={styles.panelHeader}>
                   <span className={styles.panelEyebrow}>History</span>
-                  <h2 className={styles.panelTitle}>Historico recente</h2>
-                  <p className={styles.panelDescription}>Politicas ja confirmadas e contexto de compliance ligado a elas.</p>
+                  <h2 className={styles.panelTitle}>Histórico recente</h2>
+                  <p className={styles.panelDescription}>Políticas ja confirmadas e contexto de compliance ligado a elas.</p>
                 </div>
                 {workspace.acknowledged.length ? (
                   <div className={styles.list}>
@@ -110,7 +110,7 @@ export default async function MyPoliciesPage() {
                               Confirmado em{" "}
                               {item.acknowledgedAt
                                 ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(item.acknowledgedAt)
-                                : "data indisponivel"}
+                                : "data indisponível"}
                             </span>
                           </div>
                           <Badge variant="success">ACKNOWLEDGED</Badge>
@@ -128,7 +128,7 @@ export default async function MyPoliciesPage() {
               <div className={styles.spotlight}>
                 <span className={styles.panelEyebrow}>Self service</span>
                 <strong className={styles.spotlightValue}>{workspace.pendingAcknowledgements.length ? "Action" : "Clear"}</strong>
-                <p className={styles.panelDescription}>Uma leitura rapida para saber se ainda existe algo esperando voce.</p>
+                <p className={styles.panelDescription}>Uma leitura r?pida para saber se ainda existe algo esperando você.</p>
               </div>
               <div className={styles.panel}>
                 <div className={styles.list}>
@@ -138,7 +138,7 @@ export default async function MyPoliciesPage() {
                   </div>
                   <div className={styles.listItem}>
                     <strong className={styles.itemTitle}>Observe a versao</strong>
-                    <span className={styles.itemDescription}>Quando houver nova policy, o historico deixa claro o que mudou.</span>
+                    <span className={styles.itemDescription}>Quando houver nova policy, o histórico deixa claro o que mudou.</span>
                   </div>
                 </div>
               </div>

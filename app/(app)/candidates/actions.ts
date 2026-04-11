@@ -118,7 +118,7 @@ export async function uploadResume(
 
   if (!candidate) {
     return {
-      error: "Candidato nao encontrado para esta organizacao."
+      error: "Candidato não encontrado para esta organização."
     };
   }
 
@@ -139,7 +139,7 @@ export async function uploadResume(
 
   if (!parsedFile.success) {
     return {
-      error: parsedFile.error.errors[0]?.message ?? "Nao foi possivel validar o curriculo."
+      error: parsedFile.error.errors[0]?.message ?? "Não foi possível validar o currículo."
     };
   }
 
@@ -180,7 +180,7 @@ export async function uploadResume(
     action: "candidate.resume_uploaded",
     entityType: "resume",
     entityId: resume.id,
-    summary: `Curriculo ${file.name} enviado para ${candidate.fullName}.`,
+    summary: `Currículo ${file.name} enviado para ${candidate.fullName}.`,
     metadata: {
       candidateId,
       resumeId: resume.id,
@@ -212,7 +212,7 @@ export async function analyzeCandidateResume(
 
   if (!organization) {
     return {
-      error: "Organizacao nao encontrada."
+      error: "Organização não encontrada."
     };
   }
 
@@ -226,7 +226,7 @@ export async function analyzeCandidateResume(
 
   if (!process.env.OPENAI_API_KEY) {
     return {
-      error: "Configure OPENAI_API_KEY para habilitar a analise com IA."
+      error: "Configure OPENAI_API_KEY para habilitar a análise com IA."
     };
   }
 
@@ -245,7 +245,7 @@ export async function analyzeCandidateResume(
 
   if (!candidate) {
     return {
-      error: "Candidato nao encontrado para esta organizacao."
+      error: "Candidato não encontrado para esta organização."
     };
   }
 
@@ -253,7 +253,7 @@ export async function analyzeCandidateResume(
 
   if (!latestResume?.extractedText) {
     return {
-      error: "Esse candidato ainda nao possui texto de curriculo extraido para analise."
+      error: "Esse candidato ainda não possui texto de currículo extraído para análise."
     };
   }
 
@@ -274,7 +274,7 @@ export async function analyzeCandidateResume(
       action: "candidate.resume_ai_queued",
       entityType: "candidate",
       entityId: candidate.id,
-      summary: `Analise com IA enfileirada para ${candidate.fullName}.`,
+      summary: `Análise com IA enfileirada para ${candidate.fullName}.`,
       metadata: {
         candidateId: candidate.id,
         resumeId: latestResume.id
@@ -286,13 +286,13 @@ export async function analyzeCandidateResume(
     revalidatePath(`/candidates/${candidateId}`);
 
     return {
-      success: "Analise enviada para processamento. O perfil sera atualizado em instantes."
+      success: "Análise enviada para processamento. O perfil será atualizado em instantes."
     };
   } catch (error) {
     logError("Failed to enqueue resume AI analysis", error, { candidateId }, "candidates");
 
     return {
-      error: "Nao foi possivel iniciar a analise com IA neste momento."
+      error: "Não foi possível iniciar a análise com IA neste momento."
     };
   }
 }
@@ -309,7 +309,7 @@ export async function createCandidateNote(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar a nota."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar a nota."
     };
   }
 
@@ -322,7 +322,7 @@ export async function createCandidateNote(
 
   if (!candidate) {
     return {
-      error: "Candidato nao encontrado."
+      error: "Candidato não encontrado."
     };
   }
 

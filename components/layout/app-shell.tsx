@@ -78,13 +78,13 @@ export function AppShell({ user, canViewRevenueOps, billing, children, switchOrg
   const billingSignal = showBillingSignal
     ? [
         billing?.status === BillingStatus.TRIALING
-          ? `trial ${billing.trialEndsAt ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(billing.trialEndsAt) : "live"}`
+          ? `trial até ${billing.trialEndsAt ? new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(billing.trialEndsAt) : "agora"}`
           : billing?.status === BillingStatus.PAST_DUE
-            ? "billing due"
-            : "limit close",
+            ? "fatura pendente"
+            : "limite próximo",
         usageAlerts[0]
           ? `${usageAlerts[0].usage}/${usageAlerts[0].limit} ${BILLING_LIMIT_LABELS[usageAlerts[0].key].toLowerCase()}`
-          : billingPlan?.label ?? "growth",
+          : billingPlan?.label ?? "Growth",
         billing ? BILLING_STATUS_LABELS[billing.status].toLowerCase() : "active"
       ]
     : [];

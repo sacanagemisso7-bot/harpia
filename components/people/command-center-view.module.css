@@ -120,7 +120,7 @@
 
 .quickLink:hover,
 .inlineLink:hover {
-  border-color: rgba(129, 155, 255, 0.24);
+  border-color: rgba(214, 198, 165, 0.24);
 }
 
 .grid {
@@ -239,7 +239,7 @@
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, rgba(129, 155, 255, 0.88), rgba(96, 122, 235, 0.84));
+  background: linear-gradient(90deg, rgba(214, 198, 165, 0.88), rgba(184, 169, 138, 0.84));
 }
 
 .eventItem,
@@ -275,3 +275,35 @@
     grid-template-columns: 1fr;
   }
 }
+
+:global(html.light) .hero,
+:global(html.light) .panel,
+:global(html.light) .metricTile,
+:global(html.light) .alertItem,
+:global(html.light) .queueItem,
+:global(html.light) .workflowItem,
+:global(html.light) .eventItem,
+:global(html.light) .complianceItem,
+:global(html.light) .snapshotItem,
+:global(html.light) .quickLink,
+:global(html.light) .inlineLink,
+:global(html.light) .emptyRow {
+  border-color: hsl(var(--border) / 0.92);
+  background:
+    linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.86)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent 42%);
+  box-shadow:
+    0 14px 28px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+:global(html.light) .progressTrack {
+  background: hsl(var(--secondary));
+}
+
+:global(html.light) .quickLink:hover,
+:global(html.light) .inlineLink:hover,
+:global(html.light) .alertItem:hover {
+  border-color: hsl(var(--primary) / 0.22);
+}
+

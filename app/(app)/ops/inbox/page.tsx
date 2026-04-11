@@ -23,7 +23,7 @@ export default async function OperationsInboxPage() {
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Solicitacoes abertas</span>
+          <span className={styles.statLabel}>Solicitações abertas</span>
           <strong className={styles.statValue}>{inbox.metrics.openRequests}</strong>
           <span className={styles.statHint}>Itens que ainda exigem retorno ou resolucao.</span>
         </div>
@@ -40,7 +40,7 @@ export default async function OperationsInboxPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>SLAs em risco</span>
           <strong className={styles.statValue}>{inbox.metrics.requestsAtRisk}</strong>
-          <span className={styles.statHint}>Casos que pedem decisao ou resposta mais rapida.</span>
+          <span className={styles.statHint}>Casos que pedem decisão ou resposta mais r?pida.</span>
         </div>
       </section>
 
@@ -50,7 +50,7 @@ export default async function OperationsInboxPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Priority queue</span>
               <h2 className={styles.panelTitle}>Fila de prioridades</h2>
-              <p className={styles.panelDescription}>Leitura unica do que esta exigindo acao imediata na operacao interna.</p>
+              <p className={styles.panelDescription}>Leitura unica do que esta exigindo ação imediata na operação interna.</p>
             </div>
             {inbox.alerts.length ? (
               <div className={styles.linkList}>
@@ -67,7 +67,7 @@ export default async function OperationsInboxPage() {
                       {item.title}
                     </strong>
                     <span>{item.description}</span>
-                    <span>{item.severity === "high" ? "Alta prioridade" : "Atencao"}</span>
+                    <span>{item.severity === "high" ? "Alta prioridade" : "Aten??o"}</span>
                   </Link>
                 ))}
               </div>
@@ -81,7 +81,7 @@ export default async function OperationsInboxPage() {
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Now</span>
             <strong className={styles.spotlightValue}>{inbox.alerts.length}</strong>
-            <p className={styles.panelDescription}>Itens com prioridade real aguardando acao do time.</p>
+            <p className={styles.panelDescription}>Itens com prioridade real aguardando ação do time.</p>
           </div>
 
           <div className={styles.panel}>
@@ -114,7 +114,7 @@ export default async function OperationsInboxPage() {
             <div className={styles.itemHeader}>
               <div className={styles.itemLead}>
                 <span className={styles.panelEyebrow}>Hiring</span>
-                <h3 className={styles.panelTitle}>Modulo complementar</h3>
+                <h3 className={styles.panelTitle}>Módulo complementar</h3>
               </div>
               <span className={styles.iconLead}>
                 <BriefcaseBusiness className="h-4 w-4" />
@@ -122,11 +122,11 @@ export default async function OperationsInboxPage() {
             </div>
             <div className={styles.surfaceMuted}>
               <span className={styles.itemDescription}>
-                {inbox.hiring.applicationCount} aplicacoes, {inbox.hiring.jobCount} vagas abertas e {inbox.hiring.slaAlerts} alertas operacionais.
+                {inbox.hiring.applicationCount} aplicações, {inbox.hiring.jobCount} vagas abertas e {inbox.hiring.slaAlerts} alertas operacionais.
               </span>
             </div>
             <Link href="/hiring" className={styles.linkItem}>
-              <strong>Abrir modulo de hiring</strong>
+              <strong>Abrir módulo de hiring</strong>
               <span>Continue a leitura do lado de recrutamento quando necessario.</span>
             </Link>
           </div>

@@ -71,7 +71,7 @@ export async function createInterview(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar a entrevista."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar a entrevista."
     };
   }
 
@@ -88,7 +88,7 @@ export async function createInterview(
 
   if (!application) {
     return {
-      error: "Aplicacao nao encontrada."
+      error: "Aplicação não encontrada."
     };
   }
 
@@ -129,7 +129,7 @@ export async function createInterview(
     action: "interview.created",
     entityType: "interview",
     entityId: interview.id,
-    summary: `Entrevista "${parsed.data.title}" agendada para a aplicacao.`,
+    summary: `Entrevista "${parsed.data.title}" agendada para a aplicação.`,
     metadata: {
       interviewId: interview.id,
       applicationId,
@@ -146,7 +146,7 @@ export async function createInterview(
     organizationId: user.organizationId,
     actorId: user.id,
     trigger: AutomationTrigger.INTERVIEW_CREATED,
-    note: "Aplicacao movida automaticamente apos agendamento de entrevista."
+    note: "Aplicação movida automaticamente apos agendamento de entrevista."
   });
 
   return {
@@ -211,7 +211,7 @@ export async function updateInterviewStatus(interviewId: string, status: Intervi
       organizationId: user.organizationId,
       actorId: user.id,
       trigger: AutomationTrigger.INTERVIEW_COMPLETED,
-      note: "Aplicacao movida automaticamente apos conclusao da entrevista."
+      note: "Aplicação movida automaticamente apos conclus?o da entrevista."
     });
   }
 }
@@ -236,7 +236,7 @@ export async function saveInterviewFeedback(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o feedback."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o feedback."
     };
   }
 
@@ -249,7 +249,7 @@ export async function saveInterviewFeedback(
 
   if (!interview) {
     return {
-      error: "Entrevista nao encontrada."
+      error: "Entrevista não encontrada."
     };
   }
 
@@ -313,7 +313,7 @@ export async function saveInterviewFeedback(
       organizationId: user.organizationId,
       actorId: user.id,
       trigger: AutomationTrigger.FEEDBACK_RECOMMENDED,
-      note: "Aplicacao movida automaticamente apos feedback positivo."
+      note: "Aplicação movida automaticamente apos feedback positivo."
     });
   }
 
@@ -326,7 +326,7 @@ export async function saveInterviewFeedback(
       organizationId: user.organizationId,
       actorId: user.id,
       trigger: AutomationTrigger.FEEDBACK_REJECTED,
-      note: "Aplicacao movida automaticamente apos feedback negativo."
+      note: "Aplicação movida automaticamente apos feedback negativo."
     });
   }
 
@@ -339,7 +339,7 @@ export async function sendInterviewInvite(interviewId: string) {
   const user = await requirePermission("manage_interviews");
 
   if (!isEmailConfigured()) {
-    throw new Error("SMTP nao configurado.");
+    throw new Error("SMTP não configurado.");
   }
 
   const interview = await prisma.interview.findFirst({
@@ -430,7 +430,7 @@ export async function rescheduleInterview(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar o reagendamento."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar o reagendamento."
     };
   }
 
@@ -454,7 +454,7 @@ export async function rescheduleInterview(
 
   if (!interview) {
     return {
-      error: "Entrevista nao encontrada."
+      error: "Entrevista não encontrada."
     };
   }
 

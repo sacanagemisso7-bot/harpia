@@ -1,23 +1,23 @@
 .layout {
   --dashboard-bg: #0c1219;
   --dashboard-bg-2: #0f1620;
-  --dashboard-surface: rgba(18, 25, 35, 0.82);
-  --dashboard-surface-strong: rgba(21, 30, 41, 0.92);
+  --dashboard-surface: rgba(26, 26, 29, 0.82);
+  --dashboard-surface-strong: rgba(35, 35, 38, 0.92);
   --dashboard-border: rgba(148, 163, 184, 0.14);
   --dashboard-border-soft: rgba(148, 163, 184, 0.08);
   --dashboard-text: rgba(239, 244, 250, 0.96);
   --dashboard-muted: rgba(166, 178, 194, 0.68);
   --dashboard-subtle: rgba(166, 178, 194, 0.46);
-  --dashboard-accent: rgba(129, 155, 255, 0.92);
-  --dashboard-accent-soft: rgba(129, 155, 255, 0.12);
+  --dashboard-accent: rgba(214, 198, 165, 0.92);
+  --dashboard-accent-soft: rgba(214, 198, 165, 0.12);
   --dashboard-danger: rgba(244, 114, 182, 0.16);
   min-height: 100svh;
   display: grid;
   grid-template-columns: 250px minmax(0, 1fr);
   background:
-    radial-gradient(circle at top left, rgba(129, 155, 255, 0.15), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(45, 212, 191, 0.08), transparent 22%),
-    linear-gradient(180deg, #0b1016 0%, #0e141d 50%, #0a0f15 100%);
+    radial-gradient(circle at top left, rgba(214, 198, 165, 0.15), transparent 24%),
+    radial-gradient(circle at bottom right, rgba(117, 134, 111, 0.08), transparent 22%),
+    linear-gradient(180deg, #0b0b0c 0%, #1a1a1d 50%, #111315 100%);
   color: var(--dashboard-text);
 }
 
@@ -29,8 +29,8 @@
   padding: 1.25rem 1rem 1rem 1.1rem;
   border-right: 1px solid var(--dashboard-border-soft);
   background:
-    linear-gradient(180deg, rgba(14, 20, 28, 0.9), rgba(15, 21, 30, 0.72)),
-    radial-gradient(circle at top left, rgba(129, 155, 255, 0.08), transparent 28%);
+    linear-gradient(180deg, rgba(26, 26, 29, 0.9), rgba(35, 35, 38, 0.72)),
+    radial-gradient(circle at top left, rgba(214, 198, 165, 0.08), transparent 28%);
 }
 
 .sidebar::after {
@@ -202,6 +202,30 @@
   gap: 0.72rem;
 }
 
+.topbarControls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.72rem;
+  width: 100%;
+}
+
+.themeDock {
+  flex-shrink: 0;
+}
+
+.pdfButton {
+  min-height: 2.7rem;
+  border-color: var(--dashboard-border) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02)) !important;
+  color: var(--dashboard-text) !important;
+}
+
+.pdfButton:hover {
+  border-color: color-mix(in srgb, var(--dashboard-accent) 38%, transparent) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.028)) !important;
+}
+
 .metaPill,
 .legendPill,
 .moduleStat {
@@ -225,7 +249,7 @@
   height: 0.34rem;
   border-radius: 999px;
   background: var(--dashboard-accent);
-  box-shadow: 0 0 12px rgba(129, 155, 255, 0.28);
+  box-shadow: 0 0 12px rgba(214, 198, 165, 0.28);
 }
 
 .content {
@@ -586,8 +610,8 @@
 }
 
 .primaryAction {
-  border: 1px solid rgba(129, 155, 255, 0.3);
-  background: linear-gradient(180deg, rgba(129, 155, 255, 0.94), rgba(96, 122, 235, 0.92));
+  border: 1px solid rgba(214, 198, 165, 0.3);
+  background: linear-gradient(180deg, rgba(214, 198, 165, 0.94), rgba(184, 169, 138, 0.92));
   color: rgba(10, 15, 23, 0.96);
 }
 
@@ -695,3 +719,153 @@
     flex-direction: column;
   }
 }
+
+:global(html.light) .layout {
+  --dashboard-bg: hsl(var(--background));
+  --dashboard-bg-2: hsl(var(--surface-2));
+  --dashboard-surface: color-mix(in oklab, hsl(var(--card)) 86%, white 14%);
+  --dashboard-surface-strong: color-mix(in oklab, hsl(var(--card)) 94%, white 6%);
+  --dashboard-border: hsl(var(--border) / 0.96);
+  --dashboard-border-soft: hsl(var(--border) / 0.72);
+  --dashboard-text: hsl(var(--foreground));
+  --dashboard-muted: hsl(var(--muted-foreground));
+  --dashboard-subtle: hsl(var(--muted-foreground) / 0.72);
+  --dashboard-accent: hsl(var(--primary));
+  --dashboard-accent-soft: hsl(var(--primary) / 0.12);
+  --dashboard-danger: hsl(var(--destructive) / 0.12);
+  background:
+    radial-gradient(circle at top left, hsl(var(--primary) / 0.1), transparent 24%),
+    radial-gradient(circle at bottom right, hsl(var(--accent-warm) / 0.08), transparent 22%),
+    linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface-2)) 48%, hsl(var(--background)));
+}
+
+:global(html.light) .sidebar {
+  border-right-color: hsl(var(--border) / 0.78);
+  background:
+    linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.9)),
+    radial-gradient(circle at top left, hsl(var(--primary) / 0.08), transparent 30%);
+}
+
+:global(html.light) .sidebar::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.82), transparent 16%);
+}
+
+:global(html.light) .brandBlock,
+:global(html.light) .boardColumn,
+:global(html.light) .boardItem,
+:global(html.light) .metaPill,
+:global(html.light) .legendPill,
+:global(html.light) .moduleStat {
+  border-color: hsl(var(--border) / 0.92);
+  background: linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.86));
+  box-shadow:
+    0 14px 28px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+:global(html.light) .pdfButton {
+  border-color: hsl(var(--border) / 0.92) !important;
+  background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary) / 0.82)) !important;
+  color: hsl(var(--foreground)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 22px rgba(15, 23, 42, 0.05);
+}
+
+:global(html.light) .brandMark,
+:global(html.light) .boardColumnIcon {
+  border-color: hsl(var(--border) / 0.92);
+  background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary) / 0.7));
+  color: hsl(var(--foreground) / 0.82);
+  box-shadow:
+    0 10px 20px rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+:global(html.light) .navLink,
+:global(html.light) .navAction,
+:global(html.light) .boardItemSubtitle,
+:global(html.light) .boardItemMeta,
+:global(html.light) .moduleItemMeta,
+:global(html.light) .panelSubtitle,
+:global(html.light) .moduleSubtitle,
+:global(html.light) .insightItem,
+:global(html.light) .queueStatus,
+:global(html.light) .subtitle,
+:global(html.light) .metricHint,
+:global(html.light) .boardSubtitle,
+:global(html.light) .boardColumnTitle p {
+  color: hsl(var(--muted-foreground));
+}
+
+:global(html.light) .navLink:hover,
+:global(html.light) .navAction:hover,
+:global(html.light) .navLinkActive,
+:global(html.light) .boardItem:hover,
+:global(html.light) .boardItemActive {
+  border-color: hsl(var(--border));
+  background: linear-gradient(180deg, hsl(var(--card)), hsl(var(--secondary) / 0.78));
+  color: hsl(var(--foreground));
+  box-shadow:
+    0 16px 30px rgba(15, 23, 42, 0.08),
+    0 0 0 1px hsl(var(--border) / 0.72),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+  transform: translateX(2px);
+}
+
+:global(html.light) .surface {
+  background:
+    linear-gradient(180deg, hsl(var(--card) / 0.99), hsl(var(--surface-3) / 0.9)),
+    radial-gradient(circle at top left, hsl(var(--primary) / 0.08), transparent 24%);
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.94);
+}
+
+:global(html.light) .surface::before {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.88), transparent);
+}
+
+:global(html.light) .boardColumn {
+  background: linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.82));
+}
+
+:global(html.light) .boardItemCritical {
+  border-color: hsl(var(--destructive) / 0.24);
+  background:
+    linear-gradient(180deg, hsl(var(--card)), hsl(var(--surface-3) / 0.88)),
+    linear-gradient(90deg, hsl(var(--destructive) / 0.1), transparent 42%);
+}
+
+:global(html.light) .boardItemValue,
+:global(html.light) .moduleItemValue,
+:global(html.light) .queueItem strong,
+:global(html.light) .candidateItem strong,
+:global(html.light) .metricRow strong {
+  color: hsl(var(--primary));
+}
+
+:global(html.light) .primaryAction {
+  border-color: hsl(var(--primary) / 0.2);
+  background: linear-gradient(180deg, hsl(var(--primary) / 0.96), hsl(var(--primary) / 0.84));
+  color: hsl(var(--primary-foreground));
+  box-shadow: 0 14px 28px hsl(var(--primary) / 0.16);
+}
+
+:global(html.light) .secondaryAction,
+:global(html.light) .queueItem,
+:global(html.light) .candidateItem {
+  color: hsl(var(--muted-foreground));
+}
+
+:global(html.light) .metricRow span,
+:global(html.light) .queueItem span:first-child,
+:global(html.light) .candidateItem span:first-child,
+:global(html.light) .metricLabel,
+:global(html.light) .eyebrow,
+:global(html.light) .sidebarLabel,
+:global(html.light) .brandMeta {
+  color: hsl(var(--muted-foreground) / 0.76);
+}
+
+

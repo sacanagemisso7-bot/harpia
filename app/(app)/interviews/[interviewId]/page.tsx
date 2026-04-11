@@ -100,12 +100,12 @@ export default async function InterviewDetailPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Feedbacks</span>
           <strong className={styles.statValue}>{interview.feedbacks.length}</strong>
-          <span className={styles.statHint}>Entradas estruturadas ja salvas nesta sessao.</span>
+          <span className={styles.statHint}>Entradas estruturadas ja salvas nesta sess?o.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Scorecard</span>
           <strong className={styles.statValue}>{scorecardItems.length}</strong>
-          <span className={styles.statHint}>Eixos de avaliacao puxados da vaga.</span>
+          <span className={styles.statHint}>Eixos de avaliação puxados da vaga.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Invite</span>
@@ -167,7 +167,7 @@ export default async function InterviewDetailPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Feedback</span>
-              <h2 className={styles.panelTitle}>Avaliacao estruturada</h2>
+              <h2 className={styles.panelTitle}>Avaliação estruturada</h2>
               <p className={styles.panelDescription}>Scorecard, recomendacao e evidencias desta entrevista.</p>
             </div>
 
@@ -203,7 +203,7 @@ export default async function InterviewDetailPage({
               </div>
             ) : (
               <div className={styles.surfaceMuted}>
-                Seu papel atual pode visualizar a entrevista, mas nao pode registrar feedback estruturado.
+                Seu papel atual pode visualizar a entrevista, mas não pode registrar feedback estruturado.
               </div>
             )}
 
@@ -223,9 +223,9 @@ export default async function InterviewDetailPage({
                         </div>
                         <div className={styles.tagWrap}>
                           <span className={styles.tagPill}>Geral {feedback.overallScore}/5</span>
-                          <span className={styles.tagPill}>Comunicacao {feedback.communicationScore}/5</span>
+                          <span className={styles.tagPill}>Comunicação {feedback.communicationScore}/5</span>
                           <span className={styles.tagPill}>Role fit {feedback.roleFitScore}/5</span>
-                          {feedback.technicalScore ? <span className={styles.tagPill}>Tecnico {feedback.technicalScore}/5</span> : null}
+                          {feedback.technicalScore ? <span className={styles.tagPill}>Técnico {feedback.technicalScore}/5</span> : null}
                         </div>
                       </div>
 
@@ -278,7 +278,7 @@ export default async function InterviewDetailPage({
                 })}
               </div>
             ) : (
-              <div className={styles.emptyState}>Ainda nao ha feedback salvo para esta entrevista.</div>
+              <div className={styles.emptyState}>Ainda não ha feedback salvo para esta entrevista.</div>
             )}
           </div>
         </div>
@@ -287,14 +287,14 @@ export default async function InterviewDetailPage({
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Interview status</span>
             <strong className={styles.spotlightValue}>{interview.status}</strong>
-            <p className={styles.panelDescription}>Estado atual desta sessao dentro do fluxo da vaga.</p>
+            <p className={styles.panelDescription}>Estado atual desta sess?o dentro do fluxo da vaga.</p>
           </div>
 
           <div className={styles.panel}>
             <div className={styles.itemHeader}>
               <div className={styles.itemLead}>
                 <span className={styles.panelEyebrow}>Calendar</span>
-                <h3 className={styles.panelTitle}>Acoes operacionais</h3>
+                <h3 className={styles.panelTitle}>Ações operacionais</h3>
               </div>
               <span className={styles.iconLead}>
                 <CalendarDays className="h-4 w-4" />
@@ -340,7 +340,7 @@ export default async function InterviewDetailPage({
               )}
 
               <Button asChild variant="outline" className="w-full">
-                <Link href={`/applications/${interview.applicationId}`}>Abrir aplicacao</Link>
+                <Link href={`/applications/${interview.applicationId}`}>Abrir aplicação</Link>
               </Button>
             </div>
           </div>
@@ -376,7 +376,7 @@ export default async function InterviewDetailPage({
             <div className={styles.itemHeader}>
               <div className={styles.itemLead}>
                 <span className={styles.panelEyebrow}>Context</span>
-                <h3 className={styles.panelTitle}>Aplicacao vinculada</h3>
+                <h3 className={styles.panelTitle}>Aplicação vinculada</h3>
               </div>
               <span className={styles.iconLead}>
                 <UserRound className="h-4 w-4" />

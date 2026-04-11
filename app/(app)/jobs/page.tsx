@@ -71,8 +71,8 @@ export default async function JobsPage({
     <div className={styles.page}>
       <PageHeader
         eyebrow="Jobs"
-        title="Vagas com criterio e contexto"
-        description="Filtros, views salvas e leitura rapida das requisicoes para o time abrir, revisar e priorizar melhor."
+        title="Vagas com critério e contexto"
+        description="Filtros, views salvas e leitura r?pida das requisi??es para o time abrir, revisar e priorizar melhor."
         actions={
           canManageJobs ? (
             <Button asChild>
@@ -94,17 +94,17 @@ export default async function JobsPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Abertas</span>
           <strong className={styles.statValue}>{openCount}</strong>
-          <p className={styles.statHint}>Requisicoes em captura ativa nesta leitura</p>
+          <p className={styles.statHint}>Requisi??es em captura ativa nesta leitura</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacoes</span>
+          <span className={styles.statLabel}>Aplicações</span>
           <strong className={styles.statValue}>{totalApplications}</strong>
           <p className={styles.statHint}>Volume somado das vagas visiveis agora</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Locais</span>
           <strong className={styles.statValue}>{uniqueLocations}</strong>
-          <p className={styles.statHint}>{draftCount} vaga(s) ainda em rascunho na pagina</p>
+          <p className={styles.statHint}>{draftCount} vaga(s) ainda em rascunho na página</p>
         </div>
       </section>
 
@@ -113,7 +113,7 @@ export default async function JobsPage({
           <FilterBar
             q={filters.q}
             resetHref="/jobs"
-            placeholder="Buscar por titulo, area ou localizacao"
+            placeholder="Buscar por titulo, area ou localização"
             selects={[
               {
                 name: "status",
@@ -180,7 +180,7 @@ export default async function JobsPage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Resumo</span>
               <h2 className={styles.panelTitle}>Onde a carga esta</h2>
-              <p className={styles.panelDescription}>Areas com mais requisicoes e vagas com maior volume de aplicacoes na pagina atual.</p>
+              <p className={styles.panelDescription}>Areas com mais requisi??es e vagas com maior volume de aplicações na página atual.</p>
             </div>
 
             <div className={styles.summaryGrid}>

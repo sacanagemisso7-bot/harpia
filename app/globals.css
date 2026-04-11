@@ -1,4 +1,4 @@
-﻿@tailwind base;
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -6,40 +6,40 @@
   :root,
   html.dark {
     color-scheme: dark;
-    --brand-forest: 220 28% 16%;
-    --brand-graphite: 220 30% 8%;
-    --brand-ivory: 210 26% 94%;
-    --brand-gold: 221 74% 68%;
-    --background: 220 30% 8%;
+    --brand-forest: 156 60% 15%;
+    --brand-graphite: 240 4% 5%;
+    --brand-ivory: 36 29% 94%;
+    --brand-gold: 39 39% 74%;
+    --background: 240 4% 5%;
     --foreground: var(--brand-ivory);
-    --card: 220 24% 12%;
+    --card: 240 5% 11%;
     --card-foreground: var(--brand-ivory);
-    --popover: 220 24% 12%;
+    --popover: 240 5% 11%;
     --popover-foreground: var(--brand-ivory);
-    --primary: 221 74% 67%;
-    --primary-foreground: 220 34% 10%;
-    --secondary: 220 20% 16%;
+    --primary: 39 37% 74%;
+    --primary-foreground: 240 18% 8%;
+    --secondary: 240 4% 15%;
     --secondary-foreground: var(--brand-ivory);
-    --muted: 220 18% 18%;
-    --muted-foreground: 215 16% 74%;
-    --accent: 220 18% 18%;
+    --muted: 240 4% 18%;
+    --muted-foreground: 33 15% 78%;
+    --accent: 240 4% 15%;
     --accent-foreground: var(--brand-ivory);
     --destructive: 8 34% 48%;
     --destructive-foreground: 0 0% 100%;
-    --border: 219 17% 24%;
-    --input: 220 18% 18%;
-    --ring: 221 74% 68%;
-    --success: 146 26% 45%;
-    --warning: 38 68% 63%;
-    --info: 206 58% 64%;
-    --shell: 220 30% 8%;
+    --border: 240 4% 22%;
+    --input: 240 4% 15%;
+    --ring: 39 37% 74%;
+    --success: 150 18% 46%;
+    --warning: 37 52% 60%;
+    --info: 194 20% 62%;
+    --shell: 240 4% 5%;
     --shell-foreground: var(--brand-ivory);
-    --surface-1: 220 30% 8%;
-    --surface-2: 220 24% 12%;
-    --surface-3: 220 20% 16%;
-    --accent-secondary: 221 48% 58%;
-    --accent-tertiary: 215 16% 74%;
-    --accent-warm: var(--brand-gold);
+    --surface-1: 240 4% 5%;
+    --surface-2: 240 5% 11%;
+    --surface-3: 240 4% 15%;
+    --accent-secondary: 36 27% 60%;
+    --accent-tertiary: 33 15% 78%;
+    --accent-warm: 37 25% 63%;
     --radius: 0.92rem;
     --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-snappy: cubic-bezier(0.2, 0.9, 0.3, 1);
@@ -55,40 +55,40 @@
 
   html.light {
     color-scheme: light;
-    --brand-forest: 220 28% 16%;
-    --brand-graphite: 220 30% 8%;
-    --brand-ivory: 210 26% 94%;
-    --brand-gold: 221 58% 58%;
-    --background: 210 28% 97%;
-    --foreground: 220 24% 14%;
-    --card: 210 30% 99%;
-    --card-foreground: 220 24% 14%;
-    --popover: 210 30% 99%;
-    --popover-foreground: 220 24% 14%;
-    --primary: 222 52% 46%;
-    --primary-foreground: 210 30% 98%;
-    --secondary: 216 28% 94%;
-    --secondary-foreground: 220 24% 14%;
-    --muted: 214 24% 93%;
-    --muted-foreground: 218 12% 41%;
-    --accent: 214 24% 93%;
-    --accent-foreground: 220 24% 14%;
+    --brand-forest: 156 44% 18%;
+    --brand-graphite: 240 4% 5%;
+    --brand-ivory: 36 29% 94%;
+    --brand-gold: 37 29% 64%;
+    --background: 36 24% 96%;
+    --foreground: 240 8% 10%;
+    --card: 36 20% 98%;
+    --card-foreground: 240 8% 10%;
+    --popover: 36 20% 98%;
+    --popover-foreground: 240 8% 10%;
+    --primary: 37 29% 64%;
+    --primary-foreground: 240 10% 12%;
+    --secondary: 34 18% 92%;
+    --secondary-foreground: 240 8% 10%;
+    --muted: 34 18% 92%;
+    --muted-foreground: 28 9% 38%;
+    --accent: 34 18% 92%;
+    --accent-foreground: 240 8% 10%;
     --destructive: 8 44% 44%;
     --destructive-foreground: 0 0% 100%;
-    --border: 214 22% 86%;
-    --input: 214 24% 92%;
-    --ring: 222 52% 46%;
-    --success: 146 28% 38%;
-    --warning: 38 72% 46%;
-    --info: 215 48% 46%;
-    --shell: 210 28% 97%;
-    --shell-foreground: 220 24% 14%;
-    --surface-1: 210 28% 97%;
-    --surface-2: 210 30% 99%;
-    --surface-3: 214 24% 95%;
-    --accent-secondary: 222 52% 46%;
-    --accent-tertiary: 218 12% 41%;
-    --accent-warm: 221 46% 58%;
+    --border: 34 14% 84%;
+    --input: 34 16% 92%;
+    --ring: 37 29% 64%;
+    --success: 150 17% 37%;
+    --warning: 37 58% 46%;
+    --info: 207 26% 42%;
+    --shell: 36 24% 96%;
+    --shell-foreground: 240 8% 10%;
+    --surface-1: 36 24% 96%;
+    --surface-2: 36 20% 98%;
+    --surface-3: 34 17% 94%;
+    --accent-secondary: 35 21% 54%;
+    --accent-tertiary: 28 9% 38%;
+    --accent-warm: 37 25% 63%;
     --shadow-panel:
       0 18px 42px rgba(22, 18, 12, 0.08),
       0 6px 18px rgba(22, 18, 12, 0.05),
@@ -116,15 +116,15 @@
   html.dark body,
   :root body {
     background:
-      radial-gradient(circle at 15% -4%, rgba(129, 155, 255, 0.055), transparent 22%),
+      radial-gradient(circle at 15% -4%, rgba(214, 198, 165, 0.045), transparent 22%),
       radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.028), transparent 24%),
-      linear-gradient(180deg, rgb(11 11 12), rgb(17 17 20), rgb(11 11 12));
+      linear-gradient(180deg, rgb(11 11 12), rgb(26 26 29), rgb(11 11 12));
   }
 
   html.light body {
     background:
-      radial-gradient(circle at 22% -4%, rgba(129, 155, 255, 0.12), transparent 18%),
-      radial-gradient(circle at 100% 0%, rgba(96, 122, 235, 0.09), transparent 20%),
+      radial-gradient(circle at 22% -4%, rgba(214, 198, 165, 0.1), transparent 18%),
+      radial-gradient(circle at 100% 0%, rgba(184, 169, 138, 0.08), transparent 20%),
       linear-gradient(180deg, rgb(248 245 239), rgb(245 241 234), rgb(241 236 227));
   }
 
@@ -163,7 +163,7 @@
   html.dark body::after,
   :root body::after {
     background:
-      radial-gradient(circle at 50% 0%, rgba(129, 155, 255, 0.08), transparent 18%),
+      radial-gradient(circle at 50% 0%, rgba(214, 198, 165, 0.06), transparent 18%),
       radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.035), transparent 16%);
   }
 
@@ -177,11 +177,11 @@
 
   html.dark ::selection,
   :root ::selection {
-    background: rgba(129, 155, 255, 0.2);
+    background: rgba(214, 198, 165, 0.2);
   }
 
   html.light ::selection {
-    background: rgba(96, 122, 235, 0.2);
+    background: rgba(184, 169, 138, 0.2);
   }
 
   a,
@@ -227,7 +227,7 @@
   ::-webkit-scrollbar-thumb {
     border: 2px solid transparent;
     border-radius: 999px;
-    background: linear-gradient(180deg, rgba(207, 202, 194, 0.18), rgba(96, 122, 235, 0.28)) padding-box;
+    background: linear-gradient(180deg, rgba(207, 202, 194, 0.18), rgba(184, 169, 138, 0.28)) padding-box;
   }
 
   html.light ::-webkit-scrollbar-track {
@@ -235,7 +235,7 @@
   }
 
   html.light ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(96, 122, 235, 0.34), rgba(132, 122, 100, 0.26)) padding-box;
+    background: linear-gradient(180deg, rgba(184, 169, 138, 0.34), rgba(132, 122, 100, 0.26)) padding-box;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -272,7 +272,7 @@
     top: 0.5rem;
     bottom: 2rem;
     width: 1px;
-    background: linear-gradient(180deg, rgba(129, 155, 255, 0.28), transparent 86%);
+    background: linear-gradient(180deg, rgba(214, 198, 165, 0.28), transparent 86%);
     opacity: 0.7;
     pointer-events: none;
   }
@@ -285,7 +285,7 @@
     width: 18rem;
     height: 10rem;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(129, 155, 255, 0.08), transparent 70%);
+    background: radial-gradient(circle, rgba(214, 198, 165, 0.08), transparent 70%);
     filter: blur(34px);
     opacity: 0.6;
     pointer-events: none;
@@ -468,7 +468,7 @@
     content: "";
     width: 2rem;
     height: 1px;
-    background: linear-gradient(90deg, rgba(129, 155, 255, 0.34), transparent);
+    background: linear-gradient(90deg, rgba(214, 198, 165, 0.34), transparent);
   }
 
   .scene-divider {
@@ -746,44 +746,46 @@
 
   .chat-pane-shell {
     position: relative;
-    border-radius: 1.3rem 1.72rem 1.42rem 1.08rem;
+    border-radius: 1.35rem;
     border: 1px solid rgba(120, 129, 142, 0.1);
     background:
-      linear-gradient(180deg, hsl(var(--card) / 0.9), hsl(var(--secondary) / 0.78)),
-      radial-gradient(circle at 10% 0%, hsl(var(--accent-warm) / 0.08), transparent 20%),
+      linear-gradient(180deg, hsl(var(--card) / 0.94), hsl(var(--secondary) / 0.8)),
+      radial-gradient(circle at 10% 0%, hsl(var(--accent-warm) / 0.1), transparent 22%),
       linear-gradient(135deg, hsl(var(--foreground) / 0.028), transparent 48%);
-    padding: 1.05rem;
+    padding: 1.1rem;
     box-shadow:
-      0 22px 40px rgba(0, 0, 0, 0.18),
+      0 20px 34px rgba(0, 0, 0, 0.14),
       inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   .chat-message-shell {
     position: relative;
-    border-radius: 1.18rem 1.56rem 1.3rem 1rem;
+    border-radius: 1.28rem;
     border: 1px solid rgba(120, 129, 142, 0.1);
     padding: 1.24rem 1.3rem;
     box-shadow:
-      0 18px 28px rgba(0, 0, 0, 0.16),
+      0 16px 24px rgba(0, 0, 0, 0.14),
       inset 0 1px 0 rgba(255, 255, 255, 0.03);
   }
 
   .assistant-message {
-    background: linear-gradient(180deg, hsl(var(--card) / 0.96), hsl(var(--secondary) / 0.92));
+    background:
+      linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--secondary) / 0.94)),
+      radial-gradient(circle at top left, hsl(var(--accent-warm) / 0.06), transparent 26%);
   }
 
   .user-message {
     align-self: flex-end;
     background:
-      linear-gradient(180deg, hsl(var(--secondary) / 0.96), hsl(var(--card) / 0.92)),
-      radial-gradient(circle at top right, hsl(var(--accent-warm) / 0.12), transparent 30%);
+      linear-gradient(180deg, hsl(var(--secondary) / 0.98), hsl(var(--card) / 0.92)),
+      radial-gradient(circle at top right, hsl(var(--accent-warm) / 0.16), transparent 34%);
     color: rgba(240, 243, 248, 0.94);
     border-color: hsl(var(--accent-warm) / 0.18);
   }
 
   .system-message {
     background:
-      linear-gradient(180deg, rgba(56, 46, 34, 0.72), rgba(38, 31, 23, 0.66)),
+      linear-gradient(180deg, rgba(56, 46, 34, 0.74), rgba(38, 31, 23, 0.68)),
       radial-gradient(circle at top right, hsl(var(--accent-warm) / 0.12), transparent 24%);
     border-color: hsl(var(--accent-warm) / 0.18);
     color: hsl(var(--foreground) / 0.88);
@@ -845,7 +847,7 @@
     border: 1px solid rgba(120, 129, 142, 0.1);
     background:
       linear-gradient(180deg, hsl(var(--card) / 0.7), hsl(var(--secondary) / 0.54)),
-      linear-gradient(90deg, rgba(129, 155, 255, 0.08), transparent 24%);
+      linear-gradient(90deg, rgba(214, 198, 165, 0.08), transparent 24%);
     padding: 0.32rem;
     box-shadow:
       0 10px 20px rgba(0, 0, 0, 0.12),
@@ -884,7 +886,7 @@
     border-color: rgba(120, 129, 142, 0.1);
     background:
       linear-gradient(180deg, hsl(var(--secondary) / 0.84), hsl(var(--card) / 0.72)),
-      linear-gradient(90deg, rgba(129, 155, 255, 0.1), transparent 26%);
+      linear-gradient(90deg, rgba(214, 198, 165, 0.1), transparent 26%);
     color: hsl(var(--foreground));
     box-shadow:
       0 10px 20px rgba(0, 0, 0, 0.14),
@@ -1107,7 +1109,7 @@
     border-color: rgba(208, 215, 222, 0.9);
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 249, 251, 0.92)),
-      radial-gradient(circle at 14% 0%, rgba(129, 155, 255, 0.12), transparent 22%),
+      radial-gradient(circle at 14% 0%, rgba(214, 198, 165, 0.12), transparent 22%),
       linear-gradient(135deg, rgba(255, 255, 255, 0.76), transparent 34%);
     box-shadow:
       0 18px 42px rgba(15, 23, 42, 0.08),
@@ -1132,7 +1134,7 @@
     border-color: rgba(208, 215, 222, 0.92);
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.92)),
-      radial-gradient(circle at 14% 0%, rgba(129, 155, 255, 0.12), transparent 22%),
+      radial-gradient(circle at 14% 0%, rgba(214, 198, 165, 0.12), transparent 22%),
       linear-gradient(135deg, rgba(255, 255, 255, 0.76), transparent 42%);
     box-shadow:
       0 18px 38px rgba(15, 23, 42, 0.08),
@@ -1146,7 +1148,7 @@
 
   html.light .scene-label::before,
   html.light .scene-divider {
-    background: linear-gradient(90deg, rgba(96, 122, 235, 0.36), transparent);
+    background: linear-gradient(90deg, rgba(184, 169, 138, 0.36), transparent);
   }
 
   html.light .aurora {
@@ -1272,17 +1274,17 @@
 
   html.light .user-message {
     background:
-      linear-gradient(180deg, rgba(96, 122, 235, 0.18), rgba(96, 122, 235, 0.12)),
+      linear-gradient(180deg, rgba(184, 169, 138, 0.18), rgba(184, 169, 138, 0.12)),
       linear-gradient(180deg, rgba(255, 255, 255, 0.92), transparent);
     color: hsl(var(--foreground));
-    border-color: rgba(96, 122, 235, 0.24);
+    border-color: rgba(184, 169, 138, 0.24);
   }
 
   html.light .system-message {
     background:
       linear-gradient(180deg, rgba(248, 241, 228, 0.92), rgba(243, 236, 224, 0.84)),
-      radial-gradient(circle at top right, rgba(129, 155, 255, 0.16), transparent 24%);
-    border-color: rgba(96, 122, 235, 0.24);
+      radial-gradient(circle at top right, rgba(214, 198, 165, 0.16), transparent 24%);
+    border-color: rgba(184, 169, 138, 0.24);
     color: #4f4436;
   }
 
@@ -1336,7 +1338,7 @@
 
   html.light .nav-item-active .nav-item-icon {
     border-color: rgba(186, 196, 207, 0.94);
-    background: rgba(96, 122, 235, 0.12);
+    background: rgba(184, 169, 138, 0.12);
     color: hsl(var(--primary));
   }
 
@@ -1413,7 +1415,7 @@
   }
 
   html.light .page-stage::before {
-    background: linear-gradient(180deg, rgba(96, 122, 235, 0.3), transparent 86%);
+    background: linear-gradient(180deg, rgba(184, 169, 138, 0.3), transparent 86%);
   }
 }
 
@@ -1495,4 +1497,5 @@
     transform: translate3d(0, 0, 0);
   }
 }
+
 

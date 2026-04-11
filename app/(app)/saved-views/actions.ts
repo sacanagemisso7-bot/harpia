@@ -22,7 +22,7 @@ export async function createSavedView(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel salvar a view."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível salvar a view."
     };
   }
 

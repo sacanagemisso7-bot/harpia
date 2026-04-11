@@ -3,7 +3,7 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
   Bell,
   BookOpenText,
@@ -14,19 +14,24 @@ import {
   LayoutGrid,
   Layers3,
   LogOut,
+  Menu,
   MessageSquareMore,
+  PanelLeftClose,
+  PanelLeftOpen,
   Radar,
   Settings,
   ShieldCheck,
   TrendingUp,
   UserRoundSearch,
   UsersRound,
+  X,
   type LucideIcon
 } from "lucide-react";
 
 import { HarpiaLogo } from "@/components/brand/harpia-logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { hasPermission, type AppPermission } from "@/lib/auth/permission-matrix";
+import { brandPaths } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 import styles from "./harpia-system-shell.module.css";
@@ -68,12 +73,14 @@ type NavItem = {
   roles?: string[];
 };
 
+const SIDEBAR_STORAGE_KEY = "harpia-sidebar-collapsed";
+
 const navItems: NavItem[] = [
   {
     id: "dashboard",
     href: "/dashboard",
     label: "Dashboard",
-    description: "Overview geral",
+    description: "Visão geral",
     icon: LayoutGrid,
     section: "workspace",
     requiredPermission: "view_people_command_center"
@@ -81,8 +88,8 @@ const navItems: NavItem[] = [
   {
     id: "command-center",
     href: "/people/command-center",
-    label: "Command center",
-    description: "Operacao de people ops",
+    label: "Central",
+    description: "Operação de people ops",
     icon: Layers3,
     section: "workspace",
     requiredPermission: "view_people_command_center"
@@ -90,8 +97,8 @@ const navItems: NavItem[] = [
   {
     id: "chat",
     href: "/chat",
-    label: "Company chat",
-    description: "Perguntas e acoes",
+    label: "Company Chat",
+    description: "Perguntas e ações",
     icon: MessageSquareMore,
     section: "workspace",
     requiredPermission: "view_chat"
@@ -99,7 +106,7 @@ const navItems: NavItem[] = [
   {
     id: "employees",
     href: "/employees",
-    label: "Employees",
+    label: "Colaboradores",
     description: "Base e perfis",
     icon: UserRoundSearch,
     section: "people",
@@ -108,7 +115,7 @@ const navItems: NavItem[] = [
   {
     id: "requests",
     href: "/requests",
-    label: "Requests",
+    label: "Solicitações",
     description: "Fila interna",
     icon: Bell,
     section: "people",
@@ -117,8 +124,8 @@ const navItems: NavItem[] = [
   {
     id: "tasks",
     href: "/people/tasks",
-    label: "Tasks",
-    description: "Pendencias do time",
+    label: "Tarefas",
+    description: "Pendências do time",
     icon: ClipboardList,
     section: "people",
     requiredPermission: "view_people_tasks"
@@ -136,7 +143,7 @@ const navItems: NavItem[] = [
     id: "offboarding",
     href: "/people/offboarding",
     label: "Offboarding",
-    description: "Saidas ativas",
+    description: "Saídas ativas",
     icon: UsersRound,
     section: "people",
     requiredPermission: "view_people_command_center"
@@ -144,7 +151,7 @@ const navItems: NavItem[] = [
   {
     id: "calendar",
     href: "/people/calendar",
-    label: "Calendar",
+    label: "Calendário",
     description: "Agenda operacional",
     icon: CalendarClock,
     section: "people",
@@ -154,7 +161,7 @@ const navItems: NavItem[] = [
     id: "compliance",
     href: "/people/compliance",
     label: "Compliance",
-    description: "Controles e politicas",
+    description: "Controles e políticas",
     icon: ShieldCheck,
     section: "people",
     requiredPermission: "view_compliance"
@@ -162,7 +169,7 @@ const navItems: NavItem[] = [
   {
     id: "knowledge",
     href: "/knowledge",
-    label: "Knowledge",
+    label: "Conhecimento",
     description: "Base interna",
     icon: BookOpenText,
     section: "people",
@@ -171,8 +178,8 @@ const navItems: NavItem[] = [
   {
     id: "approvals",
     href: "/people/agent-approvals",
-    label: "Approvals",
-    description: "Revisoes pendentes",
+    label: "Aprovações",
+    description: "Revisões pendentes",
     icon: ShieldCheck,
     section: "people",
     requiredPermission: "review_agent_approvals"
@@ -180,7 +187,7 @@ const navItems: NavItem[] = [
   {
     id: "hiring",
     href: "/hiring",
-    label: "Hiring",
+    label: "Contratação",
     description: "Pipeline e vagas",
     icon: BriefcaseBusiness,
     section: "admin"
@@ -189,7 +196,7 @@ const navItems: NavItem[] = [
     id: "analytics",
     href: "/analytics",
     label: "Analytics",
-    description: "Leitura do negocio",
+    description: "Leitura do negócio",
     icon: Radar,
     section: "admin",
     requiredPermission: "view_analytics"
@@ -197,7 +204,7 @@ const navItems: NavItem[] = [
   {
     id: "revenue",
     href: "/ops/revenue",
-    label: "Revenue",
+    label: "Receita",
     description: "Receita e metas",
     icon: TrendingUp,
     section: "admin"
@@ -214,7 +221,7 @@ const navItems: NavItem[] = [
   {
     id: "settings",
     href: "/settings",
-    label: "Settings",
+    label: "Configurações",
     description: "Workspace",
     icon: Settings,
     section: "admin",
@@ -223,8 +230,8 @@ const navItems: NavItem[] = [
   {
     id: "policies",
     href: "/me/policies",
-    label: "My policies",
-    description: "Leituras obrigatorias",
+    label: "Minhas políticas",
+    description: "Leituras obrigatórias",
     icon: ShieldCheck,
     section: "self",
     roles: ["EMPLOYEE"]
@@ -232,10 +239,10 @@ const navItems: NavItem[] = [
 ];
 
 const sectionLabels: Record<NavSection, string> = {
-  workspace: "Workspace",
+  workspace: "Principal",
   people: "People ops",
-  admin: "Admin",
-  self: "My area"
+  admin: "Administração",
+  self: "Minha área"
 };
 
 const sectionOrder: NavSection[] = ["workspace", "people", "admin", "self"];
@@ -243,33 +250,33 @@ const sectionOrder: NavSection[] = ["workspace", "people", "admin", "self"];
 const routeMeta = [
   {
     match: (pathname: string) => pathname.startsWith("/chat"),
-    eyebrow: "Company chat",
+    eyebrow: "Company Chat",
     title: "Chat operacional",
-    description: "Pergunte, resuma, proponha e execute com contexto preso a cada thread."
+    description: "Pergunte em linguagem natural, consulte o contexto e transforme resposta em ação."
   },
   {
     match: (pathname: string) => pathname.startsWith("/people/command-center"),
     eyebrow: "People ops",
-    title: "Command center",
+    title: "Central de operações",
     description: "Alertas, filas, workflows e riscos do RH em uma leitura direta."
   },
   {
     match: (pathname: string) => pathname.startsWith("/employees"),
     eyebrow: "People",
-    title: "Employees",
-    description: "Base, perfis, historico e proximas acoes do time."
+    title: "Colaboradores",
+    description: "Base, perfis, histórico e próximas ações do time."
   },
   {
     match: (pathname: string) => pathname.startsWith("/requests"),
     eyebrow: "Service desk",
-    title: "Requests",
-    description: "Fila interna, SLA e ownership sem ruido."
+    title: "Solicitações",
+    description: "Fila interna, SLA e ownership sem ruído."
   },
   {
     match: (pathname: string) => pathname.startsWith("/hiring"),
-    eyebrow: "Hiring",
-    title: "Hiring",
-    description: "Vagas, candidatos e decisao em um fluxo unico."
+    eyebrow: "Contratação",
+    title: "Contratação",
+    description: "Vagas, candidatos e decisão em um fluxo único."
   },
   {
     match: (pathname: string) => pathname.startsWith("/analytics"),
@@ -281,13 +288,13 @@ const routeMeta = [
     match: (pathname: string) => pathname.startsWith("/settings/billing"),
     eyebrow: "Workspace",
     title: "Billing",
-    description: "Plano atual, consumo e proximas mudancas."
+    description: "Plano atual, consumo e próximas mudanças."
   },
   {
     match: (pathname: string) => pathname.startsWith("/settings"),
     eyebrow: "Workspace",
-    title: "Settings",
-    description: "Configuracoes centrais da operacao."
+    title: "Configurações",
+    description: "Configurações centrais da operação."
   }
 ];
 
@@ -308,12 +315,27 @@ function resolveRouteCopy(pathname: string, fallbackLabel: string) {
   return {
     eyebrow: "Workspace",
     title: fallbackLabel,
-    description: "Fluxos, contexto e operacao no mesmo ambiente de trabalho."
+    description: "Fluxos, contexto e operação no mesmo ambiente de trabalho."
   };
 }
 
 function accountName(user: ShellUser) {
-  return user.name ?? user.email ?? "Operator";
+  return user.name ?? user.email ?? "Operador";
+}
+
+function getRoleLabel(role: string) {
+  return (
+    {
+      OWNER: "Owner",
+      ADMIN: "Admin",
+      PEOPLE_ADMIN: "People Admin",
+      PEOPLE_OPS: "People Ops",
+      MANAGER: "Manager",
+      RECRUITER: "Recruiter",
+      HIRING_MANAGER: "Hiring Manager",
+      EMPLOYEE: "Colaborador"
+    } satisfies Record<string, string>
+  )[role] ?? role;
 }
 
 export function HarpiaSystemShellClient({
@@ -327,6 +349,35 @@ export function HarpiaSystemShellClient({
 }: HarpiaSystemShellClientProps) {
   const pathname = usePathname();
   const isDashboardRoute = pathname === "/dashboard";
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+
+    try {
+      setSidebarCollapsed(window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1");
+    } catch {
+      // Keep the default expanded state if persistence is unavailable.
+    }
+  }, []);
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!mounted) {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(SIDEBAR_STORAGE_KEY, sidebarCollapsed ? "1" : "0");
+    } catch {
+      // Keep the interaction working even if persistence fails.
+    }
+  }, [mounted, sidebarCollapsed]);
 
   const visibleNav = navItems.filter((item) => {
     if (item.id === "revenue" && !canViewRevenueOps) {
@@ -358,20 +409,48 @@ export function HarpiaSystemShellClient({
     .filter((group) => group.items.length > 0);
 
   const currentCopy = resolveRouteCopy(pathname, activeItem?.label ?? "Workspace");
+  const currentRoleLabel = getRoleLabel(user.role as never) ?? user.role;
 
   if (isDashboardRoute) {
     return <div className={styles.dashboardRoute}>{children}</div>;
   }
 
   return (
-    <div className={styles.shell}>
+    <div className={cn(styles.shell, sidebarCollapsed && styles.shellCollapsed, mobileNavOpen && styles.shellMobileOpen)}>
+      <button
+        type="button"
+        className={styles.mobileBackdrop}
+        aria-label="Fechar navegação"
+        onClick={() => setMobileNavOpen(false)}
+      />
+
       <aside className={styles.sidebar}>
         <div className={styles.sidebarInner}>
-          <Link href={"/dashboard" as Route} className={styles.brandCard} aria-label="Abrir dashboard da Harpia">
-            <HarpiaLogo variant="compact" showTagline className={styles.brandLockup} />
-          </Link>
+          <div className={styles.sidebarHeader}>
+            <Link href={"/dashboard" as Route} className={styles.brandCard} aria-label="Abrir dashboard da Harpia">
+              <HarpiaLogo
+                variant={sidebarCollapsed ? "icon" : "compact"}
+                showTagline={!sidebarCollapsed}
+                className={styles.brandLockup}
+              />
+            </Link>
 
-          <nav className={styles.navGroups} aria-label="Primary navigation">
+            <button
+              type="button"
+              className={styles.sidebarToggle}
+              onClick={() => setSidebarCollapsed((current) => !current)}
+              aria-label={sidebarCollapsed ? "Expandir barra lateral" : "Ocultar barra lateral"}
+              title={sidebarCollapsed ? "Expandir menu" : "Ocultar menu"}
+            >
+              {sidebarCollapsed ? (
+                <PanelLeftOpen className={styles.sidebarToggleIcon} />
+              ) : (
+                <PanelLeftClose className={styles.sidebarToggleIcon} />
+              )}
+            </button>
+          </div>
+
+          <nav className={styles.navGroups} aria-label="Navegação principal">
             {groupedNav.map((group) => (
               <div key={group.section} className={styles.navGroup}>
                 <span className={styles.navGroupLabel}>{group.label}</span>
@@ -387,6 +466,7 @@ export function HarpiaSystemShellClient({
                         href={item.href}
                         className={cn(styles.navLink, isActive && styles.navLinkActive)}
                         aria-current={isActive ? "page" : undefined}
+                        title={item.label}
                       >
                         <span className={styles.navIconWrap}>
                           <Icon className={styles.navIcon} />
@@ -403,36 +483,58 @@ export function HarpiaSystemShellClient({
             ))}
           </nav>
 
-          <div className={styles.sidebarFooter}>
-            {user.memberships.length > 1 ? (
-              <form action={switchOrganization} className={styles.workspaceCard}>
-                <span className={styles.workspaceLabel}>Workspace ativo</span>
-                <select name="organizationId" defaultValue={user.organizationId} className={styles.workspaceSelect}>
-                  {user.memberships.map((membership) => (
-                    <option key={membership.organizationId} value={membership.organizationId}>
-                      {membership.organizationName}
-                    </option>
-                  ))}
-                </select>
-                <button type="submit" className={styles.workspaceAction}>
-                  Trocar
+          {sidebarCollapsed ? (
+            <div className={styles.sidebarFooterCompact}>
+              {user.memberships.length > 1 ? (
+                <button
+                  type="button"
+                  className={styles.compactUtilityButton}
+                  onClick={() => setSidebarCollapsed(false)}
+                  title="Expandir menu para trocar de workspace"
+                  aria-label="Expandir menu para trocar de workspace"
+                >
+                  <BriefcaseBusiness className={styles.signOutIcon} />
+                </button>
+              ) : null}
+
+              <form action={signOutAction}>
+                <button type="submit" className={styles.compactUtilityButton} title="Sair" aria-label="Sair">
+                  <LogOut className={styles.signOutIcon} />
                 </button>
               </form>
-            ) : (
-              <div className={styles.workspaceCard}>
-                <span className={styles.workspaceLabel}>Workspace ativo</span>
-                <strong className={styles.workspaceTitle}>{user.organizationName}</strong>
-                <span className={styles.workspaceMeta}>{user.role}</span>
-              </div>
-            )}
+            </div>
+          ) : (
+            <div className={styles.sidebarFooter}>
+              {user.memberships.length > 1 ? (
+                <form action={switchOrganization} className={styles.workspaceCard}>
+                  <span className={styles.workspaceLabel}>Workspace ativo</span>
+                  <select name="organizationId" defaultValue={user.organizationId} className={styles.workspaceSelect}>
+                    {user.memberships.map((membership) => (
+                      <option key={membership.organizationId} value={membership.organizationId}>
+                        {membership.organizationName}
+                      </option>
+                    ))}
+                  </select>
+                  <button type="submit" className={styles.workspaceAction}>
+                    Trocar
+                  </button>
+                </form>
+              ) : (
+                <div className={styles.workspaceCard}>
+                  <span className={styles.workspaceLabel}>Workspace ativo</span>
+                  <strong className={styles.workspaceTitle}>{user.organizationName}</strong>
+                  <span className={styles.workspaceMeta}>{currentRoleLabel}</span>
+                </div>
+              )}
 
-            <form action={signOutAction}>
-              <button type="submit" className={styles.signOutButton}>
-                <LogOut className={styles.signOutIcon} />
-                Sair
-              </button>
-            </form>
-          </div>
+              <form action={signOutAction}>
+                <button type="submit" className={styles.signOutButton}>
+                  <LogOut className={styles.signOutIcon} />
+                  Sair
+                </button>
+              </form>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -447,6 +549,9 @@ export function HarpiaSystemShellClient({
           <div className={styles.topbarMeta}>
             <div className={styles.topbarChips}>
               <span className={styles.topbarChip}>{user.organizationName}</span>
+              <Link href={brandPaths.executiveDeck} className={styles.billingChip}>
+                PDF executivo
+              </Link>
               {showBillingSignal ? (
                 <Link href={"/settings/billing" as Route} className={styles.billingChip}>
                   {billingSignal.join(" • ")}
@@ -455,11 +560,21 @@ export function HarpiaSystemShellClient({
             </div>
 
             <div className={styles.topbarControls}>
+              <button
+                type="button"
+                className={styles.mobileMenuButton}
+                onClick={() => setMobileNavOpen((current) => !current)}
+                aria-label={mobileNavOpen ? "Fechar navegação" : "Abrir navegação"}
+              >
+                {mobileNavOpen ? <X className={styles.mobileMenuIcon} /> : <Menu className={styles.mobileMenuIcon} />}
+                <span>{mobileNavOpen ? "Fechar" : "Menu"}</span>
+              </button>
+
               <ThemeToggle className={styles.themeControl} />
 
               <div className={styles.accountChip}>
                 <strong>{accountName(user)}</strong>
-                <span>{user.role}</span>
+                <span>{currentRoleLabel}</span>
               </div>
             </div>
           </div>

@@ -75,7 +75,7 @@ export default async function CandidateDetailPage({
         title={candidate.fullName}
         description={
           candidate.summary ||
-          "Perfil consolidado pronto para upload de curriculo, parsing com IA e vinculacao a vagas abertas."
+          "Perfil consolidado pronto para upload de currículo, parsing com IA e vinculação a vagas abertas."
         }
         actions={
           <>
@@ -88,12 +88,12 @@ export default async function CandidateDetailPage({
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Curriculos</span>
+          <span className={styles.statLabel}>Currículos</span>
           <strong className={styles.statValue}>{candidate.resumes.length}</strong>
           <span className={styles.statHint}>Arquivos salvos para parsing e reprocessamento.</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacoes</span>
+          <span className={styles.statLabel}>Aplicações</span>
           <strong className={styles.statValue}>{candidate.applications.length}</strong>
           <span className={styles.statHint}>Vagas nas quais o perfil ja esta em movimento.</span>
         </div>
@@ -105,7 +105,7 @@ export default async function CandidateDetailPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Open jobs</span>
           <strong className={styles.statValue}>{availableJobs.length}</strong>
-          <span className={styles.statHint}>Vagas ainda disponiveis para vincular este perfil.</span>
+          <span className={styles.statHint}>Vagas ainda disponíveis para vincular este perfil.</span>
         </div>
       </section>
 
@@ -159,7 +159,7 @@ export default async function CandidateDetailPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Resume ledger</span>
-              <h2 className={styles.panelTitle}>Curriculos enviados</h2>
+              <h2 className={styles.panelTitle}>Currículos enviados</h2>
             </div>
             {candidate.resumes.length ? (
               <div className={styles.list}>
@@ -177,13 +177,13 @@ export default async function CandidateDetailPage({
                       </span>
                     </div>
                     <p className={styles.richText}>
-                      {resume.extractedText || "Nao foi possivel extrair o texto deste PDF. O arquivo continua salvo para reprocessamento."}
+                      {resume.extractedText || "Não foi possível extrair o texto deste PDF. O arquivo continua salvo para reprocessamento."}
                     </p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Nenhum curriculo enviado ainda.</div>
+              <div className={styles.emptyState}>Nenhum currículo enviado ainda.</div>
             )}
           </div>
 
@@ -191,7 +191,7 @@ export default async function CandidateDetailPage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Applications</span>
               <h2 className={styles.panelTitle}>Vagas em curso</h2>
-              <p className={styles.panelDescription}>Cada aplicacao mostra fit score, etapa e resumo executivo.</p>
+              <p className={styles.panelDescription}>Cada aplicação mostra fit score, etapa e resumo executivo.</p>
             </div>
             {candidate.applications.length ? (
               <div className={styles.linkList}>
@@ -201,12 +201,12 @@ export default async function CandidateDetailPage({
                     <span>
                       {application.currentStage?.name || "Sem etapa"} - score {formatScore(application.score)}
                     </span>
-                    <span>{application.executiveSummary || "Analise de aderencia disponivel no detalhe da aplicacao."}</span>
+                    <span>{application.executiveSummary || "Análise de aderência disponível no detalhe da aplicação."}</span>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Ainda sem aplicacoes para este candidato.</div>
+              <div className={styles.emptyState}>Ainda sem aplicações para este candidato.</div>
             )}
           </div>
 
@@ -221,7 +221,7 @@ export default async function CandidateDetailPage({
                   <NoteForm title="Nova nota sobre o candidato" action={createCandidateNote.bind(null, candidate.id)} />
                 </div>
               ) : null}
-              <NoteFeed notes={candidate.notes} emptyMessage="Ainda nao ha notas internas para este candidato." />
+              <NoteFeed notes={candidate.notes} emptyMessage="Ainda não ha notas internas para este candidato." />
             </div>
           </div>
         </div>
@@ -244,7 +244,7 @@ export default async function CandidateDetailPage({
                   <ResumeUploadForm action={uploadResume.bind(null, candidate.id)} />
                 </div>
               ) : (
-                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem enviar curriculos.</div>
+                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem enviar currículos.</div>
               )}
 
               {canManageApplications && availableJobs.length ? (
@@ -252,9 +252,9 @@ export default async function CandidateDetailPage({
                   <ApplyToJobForm action={createApplication.bind(null, candidate.id)} jobs={availableJobs} />
                 </div>
               ) : canManageApplications ? (
-                <div className={styles.surfaceMuted}>Este candidato ja foi vinculado a todas as vagas abertas disponiveis.</div>
+                <div className={styles.surfaceMuted}>Este candidato ja foi vinculado a todas as vagas abertas disponíveis.</div>
               ) : (
-                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem criar novas aplicacoes.</div>
+                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem criar novas aplicações.</div>
               )}
 
               {canManageCandidate ? (
@@ -262,7 +262,7 @@ export default async function CandidateDetailPage({
                   <AnalyzeResumeForm action={analyzeCandidateResume.bind(null, candidate.id)} />
                 </div>
               ) : (
-                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem rodar a analise de IA.</div>
+                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem rodar a análise de IA.</div>
               )}
             </div>
           </div>
@@ -310,13 +310,13 @@ export default async function CandidateDetailPage({
                         </div>
                       ))
                     ) : (
-                      <span className={styles.itemDescription}>Rode a analise de IA para gerar perguntas guiadas.</span>
+                      <span className={styles.itemDescription}>Rode a análise de IA para gerar perguntas guiadas.</span>
                     )}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>Rode a analise de IA para gerar resumo, skills e perguntas sugeridas.</div>
+              <div className={styles.surfaceMuted}>Rode a análise de IA para gerar resumo, skills e perguntas sugeridas.</div>
             )}
           </div>
         </aside>

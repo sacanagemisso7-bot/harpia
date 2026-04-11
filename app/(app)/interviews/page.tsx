@@ -35,14 +35,14 @@ export default async function InterviewsPage() {
           <p className={styles.statHint}>Compromissos futuros encontrados</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Proximas 24h</span>
+          <span className={styles.statLabel}>Próximas 24h</span>
           <strong className={styles.statValue}>{next24h}</strong>
-          <p className={styles.statHint}>Itens que pedem atencao mais imediata</p>
+          <p className={styles.statHint}>Itens que pedem aten??o mais imediata</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Vagas</span>
           <strong className={styles.statValue}>{uniqueJobs}</strong>
-          <p className={styles.statHint}>Requisicoes representadas na agenda</p>
+          <p className={styles.statHint}>Requisi??es representadas na agenda</p>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Hosts</span>
@@ -56,8 +56,8 @@ export default async function InterviewsPage() {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Agenda</span>
-              <h2 className={styles.panelTitle}>Proximas entrevistas</h2>
-              <p className={styles.panelDescription}>Veja status, vaga, candidato, horario e atalhos diretos para aplicacao e entrevista.</p>
+              <h2 className={styles.panelTitle}>Próximas entrevistas</h2>
+              <p className={styles.panelDescription}>Veja status, vaga, candidato, horario e atalhos diretos para aplicação e entrevista.</p>
             </div>
 
             <div className={styles.list}>
@@ -89,7 +89,7 @@ export default async function InterviewsPage() {
 
                     <div className={styles.actionRow}>
                       <Button asChild variant="outline" size="sm">
-                        <Link href={`/applications/${interview.applicationId}`}>Aplicacao</Link>
+                        <Link href={`/applications/${interview.applicationId}`}>Aplicação</Link>
                       </Button>
                       <Button asChild size="sm">
                         <Link href={`/interviews/${interview.id}`}>
@@ -112,7 +112,7 @@ export default async function InterviewsPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Proximidade</span>
               <h2 className={styles.panelTitle}>O que vem primeiro</h2>
-              <p className={styles.panelDescription}>Compromissos mais proximos para o time se preparar antes da agenda apertar.</p>
+              <p className={styles.panelDescription}>Compromissos mais próximos para o time se preparar antes da agenda apertar.</p>
             </div>
 
             <div className={styles.list}>
@@ -127,7 +127,7 @@ export default async function InterviewsPage() {
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyState}>Sem entrevistas proximas para destacar.</div>
+                <div className={styles.emptyState}>Sem entrevistas próximas para destacar.</div>
               )}
             </div>
           </section>

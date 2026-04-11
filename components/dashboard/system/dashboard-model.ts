@@ -181,7 +181,7 @@ const clusterBlueprints: HarpiaCluster[] = [
   },
   {
     id: "analysis",
-    label: "Analise",
+    label: "Análise",
     x: 524,
     y: 238,
     radiusX: 172,
@@ -191,12 +191,12 @@ const clusterBlueprints: HarpiaCluster[] = [
   },
   {
     id: "decision",
-    label: "Decisao",
+    label: "Decisão",
     x: 810,
     y: 398,
     radiusX: 152,
     radiusY: 130,
-    note: "Janela de decisao",
+    note: "Janela de decisão",
     route: "/requests"
   }
 ];
@@ -443,9 +443,9 @@ export function buildContextInsights(node: HarpiaNode, data: DashboardData) {
     node.score >= 84 ? "Sinal forte para avancar." : node.score >= 72 ? "Leitura pede validacao." : "Entrada ainda aberta.",
     node.staleHours >= 72 ? `Sem movimento ha ${node.staleHours}h.` : `Fluxo ativo nas ultimas ${node.staleHours}h.`,
     node.cluster === "decision"
-      ? `${data.metrics.requestsAtRisk} fluxos pedem acao imediata.`
+      ? `${data.metrics.requestsAtRisk} fluxos pedem ação imediata.`
       : node.cluster === "analysis"
         ? `${data.metrics.pendingCompliance + data.metrics.overdueTasks} pontos seguem em filtro.`
-        : `${data.hiring.applicationCount} aplicacoes ativas no campo.`
+        : `${data.hiring.applicationCount} aplicações ativas no campo.`
   ];
 }

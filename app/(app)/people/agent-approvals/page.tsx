@@ -43,29 +43,29 @@ export default async function AgentApprovalsPage() {
       <PageHeader
         eyebrow="Agent approvals"
         title="Trust layer do agente corporativo"
-        description="Aprovacoes humanas para acoes assistidas de maior risco dentro do workspace."
+        description="Aprovações humanas para ações assistidas de maior risco dentro do workspace."
       />
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Pendencias</span>
           <strong className={styles.statValue}>{pendingApprovals.length}</strong>
-          <span className={styles.statHint}>Acoes aguardando decisao humana antes de executar.</span>
+          <span className={styles.statHint}>Ações aguardando decisão humana antes de executar.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Runs recentes</span>
           <strong className={styles.statValue}>{recentRuns.length}</strong>
-          <span className={styles.statHint}>Historico curto para revisar uso e confianca.</span>
+          <span className={styles.statHint}>Histórico curto para revisar uso e confian?a.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Objetivo</span>
           <strong className={styles.statValue}>Controle</strong>
-          <span className={styles.statHint}>Acoes sensiveis nao passam sem checkpoint humano.</span>
+          <span className={styles.statHint}>Ações sensiveis não passam sem checkpoint humano.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Modo</span>
           <strong className={styles.statValue}>Guarded</strong>
-          <span className={styles.statHint}>Uso assistido com rastreio e revisao.</span>
+          <span className={styles.statHint}>Uso assistido com rastreio e revisão.</span>
         </div>
       </section>
 
@@ -98,10 +98,10 @@ export default async function AgentApprovalsPage() {
                       <div className={styles.surfaceMuted}>
                         <strong className={styles.itemTitle}>Solicitado por</strong>
                         <span className={styles.itemDescription}>
-                          {approval.requestedByUser?.name ?? approval.agentRun.startedByUser?.name ?? "Usuario do workspace"}
+                          {approval.requestedByUser?.name ?? approval.agentRun.startedByUser?.name ?? "Usuário do workspace"}
                         </span>
                         <span className={styles.itemDescription}>
-                          {approval.requestedByUser?.email ?? approval.agentRun.startedByUser?.email ?? "Sem email disponivel"}
+                          {approval.requestedByUser?.email ?? approval.agentRun.startedByUser?.email ?? "Sem email disponível"}
                         </span>
                       </div>
                       <div className={styles.surfaceMuted}>
@@ -121,7 +121,7 @@ export default async function AgentApprovalsPage() {
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Nenhuma aprovacao pendente no momento.</div>
+              <div className={styles.emptyState}>Nenhuma aprovação pendente no momento.</div>
             )}
           </div>
         </div>
@@ -130,7 +130,7 @@ export default async function AgentApprovalsPage() {
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Queue</span>
             <strong className={styles.spotlightValue}>{pendingApprovals.length}</strong>
-            <p className={styles.panelDescription}>Checkpoint humano aguardando decisao agora.</p>
+            <p className={styles.panelDescription}>Checkpoint humano aguardando decisão agora.</p>
           </div>
 
           <div className={styles.panel}>
@@ -162,7 +162,7 @@ export default async function AgentApprovalsPage() {
                       </div>
                       <div className={styles.tagWrap}>
                         <span className={styles.tagPill}>{formatEnumLabel(run.riskLevel)}</span>
-                        <span className={styles.tagPill}>{run.requiresApproval ? "Com aprovacao" : "Execucao direta"}</span>
+                        <span className={styles.tagPill}>{run.requiresApproval ? "Com aprovação" : "Execucao direta"}</span>
                         {latestApproval ? <span className={styles.tagPill}>{formatEnumLabel(latestApproval.status)}</span> : null}
                         {latestExecution ? <span className={styles.tagPill}>{formatEnumLabel(latestExecution.status)}</span> : null}
                       </div>
@@ -178,7 +178,7 @@ export default async function AgentApprovalsPage() {
                 })}
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>O historico recente do agente ainda nao tem runs suficientes para exibir aqui.</div>
+              <div className={styles.surfaceMuted}>O histórico recente do agente ainda não tem runs suficientes para exibir aqui.</div>
             )}
           </div>
 

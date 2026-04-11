@@ -55,7 +55,7 @@ export async function updatePeopleTaskStatus(input: {
   });
 
   if (!task) {
-    throw new Error("Tarefa nao encontrada.");
+    throw new Error("Tarefa não encontrada.");
   }
 
   const updated = await prisma.peopleTask.update({
@@ -97,7 +97,7 @@ export async function addPeopleTaskComment(input: {
   });
 
   if (!task) {
-    throw new Error("Tarefa nao encontrada.");
+    throw new Error("Tarefa não encontrada.");
   }
 
   const comment = await prisma.peopleTaskComment.create({

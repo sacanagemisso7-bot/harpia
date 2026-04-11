@@ -136,7 +136,7 @@ export function HarpiaLogo({
               captionClassName
             )}
           >
-            Decision system
+            Sistema de decisão
           </span>
         ) : null}
       </span>

@@ -27,7 +27,7 @@ export function SiteChrome({ children }: SiteChromeProps) {
           <div className="pointer-events-auto absolute right-4 top-4 flex items-start gap-3 lg:right-6">
             <nav className="glass-strip hidden items-center gap-6 rounded-[1.2rem] border border-border/70 px-4 py-3 text-[0.64rem] font-semibold uppercase tracking-[0.24em] text-muted-foreground shadow-[0_20px_44px_rgba(0,0,0,0.18)] backdrop-blur-xl xl:flex">
               <Link href="/#vision" className="site-nav-link">
-                Visao
+                Visão
               </Link>
               <Link href="/#system" className="site-nav-link">
                 Sistema
@@ -41,9 +41,12 @@ export function SiteChrome({ children }: SiteChromeProps) {
             </nav>
 
             <div className="glass-strip flex items-center gap-3 rounded-[1.2rem] border border-border/70 px-3 py-3 shadow-[0_20px_44px_rgba(0,0,0,0.18)] backdrop-blur-xl">
-              <ThemeToggle className="hidden sm:inline-flex" />
+              <ThemeToggle className="hidden lg:inline-flex" />
               <Button asChild variant="ghost" className="hidden sm:inline-flex">
-                <Link href={brandPaths.login}>Entrar</Link>
+                <Link href={brandPaths.executiveDeck}>PDF</Link>
+              </Button>
+              <Button asChild variant="ghost" className="hidden sm:inline-flex">
+                <Link href={{ pathname: brandPaths.login, query: { callbackUrl: "/dashboard" } }}>Entrar</Link>
               </Button>
             </div>
           </div>
@@ -57,7 +60,7 @@ export function SiteChrome({ children }: SiteChromeProps) {
           <div className="space-y-3">
             <HarpiaLogo />
             <p className="max-w-lg text-sm leading-7 text-muted-foreground">
-              {brand.marketingEyebrow}. Sistema de decisao para recrutamento e people ops.
+              {brand.marketingEyebrow}. Sistema de decisão para recrutamento e people ops.
             </p>
           </div>
 
@@ -70,6 +73,9 @@ export function SiteChrome({ children }: SiteChromeProps) {
             </Link>
             <Link href={brandPaths.careersDemo} className="hover:text-foreground">
               Careers demo
+            </Link>
+            <Link href={brandPaths.executiveDeck} className="hover:text-foreground">
+              PDF executivo
             </Link>
             <Button asChild size="sm">
               <Link href={brandPaths.demo}>

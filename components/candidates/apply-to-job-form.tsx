@@ -55,7 +55,7 @@ export function ApplyToJobForm({ jobs, action }: ApplyToJobFormProps) {
       <div className="workspace-form-actions">
         <Button type="submit" disabled={pending || jobs.length === 0} className="w-full">
           <BriefcaseBusiness className="mr-2 h-4 w-4" />
-          {pending ? "Criando aplicacao..." : "Vincular a uma vaga"}
+          {pending ? "Criando aplicação..." : "Vincular a uma vaga"}
         </Button>
       </div>
     </form>

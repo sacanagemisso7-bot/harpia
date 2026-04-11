@@ -81,13 +81,17 @@ type HarpiaScanShaderProps = {
   opacity: number;
   intensity: number;
   state: number;
+  baseColor?: string;
+  accentColor?: string;
 };
 
 export const HarpiaScanShader = forwardRef<any, HarpiaScanShaderProps>(function HarpiaScanShader(
-  { coord, opacity, intensity, state },
+  { coord, opacity, intensity, state, baseColor = "#F4F1EA", accentColor = "#D6C6A5" },
   ref
 ) {
   const coordVector = useMemo(() => new Vector2(coord[0], coord[1]), [coord]);
+  const baseColorVector = useMemo(() => new Color(baseColor), [baseColor]);
+  const accentColorVector = useMemo(() => new Color(accentColor), [accentColor]);
 
   return (
     <harpiaScanMaterialImpl
@@ -99,6 +103,8 @@ export const HarpiaScanShader = forwardRef<any, HarpiaScanShaderProps>(function 
       uOpacity={opacity}
       uIntensity={intensity}
       uState={state}
+      uBaseColor={baseColorVector}
+      uAccentColor={accentColorVector}
     />
   );
 });

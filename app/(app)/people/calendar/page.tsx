@@ -20,7 +20,7 @@ export default async function PeopleCalendarPage() {
       <PageHeader
         eyebrow="People calendar"
         title="Eventos e marcos internos"
-        description="Onboarding sessions, check-ins, revisoes iniciais, entrevistas de saida e outros marcos operacionais."
+        description="Onboarding sessions, check-ins, revisoes iniciais, entrevistas de saída e outros marcos operacionais."
       />
 
       <section className={styles.statsGrid}>
@@ -42,7 +42,7 @@ export default async function PeopleCalendarPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Cadencia</span>
           <strong className={styles.statValue}>Live</strong>
-          <span className={styles.statHint}>Visao unica para onboarding, check-ins e marcos internos.</span>
+          <span className={styles.statHint}>Visão unica para onboarding, check-ins e marcos internos.</span>
         </div>
       </section>
 
@@ -109,11 +109,11 @@ export default async function PeopleCalendarPage() {
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Agrupe por pessoa</strong>
-                <span className={styles.itemDescription}>Check-ins, onboarding e saida passam a aparecer no mesmo radar.</span>
+                <span className={styles.itemDescription}>Check-ins, onboarding e saída passam a aparecer no mesmo radar.</span>
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Antecipe gargalos</strong>
-                <span className={styles.itemDescription}>Use a visao de 7 dias para evitar atraso em marcos sensiveis.</span>
+                <span className={styles.itemDescription}>Use a visão de 7 dias para evitar atraso em marcos sensiveis.</span>
               </div>
             </div>
           </div>

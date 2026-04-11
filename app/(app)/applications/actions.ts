@@ -28,7 +28,7 @@ export async function createApplication(
 
   if (!jobId) {
     return {
-      error: "Selecione uma vaga para criar a aplicacao."
+      error: "Selecione uma vaga para criar a aplicação."
     };
   }
 
@@ -66,7 +66,7 @@ export async function createApplication(
 
   if (!candidate || !job || !defaultStage) {
     return {
-      error: "Nao foi possivel criar a aplicacao com os dados atuais."
+      error: "Não foi possível criar a aplicação com os dados atuais."
     };
   }
 
@@ -105,7 +105,7 @@ export async function createApplication(
         create: {
           toStageId: defaultStage.id,
           movedById: user.id,
-          notes: "Aplicacao criada pelo workspace."
+          notes: "Aplicação criada pelo workspace."
         }
       }
     }
@@ -117,7 +117,7 @@ export async function createApplication(
     action: "application.created",
     entityType: "application",
     entityId: application.id,
-    summary: `Aplicacao criada para ${candidate.fullName} na vaga ${job.title}.`,
+    summary: `Aplicação criada para ${candidate.fullName} na vaga ${job.title}.`,
     metadata: {
       candidateId,
       jobId,
@@ -134,7 +134,7 @@ export async function createApplication(
   revalidatePath(`/applications/${application.id}`);
 
   return {
-    success: "Aplicacao criada e score inicial calculado."
+    success: "Aplicação criada e score inicial calculado."
   };
 }
 
@@ -155,7 +155,7 @@ export async function recalculateApplicationScore(
 
     if (!application) {
       return {
-        error: "Aplicacao nao encontrada."
+        error: "Aplicação não encontrada."
       };
     }
 
@@ -175,13 +175,13 @@ export async function recalculateApplicationScore(
     revalidatePath(`/applications/${application.id}`);
 
     return {
-      success: "Recalculo enviado para a fila de processamento."
+      success: "Recálculo enviado para a fila de processamento."
     };
   } catch (error) {
     logError("Failed to enqueue application score recalculation", error, { applicationId }, "applications");
 
     return {
-      error: "Nao foi possivel enfileirar o recalculo agora."
+      error: "Não foi possível enfileirar o recálculo agora."
     };
   }
 }
@@ -217,13 +217,13 @@ export async function moveApplicationStage(
 
   if (!application || !stage) {
     return {
-      error: "Nao foi possivel mover esta aplicacao."
+      error: "Não foi possível mover esta aplicação."
     };
   }
 
   if (application.currentStageId === stage.id) {
     return {
-      success: "A aplicacao ja estava nessa etapa."
+      success: "A aplicação ja estava nessa etapa."
     };
   }
 
@@ -236,7 +236,7 @@ export async function moveApplicationStage(
           fromStageId: application.currentStageId,
           toStageId: stage.id,
           movedById: user.id,
-          notes: "Movimentacao atualizada pelo workspace."
+          notes: "Movimentação atualizada pelo workspace."
         }
       }
     }
@@ -248,7 +248,7 @@ export async function moveApplicationStage(
     action: "application.stage_moved",
     entityType: "application",
     entityId: application.id,
-    summary: `Aplicacao movida para a etapa ${stage.name}.`,
+    summary: `Aplicação movida para a etapa ${stage.name}.`,
     metadata: {
       applicationId: application.id,
       fromStageId: application.currentStageId,
@@ -302,13 +302,13 @@ export async function sendApplicationEmail(
 
   if (!application) {
     return {
-      error: "Aplicacao nao encontrada."
+      error: "Aplicação não encontrada."
     };
   }
 
   if (!application.candidate.email) {
     return {
-      error: "Esse candidato nao possui email cadastrado."
+      error: "Esse candidato não possui email cadastrado."
     };
   }
 
@@ -323,7 +323,7 @@ export async function sendApplicationEmail(
 
   if (!template) {
     return {
-      error: "Template nao encontrado para esta organizacao."
+      error: "Template não encontrado para esta organização."
     };
   }
 
@@ -365,7 +365,7 @@ export async function sendApplicationEmail(
     logError("Failed to enqueue templated email", error, { applicationId, templateType }, "applications");
 
     return {
-      error: "Nao foi possivel enviar o email agora."
+      error: "Não foi possível enviar o email agora."
     };
   }
 }
@@ -382,7 +382,7 @@ export async function createApplicationNote(
 
   if (!parsed.success) {
     return {
-      error: parsed.error.errors[0]?.message ?? "Nao foi possivel validar a nota."
+      error: parsed.error.errors[0]?.message ?? "Não foi possível validar a nota."
     };
   }
 
@@ -395,7 +395,7 @@ export async function createApplicationNote(
 
   if (!application) {
     return {
-      error: "Aplicacao nao encontrada."
+      error: "Aplicação não encontrada."
     };
   }
 
@@ -413,6 +413,6 @@ export async function createApplicationNote(
   revalidatePath(`/candidates/${application.candidateId}`);
 
   return {
-    success: "Nota adicionada a aplicacao."
+    success: "Nota adicionada a aplicação."
   };
 }

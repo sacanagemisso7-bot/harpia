@@ -64,7 +64,7 @@ export async function acknowledgePolicy(input: {
   });
 
   if (!acknowledgement) {
-    throw new Error("Aceite de politica nao encontrado.");
+    throw new Error("Aceite de política não encontrado.");
   }
 
   const acknowledgedAt = acknowledgement.acknowledgedAt ?? new Date();
@@ -136,7 +136,7 @@ export async function assignPolicyToEmployees(input: {
   const employeeIds = Array.from(new Set(input.employeeIds.filter(Boolean)));
 
   if (!employeeIds.length) {
-    throw new Error("Selecione pelo menos um colaborador para atribuir a politica.");
+    throw new Error("Selecione pelo menos um colaborador para atribuir a política.");
   }
 
   const document = await prisma.knowledgeDocument.findFirst({
@@ -158,7 +158,7 @@ export async function assignPolicyToEmployees(input: {
   });
 
   if (!document) {
-    throw new Error("Politica interna nao encontrada para atribuicao.");
+    throw new Error("Política interna não encontrada para atribuicao.");
   }
 
   if (!document.publishedAt) {
@@ -239,7 +239,7 @@ export async function assignPolicyToEmployees(input: {
 
   for (const employee of employees) {
     const existingAcknowledgement = acknowledgementByEmployeeId.get(employee.id);
-    const title = `Aceite da politica: ${document.title} (${effectiveVersionLabel})`;
+    const title = `Aceite da política: ${document.title} (${effectiveVersionLabel})`;
 
     const acknowledgement =
       existingAcknowledgement && !existingAcknowledgement.acknowledgedAt

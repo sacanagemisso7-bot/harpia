@@ -20,7 +20,7 @@ export default async function MePage() {
       <PageHeader
         eyebrow="My workspace"
         title="Minha area"
-        description="Um ponto unico para acompanhar politicas, pendencias e o seu contexto dentro da operacao."
+        description="Um ponto único para acompanhar políticas, pendencias e o seu contexto dentro da operação."
         actions={<Badge variant="outline">{user.email}</Badge>}
       />
 
@@ -43,7 +43,7 @@ export default async function MePage() {
               <span className={styles.statHint}>Itens de compliance ligados a policies ativas.</span>
             </div>
             <div className={styles.statCard}>
-              <span className={styles.statLabel}>Historico</span>
+              <span className={styles.statLabel}>Histórico</span>
               <strong className={styles.statValue}>{workspace.acknowledged.length}</strong>
               <span className={styles.statHint}>Aceites ja registrados no seu perfil.</span>
             </div>
@@ -55,11 +55,11 @@ export default async function MePage() {
                 <div className={styles.panelHeader}>
                   <span className={styles.panelEyebrow}>Self service</span>
                   <h2 className={styles.panelTitle}>Seus atalhos</h2>
-                  <p className={styles.panelDescription}>Acesse rapido o que costuma exigir acao sua.</p>
+                  <p className={styles.panelDescription}>Acesse rapido o que costuma exigir ação sua.</p>
                 </div>
                 <div className={styles.linkList}>
                   <Link href="/me/policies" className={styles.linkItem}>
-                    <strong>Politicas e aceites</strong>
+                    <strong>Políticas e aceites</strong>
                     <span>Resolva pendencias e acompanhe confirmacoes ja registradas.</span>
                   </Link>
                   <Link href={`/employees/${workspace.employee.id}`} className={styles.linkItem}>
@@ -72,7 +72,7 @@ export default async function MePage() {
               <div className={styles.panel}>
                 <div className={styles.panelHeader}>
                   <span className={styles.panelEyebrow}>Pending now</span>
-                  <h2 className={styles.panelTitle}>O que precisa da sua acao</h2>
+                  <h2 className={styles.panelTitle}>O que precisa da sua ação</h2>
                 </div>
                 {workspace.pendingAcknowledgements.length ? (
                   <div className={styles.list}>
@@ -101,7 +101,7 @@ export default async function MePage() {
               <div className={styles.spotlight}>
                 <span className={styles.panelEyebrow}>Status</span>
                 <strong className={styles.spotlightValue}>{workspace.pendingAcknowledgements.length ? "Pendente" : "Em dia"}</strong>
-                <p className={styles.panelDescription}>Sua situacao atual em relacao a policies da organizacao.</p>
+                <p className={styles.panelDescription}>Sua situacao atual em relacao a policies da organização.</p>
               </div>
               <div className={styles.panel}>
                 <div className={styles.metricStack}>
@@ -125,7 +125,7 @@ export default async function MePage() {
       ) : (
         <div className={styles.panel}>
           <div className={styles.surfaceMuted}>
-            Seu usuario ainda nao esta vinculado a um perfil de colaborador nesta organizacao.
+            Seu usuário ainda não esta vinculado a um perfil de colaborador nesta organização.
           </div>
         </div>
       )}

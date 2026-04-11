@@ -6,7 +6,7 @@ import { logError } from "@/lib/observability/logger";
 
 export async function POST(request: Request) {
   if (!env.STRIPE_WEBHOOK_SECRET) {
-    return NextResponse.json({ ok: false, error: "Stripe webhook nao configurado." }, { status: 503 });
+    return NextResponse.json({ ok: false, error: "Stripe webhook não configurado." }, { status: 503 });
   }
 
   const payload = await request.text();

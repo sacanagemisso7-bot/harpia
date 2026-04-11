@@ -357,7 +357,7 @@ export async function draftEmail(organizationId: string, query: string) {
 
   return {
     to: application.candidate.email,
-    subject: `Proximos passos no processo para ${application.job.title}`,
-    body: `Oi ${application.candidate.fullName},\n\nSeu perfil segue bem posicionado para a vaga ${application.job.title}. Queremos avancar voce para a proxima etapa${application.currentStage?.name ? ` a partir de ${application.currentStage.name}` : ""}.\n\nPode me confirmar sua disponibilidade?\n\nTime HireFlow AI`
+    subject: `Próximos passos no processo para ${application.job.title}`,
+    body: `Oi ${application.candidate.fullName},\n\nSeu perfil segue bem posicionado para a vaga ${application.job.title}. Queremos avancar você para a próxima etapa${application.currentStage?.name ? ` a partir de ${application.currentStage.name}` : ""}.\n\nPode me confirmar sua disponibilidade?\n\nTime Harpia`
   };
 }

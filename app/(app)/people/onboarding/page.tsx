@@ -26,7 +26,7 @@ export default async function OnboardingPage() {
       <PageHeader
         eyebrow="Onboarding"
         title="Entrada operacional de novos colaboradores"
-        description="Checklist por colaborador, owners, progresso e marcos iniciais da jornada em um fluxo unico."
+        description="Checklist por colaborador, owners, progresso e marcos iniciais da jornada em um fluxo único."
       />
 
       <section className={styles.statsGrid}>
@@ -48,7 +48,7 @@ export default async function OnboardingPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Base</span>
           <strong className={styles.statValue}>{employees.length}</strong>
-          <span className={styles.statHint}>Colaboradores disponiveis para iniciar fluxo.</span>
+          <span className={styles.statHint}>Colaboradores disponíveis para iniciar fluxo.</span>
         </div>
       </section>
 
@@ -145,7 +145,7 @@ export default async function OnboardingPage() {
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Pipeline</span>
             <strong className={styles.spotlightValue}>{runs.length}</strong>
-            <p className={styles.panelDescription}>Fluxos simultaneos de entrada hoje na operacao.</p>
+            <p className={styles.panelDescription}>Fluxos simultaneos de entrada hoje na operação.</p>
           </div>
           <div className={styles.panel}>
             <div className={styles.list}>

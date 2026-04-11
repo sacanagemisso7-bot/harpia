@@ -38,7 +38,7 @@ export function AgentApprovalReviewForm({
           id={`approval-notes-${approvalRequestId}`}
           name="notes"
           className={compact ? "min-h-20" : "min-h-28"}
-          placeholder="Opcional: contexto, ressalvas ou motivo da decisao."
+          placeholder="Opcional: contexto, ressalvas ou motivo da decisão."
         />
       </div>
       <FormMessage message={state.error} />

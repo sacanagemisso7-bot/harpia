@@ -16,6 +16,7 @@ export type HarpiaConnectionData = {
 type HarpiaConnectionsProps = {
   nodes: HarpiaNodeData[];
   edges: HarpiaConnectionData[];
+  themeMode: "light" | "dark";
   activeCluster: string | null;
   activeNodeId: string | null;
   hoveredNodeId: string | null;
@@ -28,13 +29,14 @@ function hashSeed(value: string) {
 export function HarpiaConnections({
   nodes,
   edges,
+  themeMode,
   activeCluster,
   activeNodeId,
   hoveredNodeId
 }: HarpiaConnectionsProps) {
   const nodeMap = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
-  const warm = useMemo(() => new Color("#D6C6A5"), []);
-  const ivory = useMemo(() => new Color("#F4F1EA"), []);
+  const warm = useMemo(() => new Color(themeMode === "light" ? "#B8A98A" : "#D6C6A5"), [themeMode]);
+  const ivory = useMemo(() => new Color(themeMode === "light" ? "#6A6156" : "#F4F1EA"), [themeMode]);
 
   return (
     <>

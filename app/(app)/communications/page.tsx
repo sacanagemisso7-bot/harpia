@@ -17,7 +17,7 @@ export default async function CommunicationsPage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="Communication"
-        title="Templates de email prontos para operacao"
+        title="Templates de email prontos para operação"
         description="Mensagens de recebimento, avanco e reprovacao numa biblioteca simples de manter."
         actions={<Badge variant={smtpReady ? "success" : "warning"}>{smtpReady ? "SMTP configurado" : "SMTP pendente"}</Badge>}
       />
@@ -26,12 +26,12 @@ export default async function CommunicationsPage() {
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Templates</span>
           <strong className={styles.statValue}>{templates.length}</strong>
-          <span className={styles.statHint}>Modelos ativos para a experiencia do candidato.</span>
+          <span className={styles.statHint}>Modelos ativos para a experiência do candidato.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>SMTP</span>
           <strong className={styles.statValue}>{smtpReady ? "On" : "Off"}</strong>
-          <span className={styles.statHint}>Envio operacional depende desta configuracao.</span>
+          <span className={styles.statHint}>Envio operacional depende desta configuração.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Variaveis</span>
@@ -65,7 +65,7 @@ export default async function CommunicationsPage() {
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Delivery</span>
             <strong className={styles.spotlightValue}>{smtpReady ? "Ready" : "Setup"}</strong>
-            <p className={styles.panelDescription}>A camada de envio esta {smtpReady ? "pronta para operar" : "pendente de configuracao SMTP"}.</p>
+            <p className={styles.panelDescription}>A camada de envio esta {smtpReady ? "pronta para operar" : "pendente de configuração SMTP"}.</p>
           </div>
 
           <div className={styles.panel}>
@@ -80,7 +80,7 @@ export default async function CommunicationsPage() {
               </div>
               <div className={styles.listItem}>
                 <strong className={styles.itemTitle}>Tono consistente</strong>
-                <span className={styles.itemDescription}>A experiencia do candidato deve soar igual em todas as etapas.</span>
+                <span className={styles.itemDescription}>A experiência do candidato deve soar igual em todas as etapas.</span>
               </div>
             </div>
           </div>

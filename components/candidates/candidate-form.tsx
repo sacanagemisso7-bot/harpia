@@ -52,11 +52,11 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
           <Input id="currentCompany" name="currentCompany" defaultValue={defaultValues?.currentCompany ?? ""} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="location">Localizacao</Label>
+          <Label htmlFor="location">Localização</Label>
           <Input id="location" name="location" defaultValue={defaultValues?.location ?? ""} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="yearsExperience">Anos de experiencia</Label>
+          <Label htmlFor="yearsExperience">Anos de experiência</Label>
           <Input
             id="yearsExperience"
             name="yearsExperience"
@@ -80,7 +80,7 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
             <option value={CandidateSource.MANUAL_IMPORT}>Importacao manual</option>
             <option value={CandidateSource.LINKEDIN}>LinkedIn</option>
             <option value={CandidateSource.REFERRAL}>Indicacao</option>
-            <option value={CandidateSource.CAREERS_PAGE}>Pagina de carreiras</option>
+            <option value={CandidateSource.CAREERS_PAGE}>Página de carreiras</option>
           </Select>
         </div>
         <div className="space-y-2">

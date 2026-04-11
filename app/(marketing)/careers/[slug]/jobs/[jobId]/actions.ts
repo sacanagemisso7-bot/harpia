@@ -30,7 +30,7 @@ export async function submitPublicApplication(
 
   if (!job) {
     return {
-      error: "Vaga nao encontrada ou encerrada."
+      error: "Vaga não encontrada ou encerrada."
     };
   }
 
@@ -52,7 +52,7 @@ export async function submitPublicApplication(
 
   if (!defaultStage) {
     return {
-      error: "A organizacao ainda nao configurou o pipeline padrao."
+      error: "A organização ainda não configurou o pipeline padrao."
     };
   }
 
@@ -81,7 +81,7 @@ export async function submitPublicApplication(
 
     if (!organization) {
       return {
-        error: "Organizacao indisponivel para receber candidaturas agora."
+        error: "Organização indisponível para receber candidaturas agora."
       };
     }
 
@@ -127,7 +127,7 @@ export async function submitPublicApplication(
 
     if (!parsedResume.success) {
       return {
-        error: parsedResume.error.errors[0]?.message ?? "O curriculo nao pode ser processado."
+        error: parsedResume.error.errors[0]?.message ?? "O currículo não pode ser processado."
       };
     }
 

@@ -48,7 +48,7 @@ export function BillingProfileForm({ action, defaultValues }: BillingProfileForm
           <Input id="billingCountryCode" name="billingCountryCode" defaultValue={defaultValues.billingCountryCode} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="billingAiOverageRateCents">Overage IA por analise (centavos)</Label>
+          <Label htmlFor="billingAiOverageRateCents">Overage IA por análise (centavos)</Label>
           <Input
             id="billingAiOverageRateCents"
             name="billingAiOverageRateCents"

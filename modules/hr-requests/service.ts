@@ -59,7 +59,7 @@ export async function createHrRequest(input: {
     action: "hr_request.created",
     entityType: "hr_request",
     entityId: request.id,
-    summary: `Solicitacao interna criada: ${request.title}.`,
+    summary: `Solicitação interna criada: ${request.title}.`,
     metadata: {
       category: request.category,
       priority: request.priority
@@ -83,7 +83,7 @@ export async function updateHrRequestStatus(input: {
   });
 
   if (!request) {
-    throw new Error("Solicitacao nao encontrada.");
+    throw new Error("Solicitação não encontrada.");
   }
 
   const nextFirstResponseAt =
@@ -112,7 +112,7 @@ export async function updateHrRequestStatus(input: {
     action: "hr_request.status_updated",
     entityType: "hr_request",
     entityId: updated.id,
-    summary: `Solicitacao ${updated.title} atualizada para ${updated.status}.`,
+    summary: `Solicitação ${updated.title} atualizada para ${updated.status}.`,
     metadata: {
       status: updated.status
     }
@@ -136,7 +136,7 @@ export async function addHrRequestComment(input: {
   });
 
   if (!request) {
-    throw new Error("Solicitacao nao encontrada.");
+    throw new Error("Solicitação não encontrada.");
   }
 
   const comment = await prisma.hrRequestComment.create({
@@ -155,7 +155,7 @@ export async function addHrRequestComment(input: {
     action: "hr_request.comment_added",
     entityType: "hr_request",
     entityId: request.id,
-    summary: `Comentario adicionado na solicitacao ${request.title}.`
+    summary: `Comentario adicionado na solicitação ${request.title}.`
   });
 
   return comment;

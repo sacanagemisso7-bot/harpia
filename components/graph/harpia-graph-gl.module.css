@@ -1,11 +1,11 @@
-﻿.root {
+.root {
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
   border-radius: inherit;
   background:
-    radial-gradient(circle at 18% 16%, rgba(129, 155, 255, 0.08), transparent 18%),
+    radial-gradient(circle at 18% 16%, rgba(214, 198, 165, 0.08), transparent 18%),
     radial-gradient(circle at 82% 12%, rgba(244, 241, 234, 0.035), transparent 24%),
     linear-gradient(180deg, rgba(26, 26, 29, 0.96), rgba(11, 11, 12, 0.98));
   isolation: isolate;
@@ -24,14 +24,14 @@
 
 .root[data-variant="hero"] {
   background:
-    radial-gradient(circle at 14% 20%, rgba(129, 155, 255, 0.1), transparent 18%),
+    radial-gradient(circle at 14% 20%, rgba(214, 198, 165, 0.1), transparent 18%),
     radial-gradient(circle at 80% 16%, rgba(244, 241, 234, 0.045), transparent 22%),
     linear-gradient(180deg, rgba(26, 26, 29, 0.88), rgba(11, 11, 12, 0.96));
 }
 
 .root[data-variant="dashboard"] {
   background:
-    radial-gradient(circle at 22% 14%, rgba(129, 155, 255, 0.07), transparent 18%),
+    radial-gradient(circle at 22% 14%, rgba(214, 198, 165, 0.07), transparent 18%),
     radial-gradient(circle at 78% 10%, rgba(244, 241, 234, 0.03), transparent 22%),
     linear-gradient(180deg, rgba(26, 26, 29, 0.95), rgba(11, 11, 12, 0.98));
 }
@@ -45,9 +45,9 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at 22% 22%, rgba(129, 155, 255, 0.08), transparent 18%),
+    radial-gradient(circle at 22% 22%, rgba(214, 198, 165, 0.08), transparent 18%),
     radial-gradient(circle at 74% 18%, rgba(244, 241, 234, 0.035), transparent 24%),
-    radial-gradient(circle at 52% 56%, rgba(129, 155, 255, 0.03), transparent 28%);
+    radial-gradient(circle at 52% 56%, rgba(214, 198, 165, 0.03), transparent 28%);
   mix-blend-mode: screen;
   opacity: 0.78;
   pointer-events: none;
@@ -70,11 +70,11 @@
   background: linear-gradient(
     112deg,
     transparent 40%,
-    rgba(129, 155, 255, 0.02) 47%,
-    rgba(129, 155, 255, 0.065) 49.6%,
+    rgba(214, 198, 165, 0.02) 47%,
+    rgba(214, 198, 165, 0.065) 49.6%,
     rgba(244, 241, 234, 0.12) 50.5%,
-    rgba(129, 155, 255, 0.065) 51.4%,
-    rgba(129, 155, 255, 0.02) 54%,
+    rgba(214, 198, 165, 0.065) 51.4%,
+    rgba(214, 198, 165, 0.02) 54%,
     transparent 60%
   );
   opacity: 0.34;
@@ -98,7 +98,7 @@
   opacity: 0.055;
   background-image:
     radial-gradient(rgba(244, 241, 234, 0.32) 0.55px, transparent 0.65px),
-    radial-gradient(rgba(129, 155, 255, 0.18) 0.45px, transparent 0.55px);
+    radial-gradient(rgba(214, 198, 165, 0.18) 0.45px, transparent 0.55px);
   background-position: 0 0, 1.6rem 1.6rem;
   background-size: 1.8rem 1.8rem, 2.1rem 2.1rem;
   mix-blend-mode: soft-light;
@@ -109,8 +109,73 @@
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 18% 16%, rgba(129, 155, 255, 0.1), transparent 16%),
+    radial-gradient(circle at 18% 16%, rgba(214, 198, 165, 0.1), transparent 16%),
     radial-gradient(circle at 80% 12%, rgba(244, 241, 234, 0.04), transparent 22%),
     linear-gradient(180deg, rgba(26, 26, 29, 0.94), rgba(11, 11, 12, 0.98));
 }
+
+.root[data-theme="light"] {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(214, 198, 165, 0.12), transparent 18%),
+    radial-gradient(circle at 82% 12%, rgba(106, 97, 86, 0.06), transparent 24%),
+    linear-gradient(180deg, rgba(245, 243, 238, 0.96), rgba(241, 236, 227, 0.98));
+}
+
+.root[data-theme="light"]::before {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.58), transparent 18%),
+    radial-gradient(circle at 50% 110%, rgba(184, 169, 138, 0.14), transparent 44%);
+}
+
+.root[data-theme="light"] .glow {
+  background:
+    radial-gradient(circle at 22% 22%, rgba(214, 198, 165, 0.12), transparent 18%),
+    radial-gradient(circle at 74% 18%, rgba(106, 97, 86, 0.04), transparent 24%),
+    radial-gradient(circle at 52% 56%, rgba(214, 198, 165, 0.04), transparent 28%);
+  mix-blend-mode: multiply;
+  opacity: 0.54;
+}
+
+.root[data-theme="light"] .grid {
+  background-image:
+    linear-gradient(rgba(106, 97, 86, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(106, 97, 86, 0.08) 1px, transparent 1px);
+  opacity: 0.34;
+}
+
+.root[data-theme="light"] .scanOverlay {
+  background: linear-gradient(
+    112deg,
+    transparent 40%,
+    rgba(184, 169, 138, 0.01) 47%,
+    rgba(184, 169, 138, 0.045) 49.6%,
+    rgba(106, 97, 86, 0.08) 50.5%,
+    rgba(184, 169, 138, 0.045) 51.4%,
+    rgba(184, 169, 138, 0.01) 54%,
+    transparent 60%
+  );
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+}
+
+.root[data-theme="light"] .vignette {
+  background:
+    linear-gradient(90deg, rgba(245, 243, 238, 0.32), transparent 26%, transparent 74%, rgba(245, 243, 238, 0.3)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.26), transparent 18%, transparent 68%, rgba(214, 198, 165, 0.12));
+}
+
+.root[data-theme="light"] .grain {
+  opacity: 0.032;
+  background-image:
+    radial-gradient(rgba(106, 97, 86, 0.2) 0.55px, transparent 0.65px),
+    radial-gradient(rgba(184, 169, 138, 0.16) 0.45px, transparent 0.55px);
+}
+
+.root[data-theme="light"] .fallback {
+  background:
+    radial-gradient(circle at 18% 16%, rgba(214, 198, 165, 0.12), transparent 16%),
+    radial-gradient(circle at 80% 12%, rgba(106, 97, 86, 0.05), transparent 22%),
+    linear-gradient(180deg, rgba(245, 243, 238, 0.94), rgba(241, 236, 227, 0.98));
+}
+
 

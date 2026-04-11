@@ -23,6 +23,7 @@ export type HarpiaNodeData = {
 type HarpiaNodeProps = {
   node: HarpiaNodeData;
   index: number;
+  themeMode: "light" | "dark";
   activeCluster: string | null;
   activeNodeId: string | null;
   hoveredNodeId: string | null;
@@ -40,6 +41,7 @@ function hashSeed(value: string) {
 export function HarpiaNode({
   node,
   index,
+  themeMode,
   activeCluster,
   activeNodeId,
   hoveredNodeId,
@@ -64,6 +66,9 @@ export function HarpiaNode({
   const opacity = isDimmed ? 0.14 : isSelected ? 0.92 : isHovered ? 0.84 : node.emphasis === "highlighted" ? 0.68 : 0.42;
   const stateLevel = isDimmed ? -1 : isSelected ? 2 : node.emphasis === "highlighted" ? 1 : 0;
   const intensity = isSelected ? 1 : isHovered ? 0.84 : node.emphasis === "highlighted" ? 0.66 : 0.42;
+  const baseColor = themeMode === "light" ? "#6A6156" : "#F4F1EA";
+  const accentColor = themeMode === "light" ? "#B8A98A" : "#D6C6A5";
+  const haloColor = useMemo(() => new Color(accentColor), [accentColor]);
 
   useFrame((state) => {
     if (!groupRef.current || !haloRef.current || !outerHaloRef.current) {
@@ -141,7 +146,7 @@ export function HarpiaNode({
           <planeGeometry args={[node.size * 2.8, node.size * 2.8]} />
           <meshBasicMaterial
             ref={outerHaloMaterialRef}
-            color={new Color("#D6C6A5")}
+            color={haloColor}
             transparent
             opacity={0.02}
             depthWrite={false}
@@ -151,7 +156,7 @@ export function HarpiaNode({
           <planeGeometry args={[node.size * 1.9, node.size * 1.9]} />
           <meshBasicMaterial
             ref={haloMaterialRef}
-            color={new Color("#D6C6A5")}
+            color={haloColor}
             transparent
             opacity={0.04}
             depthWrite={false}
@@ -190,6 +195,8 @@ export function HarpiaNode({
             opacity={opacity}
             intensity={intensity}
             state={stateLevel}
+            baseColor={baseColor}
+            accentColor={accentColor}
           />
         </mesh>
       </Billboard>

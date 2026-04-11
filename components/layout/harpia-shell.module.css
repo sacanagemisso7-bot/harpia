@@ -1,4 +1,4 @@
-﻿.sidebar {
+.sidebar {
   position: sticky;
   top: 1rem;
   align-self: start;
@@ -16,7 +16,7 @@
   padding: 0.9rem 1rem;
   background:
     linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(17, 17, 20, 0.94)),
-    radial-gradient(circle at 50% 0%, rgba(129, 155, 255, 0.14), transparent 32%);
+    radial-gradient(circle at 50% 0%, rgba(214, 198, 165, 0.14), transparent 32%);
 }
 
 .rail::before {
@@ -36,7 +36,7 @@
   width: 7rem;
   height: 7rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(129, 155, 255, 0.22), transparent 66%);
+  background: radial-gradient(circle, rgba(214, 198, 165, 0.22), transparent 66%);
   filter: blur(28px);
   transform: translateX(-50%);
   opacity: 0.9;
@@ -47,8 +47,8 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at center, rgba(129, 155, 255, 0.08) 0 1px, transparent 1px),
-    linear-gradient(180deg, rgba(129, 155, 255, 0.08), transparent 26%, transparent 74%, rgba(255, 255, 255, 0.04));
+    radial-gradient(circle at center, rgba(214, 198, 165, 0.08) 0 1px, transparent 1px),
+    linear-gradient(180deg, rgba(214, 198, 165, 0.08), transparent 26%, transparent 74%, rgba(255, 255, 255, 0.04));
   background-size: 12px 12px, 100% 100%;
   opacity: 0.16;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 86%);
@@ -103,8 +103,8 @@
 }
 
 .railSignalDotActive {
-  background: rgba(129, 155, 255, 0.88);
-  box-shadow: 0 0 14px rgba(129, 155, 255, 0.42);
+  background: rgba(214, 198, 165, 0.88);
+  box-shadow: 0 0 14px rgba(214, 198, 165, 0.42);
 }
 
 .railFoot {
@@ -114,7 +114,7 @@
 .railFootLine {
   width: 1px;
   height: 3.6rem;
-  background: linear-gradient(180deg, rgba(129, 155, 255, 0.4), transparent);
+  background: linear-gradient(180deg, rgba(214, 198, 165, 0.4), transparent);
 }
 
 .deck {
@@ -129,7 +129,7 @@
   clip-path: polygon(0 0, calc(100% - 1.9rem) 0, 100% 1.9rem, 100% 100%, 0 100%);
   background:
     linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(16, 16, 18, 0.94)),
-    radial-gradient(circle at 82% 10%, rgba(129, 155, 255, 0.12), transparent 24%),
+    radial-gradient(circle at 82% 10%, rgba(214, 198, 165, 0.12), transparent 24%),
     linear-gradient(150deg, rgba(255, 255, 255, 0.024), transparent 44%);
 }
 
@@ -150,7 +150,7 @@
   width: 17rem;
   height: 10rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(129, 155, 255, 0.18), transparent 70%);
+  background: radial-gradient(circle, rgba(214, 198, 165, 0.18), transparent 70%);
   filter: blur(36px);
   opacity: 0.72;
   pointer-events: none;
@@ -163,8 +163,8 @@
   bottom: 1rem;
   width: 7rem;
   background:
-    radial-gradient(circle at center, rgba(129, 155, 255, 0.08) 0 1px, transparent 1px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%, transparent 78%, rgba(129, 155, 255, 0.04));
+    radial-gradient(circle at center, rgba(214, 198, 165, 0.08) 0 1px, transparent 1px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 24%, transparent 78%, rgba(214, 198, 165, 0.04));
   background-size: 14px 14px, 100% 100%;
   opacity: 0.18;
   mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent 88%);
@@ -194,7 +194,7 @@
   top: 1rem;
   bottom: 1rem;
   width: 1px;
-  background: linear-gradient(180deg, rgba(129, 155, 255, 0.42), transparent 84%);
+  background: linear-gradient(180deg, rgba(214, 198, 165, 0.42), transparent 84%);
 }
 
 .brandMeta {
@@ -215,8 +215,8 @@
   width: 0.42rem;
   height: 0.42rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.84);
-  box-shadow: 0 0 14px rgba(129, 155, 255, 0.42);
+  background: rgba(214, 198, 165, 0.84);
+  box-shadow: 0 0 14px rgba(214, 198, 165, 0.42);
   transform: translateY(-50%);
 }
 
@@ -273,7 +273,7 @@
   width: 0.34rem;
   height: 0.34rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.34);
+  background: rgba(214, 198, 165, 0.34);
 }
 
 .introSlot {
@@ -288,7 +288,7 @@
   position: absolute;
   inset: 0 0 auto;
   height: 1px;
-  background: linear-gradient(90deg, rgba(129, 155, 255, 0.24), transparent);
+  background: linear-gradient(90deg, rgba(214, 198, 165, 0.24), transparent);
 }
 
 .systemPlate {
@@ -311,7 +311,7 @@
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 0.96rem;
-  border: 1px solid rgba(129, 155, 255, 0.16);
+  border: 1px solid rgba(214, 198, 165, 0.16);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 26%),
     rgba(255, 255, 255, 0.02);
@@ -354,7 +354,7 @@
   top: 5rem;
   bottom: 1rem;
   width: 1px;
-  background: linear-gradient(180deg, rgba(129, 155, 255, 0.22), rgba(255, 255, 255, 0.05), transparent);
+  background: linear-gradient(180deg, rgba(214, 198, 165, 0.22), rgba(255, 255, 255, 0.05), transparent);
   pointer-events: none;
 }
 
@@ -402,7 +402,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.024), transparent 24%),
     linear-gradient(180deg, rgba(24, 24, 27, 0.96), rgba(18, 18, 21, 0.92)),
-    radial-gradient(circle at 82% 18%, rgba(129, 155, 255, 0.12), transparent 30%);
+    radial-gradient(circle at 82% 18%, rgba(214, 198, 165, 0.12), transparent 30%);
   box-shadow:
     0 22px 46px rgba(0, 0, 0, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -488,7 +488,7 @@
   width: 0.34rem;
   height: 0.34rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.36);
+  background: rgba(214, 198, 165, 0.36);
 }
 
 .navCurrentTrail {
@@ -496,7 +496,7 @@
   z-index: 1;
   margin-top: 1rem;
   height: 1px;
-  background: linear-gradient(90deg, rgba(129, 155, 255, 0.28), transparent);
+  background: linear-gradient(90deg, rgba(214, 198, 165, 0.28), transparent);
 }
 
 .navGroup {
@@ -532,7 +532,7 @@
 .navGroupLine {
   flex: 1;
   height: 1px;
-  background: linear-gradient(90deg, rgba(129, 155, 255, 0.22), transparent);
+  background: linear-gradient(90deg, rgba(214, 198, 165, 0.22), transparent);
 }
 
 .navGroupItems {
@@ -556,7 +556,7 @@
   top: 50%;
   width: 0.72rem;
   height: 1px;
-  background: rgba(129, 155, 255, 0.24);
+  background: rgba(214, 198, 165, 0.24);
   transform: translateY(-50%);
 }
 
@@ -567,7 +567,7 @@
   right: 1rem;
   bottom: 0.8rem;
   height: 1px;
-  background: linear-gradient(90deg, rgba(129, 155, 255, 0.24), transparent);
+  background: linear-gradient(90deg, rgba(214, 198, 165, 0.24), transparent);
   opacity: 0;
   transition: opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -582,8 +582,8 @@
 }
 
 .navItemActive::before {
-  background: rgba(129, 155, 255, 0.9);
-  box-shadow: 0 0 12px rgba(129, 155, 255, 0.38);
+  background: rgba(214, 198, 165, 0.9);
+  box-shadow: 0 0 12px rgba(214, 198, 165, 0.38);
 }
 
 .navLead {
@@ -623,7 +623,7 @@
   width: 0.34rem;
   height: 0.34rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.28);
+  background: rgba(214, 198, 165, 0.28);
 }
 
 .navTrail {
@@ -642,7 +642,7 @@
   width: 0.36rem;
   height: 0.36rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.32);
+  background: rgba(214, 198, 165, 0.32);
 }
 
 .navItemActive .navTrail {
@@ -650,8 +650,8 @@
 }
 
 .navItemActive .navTrail::before {
-  background: rgba(129, 155, 255, 0.84);
-  box-shadow: 0 0 10px rgba(129, 155, 255, 0.42);
+  background: rgba(214, 198, 165, 0.84);
+  box-shadow: 0 0 10px rgba(214, 198, 165, 0.42);
 }
 
 .horizon {
@@ -670,7 +670,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
     linear-gradient(180deg, rgba(24, 24, 27, 0.94), rgba(17, 17, 20, 0.9)),
-    radial-gradient(circle at 86% 18%, rgba(129, 155, 255, 0.12), transparent 24%);
+    radial-gradient(circle at 86% 18%, rgba(214, 198, 165, 0.12), transparent 24%);
   box-shadow:
     0 30px 68px rgba(0, 0, 0, 0.26),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -688,7 +688,7 @@
   top: 1.5rem;
   bottom: 1.4rem;
   width: 1px;
-  background: linear-gradient(180deg, rgba(129, 155, 255, 0.44), transparent 84%);
+  background: linear-gradient(180deg, rgba(214, 198, 165, 0.44), transparent 84%);
 }
 
 .topbarGlow {
@@ -698,7 +698,7 @@
   width: 26rem;
   height: 18rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(129, 155, 255, 0.14), transparent 66%);
+  background: radial-gradient(circle, rgba(214, 198, 165, 0.14), transparent 66%);
   filter: blur(38px);
   opacity: 0.74;
   pointer-events: none;
@@ -760,8 +760,8 @@
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.84);
-  box-shadow: 0 0 12px rgba(129, 155, 255, 0.42);
+  background: rgba(214, 198, 165, 0.84);
+  box-shadow: 0 0 12px rgba(214, 198, 165, 0.42);
 }
 
 .topbarTitle {
@@ -807,7 +807,7 @@
   width: 0.34rem;
   height: 0.34rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.36);
+  background: rgba(214, 198, 165, 0.36);
 }
 
 .topbarDock {
@@ -832,7 +832,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(129, 155, 255, 0.1), transparent 38%);
+  background: linear-gradient(90deg, rgba(214, 198, 165, 0.1), transparent 38%);
   opacity: 0.6;
   pointer-events: none;
 }
@@ -876,8 +876,8 @@
   width: 0.38rem;
   height: 0.38rem;
   border-radius: 50%;
-  background: rgba(129, 155, 255, 0.84);
-  box-shadow: 0 0 10px rgba(129, 155, 255, 0.4);
+  background: rgba(214, 198, 165, 0.84);
+  box-shadow: 0 0 10px rgba(214, 198, 165, 0.4);
 }
 
 .topbarRole {
@@ -911,7 +911,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 24%),
     linear-gradient(180deg, rgba(26, 26, 29, 0.96), rgba(18, 18, 21, 0.92)),
-    radial-gradient(circle at 88% 16%, rgba(129, 155, 255, 0.12), transparent 24%);
+    radial-gradient(circle at 88% 16%, rgba(214, 198, 165, 0.12), transparent 24%);
   box-shadow:
     0 24px 54px rgba(0, 0, 0, 0.26),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -924,7 +924,7 @@
   width: 14rem;
   height: 10rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(129, 155, 255, 0.16), transparent 66%);
+  background: radial-gradient(circle, rgba(214, 198, 165, 0.16), transparent 66%);
   filter: blur(28px);
   opacity: 0.72;
   pointer-events: none;
@@ -1012,7 +1012,7 @@
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.022), transparent 16%),
     linear-gradient(180deg, rgba(18, 18, 21, 0.82), rgba(12, 12, 14, 0.7)),
-    radial-gradient(circle at 18% 0%, rgba(129, 155, 255, 0.08), transparent 24%);
+    radial-gradient(circle at 18% 0%, rgba(214, 198, 165, 0.08), transparent 24%);
   box-shadow:
     0 34px 76px rgba(0, 0, 0, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.032);
@@ -1036,7 +1036,7 @@
   width: 30rem;
   height: 20rem;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(129, 155, 255, 0.12), transparent 70%);
+  background: radial-gradient(circle, rgba(214, 198, 165, 0.12), transparent 70%);
   filter: blur(42px);
   opacity: 0.76;
   pointer-events: none;
@@ -1046,7 +1046,7 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(circle at center, rgba(129, 155, 255, 0.065) 0 1px, transparent 1px),
+    radial-gradient(circle at center, rgba(214, 198, 165, 0.065) 0 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px);
   background-size: 14px 14px, 96px 96px, 96px 96px;
@@ -1059,7 +1059,7 @@
   position: absolute;
   inset: -18% auto -20% -22%;
   width: 34%;
-  background: linear-gradient(90deg, transparent, rgba(129, 155, 255, 0.12), rgba(244, 241, 234, 0.18), transparent);
+  background: linear-gradient(90deg, transparent, rgba(214, 198, 165, 0.12), rgba(244, 241, 234, 0.18), transparent);
   opacity: 0.42;
   transform: rotate(-11deg);
   filter: blur(3px);
@@ -1110,7 +1110,7 @@
     width: 1px;
     height: 2.2rem;
     margin-top: 0.34rem;
-    background: linear-gradient(180deg, rgba(129, 155, 255, 0.34), transparent);
+    background: linear-gradient(180deg, rgba(214, 198, 165, 0.34), transparent);
   }
 
   .railFoot {
@@ -1174,7 +1174,7 @@
 :global(html.light) .deck {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.94)),
-    radial-gradient(circle at 82% 10%, rgba(129, 155, 255, 0.14), transparent 24%);
+    radial-gradient(circle at 82% 10%, rgba(214, 198, 165, 0.14), transparent 24%);
   box-shadow:
     0 20px 38px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.94);
@@ -1191,7 +1191,7 @@
   border-color: rgba(208, 215, 222, 0.92);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 249, 251, 0.94)),
-    radial-gradient(circle at 84% 12%, rgba(129, 155, 255, 0.12), transparent 24%);
+    radial-gradient(circle at 84% 12%, rgba(214, 198, 165, 0.12), transparent 24%);
   box-shadow:
     0 18px 34px rgba(15, 23, 42, 0.08),
     inset 0 1px 0 rgba(255, 255, 255, 0.94);
@@ -1238,8 +1238,8 @@
 }
 
 :global(html.light) .railSignalDotActive {
-  background: rgba(96, 122, 235, 0.82);
-  box-shadow: 0 0 12px rgba(96, 122, 235, 0.28);
+  background: rgba(184, 169, 138, 0.82);
+  box-shadow: 0 0 12px rgba(184, 169, 138, 0.28);
 }
 
 :global(html.light) .navGroupCode,
@@ -1258,12 +1258,12 @@
 :global(html.light) .navGroupLine,
 :global(html.light) .navViewport::before,
 :global(html.light) .railFootLine {
-  background: linear-gradient(180deg, rgba(96, 122, 235, 0.34), transparent);
+  background: linear-gradient(180deg, rgba(184, 169, 138, 0.34), transparent);
 }
 
 :global(html.light) .navItem::before,
 :global(html.light) .navItem::after {
-  background: linear-gradient(90deg, rgba(96, 122, 235, 0.28), transparent);
+  background: linear-gradient(90deg, rgba(184, 169, 138, 0.28), transparent);
 }
 
 @keyframes contentScanDrift {
@@ -1285,4 +1285,5 @@
     opacity: 0;
   }
 }
+
 

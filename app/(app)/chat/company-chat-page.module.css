@@ -1,23 +1,23 @@
 .scene {
   display: grid;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
 .workspace {
   display: grid;
-  grid-template-columns: 280px minmax(0, 1fr) 320px;
-  gap: 1rem;
-  align-items: start;
+  grid-template-columns: 296px minmax(0, 1fr) 336px;
+  gap: 1.1rem;
+  align-items: stretch;
 }
 
 .rail,
 .conversationPanel,
 .contextPanel {
   border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 1.35rem;
+  border-radius: 1.4rem;
   background:
-    linear-gradient(180deg, hsl(var(--card) / 0.92), hsl(var(--secondary) / 0.72)),
-    radial-gradient(circle at top left, hsl(var(--primary) / 0.12), transparent 28%);
+    linear-gradient(180deg, hsl(var(--card) / 0.94), hsl(var(--secondary) / 0.76)),
+    radial-gradient(circle at top left, hsl(var(--primary) / 0.1), transparent 30%);
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -36,7 +36,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   gap: 1rem;
-  min-height: 0;
+  min-height: calc(100svh - 12rem);
   padding: 1rem;
 }
 
@@ -56,7 +56,8 @@
 
 .panelTitle,
 .contextSection h3,
-.conversationLead h2 {
+.conversationLead h2,
+.welcomeCopy h2 {
   margin: 0;
   font-size: 1.04rem;
   font-weight: 600;
@@ -65,9 +66,10 @@
 }
 
 .panelDescription,
-.contextSection p {
+.contextSection p,
+.welcomeCopy p {
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   line-height: 1.6;
   color: hsl(var(--muted-foreground));
 }
@@ -75,13 +77,13 @@
 .signalGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.7rem;
+  gap: 0.72rem;
 }
 
 .signalCard {
   display: grid;
   gap: 0.28rem;
-  min-height: 5.2rem;
+  min-height: 5rem;
   padding: 0.85rem;
   border: 1px solid rgba(148, 163, 184, 0.12);
   border-radius: 1rem;
@@ -98,10 +100,33 @@
 
 .signalCard strong {
   font-family: var(--font-display);
-  font-size: 1.8rem;
+  font-size: 1.82rem;
   line-height: 0.92;
   letter-spacing: -0.08em;
   color: hsl(var(--foreground));
+}
+
+.railAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  min-height: 2.9rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(214, 198, 165, 0.16);
+  border-radius: 1rem;
+  background:
+    linear-gradient(180deg, rgba(214, 198, 165, 0.16), rgba(214, 198, 165, 0.08)),
+    linear-gradient(180deg, hsl(var(--card) / 0.92), hsl(var(--secondary) / 0.84));
+  color: hsl(var(--foreground));
+  text-decoration: none;
+  box-shadow:
+    0 16px 28px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.railAction:hover {
+  border-color: rgba(214, 198, 165, 0.26);
 }
 
 .threadList {
@@ -126,13 +151,13 @@
 
 .threadItem:hover,
 .threadItemActive {
-  border-color: rgba(129, 155, 255, 0.22);
+  border-color: rgba(214, 198, 165, 0.22);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02)),
-    rgba(129, 155, 255, 0.04);
+    rgba(214, 198, 165, 0.04);
   box-shadow:
     0 16px 28px rgba(0, 0, 0, 0.16),
-    0 0 0 1px rgba(129, 155, 255, 0.04);
+    0 0 0 1px rgba(214, 198, 165, 0.04);
 }
 
 .threadItemTop {
@@ -168,11 +193,14 @@
   color: hsl(var(--muted-foreground));
 }
 
-.emptyState,
-.messageEmpty {
+.emptyState {
   display: grid;
   place-items: center;
   min-height: 10rem;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  text-align: center;
+  color: hsl(var(--muted-foreground));
 }
 
 .conversationHeader {
@@ -180,7 +208,6 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  padding-bottom: 0.2rem;
 }
 
 .conversationLead {
@@ -216,20 +243,127 @@
 
 .messageRiver {
   min-height: 0;
-  max-height: calc(100svh - 23rem);
-  display: grid;
-  gap: 0.95rem;
   overflow-y: auto;
-  padding-right: 0.2rem;
+  padding-right: 0.15rem;
+  scroll-behavior: smooth;
+}
+
+.messageStack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 1rem;
+  min-height: 100%;
+}
+
+.messageRow {
+  display: flex;
+  width: 100%;
+}
+
+.messageAssistant {
+  justify-content: flex-start;
+}
+
+.messageUser {
+  justify-content: flex-end;
+}
+
+.messageSystem {
+  justify-content: center;
+}
+
+.messageBubble {
+  width: min(100%, 48rem);
+}
+
+.messageUser .messageBubble {
+  width: min(100%, 42rem);
+}
+
+.messageSystem .messageBubble {
+  width: min(100%, 38rem);
 }
 
 .messageMeta {
   position: relative;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.messageRole {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.messageBody {
+  margin-top: 0.9rem;
+  white-space: pre-wrap;
+  font-size: 0.94rem;
+  line-height: 1.78;
+  color: hsl(var(--foreground));
+}
+
+.inlinePromptStrip,
+.composerPromptStrip,
+.contextPromptStrip,
+.welcomePromptStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+
+.inlinePromptStrip {
+  margin-top: 1rem;
+}
+
+.inlinePromptButton,
+.composerPromptButton,
+.contextPromptButton,
+.welcomePromptButton {
+  justify-content: flex-start;
+  gap: 0.55rem;
+  border-radius: 999px;
+}
+
+.composerDock {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.25rem;
 }
 
 .composerWrap {
-  padding-top: 0.1rem;
+  position: sticky;
+  bottom: 0;
+}
+
+.welcomeState {
+  display: grid;
+  gap: 1.25rem;
+  align-content: center;
+  min-height: 100%;
+  padding: 1.5rem 0;
+}
+
+.welcomeCopy {
+  display: grid;
+  gap: 0.55rem;
+  max-width: 38rem;
+}
+
+.welcomeCopy h2 {
+  font-size: clamp(1.6rem, 2vw, 2.4rem);
+  line-height: 1.04;
+  letter-spacing: -0.06em;
+}
+
+.welcomeCopy p {
+  font-size: 0.96rem;
+  max-width: 34rem;
 }
 
 .contextPanel {
@@ -276,24 +410,6 @@
   color: hsl(var(--primary));
 }
 
-.promptList {
-  display: grid;
-  gap: 0.7rem;
-}
-
-.promptItem {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.6rem;
-  padding: 0.8rem 0.85rem;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.02);
-  font-size: 0.8rem;
-  line-height: 1.55;
-  color: hsl(var(--muted-foreground));
-}
-
 @media (max-width: 1280px) {
   .workspace {
     grid-template-columns: 260px minmax(0, 1fr);
@@ -310,6 +426,10 @@
     grid-template-columns: 1fr;
   }
 
+  .conversationPanel {
+    min-height: auto;
+  }
+
   .conversationHeader {
     flex-direction: column;
   }
@@ -318,8 +438,10 @@
     justify-content: flex-start;
   }
 
-  .messageRiver {
-    max-height: none;
+  .messageBubble,
+  .messageUser .messageBubble,
+  .messageSystem .messageBubble {
+    width: 100%;
   }
 
   .contextPanel {
@@ -331,4 +453,47 @@
   .signalGrid {
     grid-template-columns: 1fr 1fr;
   }
+}
+
+:global(html.light) .rail,
+:global(html.light) .conversationPanel,
+:global(html.light) .contextPanel {
+  border-color: hsl(var(--border) / 0.92);
+  background:
+    linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.84)),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent 42%);
+  box-shadow:
+    0 16px 30px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+:global(html.light) .signalCard,
+:global(html.light) .threadItem,
+:global(html.light) .conversationMeta span {
+  border-color: hsl(var(--border) / 0.86);
+  background: linear-gradient(180deg, hsl(var(--card) / 0.92), hsl(var(--secondary) / 0.78));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 10px 22px rgba(15, 23, 42, 0.04);
+}
+
+:global(html.light) .threadItem:hover,
+:global(html.light) .threadItemActive {
+  border-color: hsl(var(--primary) / 0.28);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.68)),
+    hsl(var(--accent-warm) / 0.08);
+  box-shadow:
+    0 14px 26px rgba(15, 23, 42, 0.06),
+    0 0 0 1px hsl(var(--primary) / 0.08);
+}
+
+:global(html.light) .railAction {
+  border-color: hsl(var(--border) / 0.86);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.78)),
+    linear-gradient(180deg, hsl(var(--card) / 0.96), hsl(var(--secondary) / 0.84));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.94),
+    0 14px 28px rgba(15, 23, 42, 0.05);
 }

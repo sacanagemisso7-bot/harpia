@@ -53,7 +53,7 @@ export default async function EmployeeProfilePage({
       <PageHeader
         eyebrow="Employee profile"
         title={employee.fullName}
-        description={`${employee.title} em ${employee.department}. Perfil operacional com historico, tasks, requests e compliance.`}
+        description={`${employee.title} em ${employee.department}. Perfil operacional com histórico, tasks, requests e compliance.`}
         actions={<Badge variant={getStatusVariant(employee.status)}>{employee.status}</Badge>}
       />
 
@@ -76,7 +76,7 @@ export default async function EmployeeProfilePage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Compliance</span>
           <strong className={styles.statValue}>{openComplianceCount}</strong>
-          <span className={styles.statHint}>Itens que ainda exigem conclusao ou aceite.</span>
+          <span className={styles.statHint}>Itens que ainda exigem conclus?o ou aceite.</span>
         </div>
       </section>
 
@@ -97,24 +97,24 @@ export default async function EmployeeProfilePage({
                 <span>{employee.department}</span>
               </div>
               <div className={styles.infoTile}>
-                <strong>Localizacao</strong>
-                <span>{employee.location || "Nao informada"}</span>
+                <strong>Localização</strong>
+                <span>{employee.location || "Não informada"}</span>
               </div>
               <div className={styles.infoTile}>
                 <strong>Tipo de contratacao</strong>
-                <span>{employee.employmentType || "Nao informado"}</span>
+                <span>{employee.employmentType || "Não informado"}</span>
               </div>
               <div className={styles.infoTile}>
                 <strong>Entrada</strong>
                 <span>
                   {employee.startDate
                     ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(employee.startDate)
-                    : "Nao informada"}
+                    : "Não informada"}
                 </span>
               </div>
               <div className={styles.infoTile}>
                 <strong>Email</strong>
-                <span>{employee.workEmail || "Nao informado"}</span>
+                <span>{employee.workEmail || "Não informado"}</span>
               </div>
             </div>
             <div className={styles.surfaceMuted}>{employee.notes || "Sem notas iniciais registradas para este colaborador."}</div>
@@ -166,7 +166,7 @@ export default async function EmployeeProfilePage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Load</span>
               <h2 className={styles.panelTitle}>Requests e tasks</h2>
-              <p className={styles.panelDescription}>Visao resumida da carga operacional ligada a esta pessoa.</p>
+              <p className={styles.panelDescription}>Visão resumida da carga operacional ligada a esta pessoa.</p>
             </div>
             <div className={styles.subGrid2}>
               <div className={styles.column}>
@@ -181,7 +181,7 @@ export default async function EmployeeProfilePage({
                     ))}
                   </div>
                 ) : (
-                  <div className={styles.surfaceMuted}>Sem solicitacoes para este colaborador.</div>
+                  <div className={styles.surfaceMuted}>Sem solicitações para este colaborador.</div>
                 )}
               </div>
               <div className={styles.column}>
@@ -232,7 +232,7 @@ export default async function EmployeeProfilePage({
           <div className={styles.spotlight}>
             <span className={styles.panelEyebrow}>Status</span>
             <strong className={styles.spotlightValue}>{employee.status}</strong>
-            <p className={styles.panelDescription}>Leitura atual da situacao desta pessoa dentro da operacao.</p>
+            <p className={styles.panelDescription}>Leitura atual da situacao desta pessoa dentro da operação.</p>
           </div>
 
           {canManageWorkflows ? (
@@ -340,7 +340,7 @@ export default async function EmployeeProfilePage({
                       <div className={styles.itemLead}>
                         <strong className={styles.itemTitle}>{item.title}</strong>
                         <span className={styles.itemSubtitle}>
-                          {item.document?.title ?? "Politica interna"}
+                          {item.document?.title ?? "Política interna"}
                           {item.document?.versionLabel ? ` - ${item.document.versionLabel}` : ""}
                         </span>
                       </div>
@@ -369,7 +369,7 @@ export default async function EmployeeProfilePage({
                 ))}
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>Nenhum aceite de politica pendente para este colaborador.</div>
+              <div className={styles.surfaceMuted}>Nenhum aceite de política pendente para este colaborador.</div>
             )}
           </div>
         </aside>

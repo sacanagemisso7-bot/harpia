@@ -43,7 +43,7 @@ function getBillingNotice(code?: string) {
     case "cancelled":
       return {
         variant: "warning" as const,
-        message: "Checkout cancelado. Voce pode retomar quando quiser."
+        message: "Checkout cancelado. Você pode retomar quando quiser."
       };
     case "trial-started":
       return {
@@ -58,12 +58,12 @@ function getBillingNotice(code?: string) {
     case "already-active":
       return {
         variant: "outline" as const,
-        message: "Sua organizacao ja possui uma assinatura ativa."
+        message: "Sua organização ja possui uma assinatura ativa."
       };
     case "portal":
       return {
         variant: "outline" as const,
-        message: "Voce voltou do portal do cliente do Stripe."
+        message: "Você voltou do portal do cliente do Stripe."
       };
     case "job-limit":
     case "candidate-limit":
@@ -100,7 +100,7 @@ export default async function BillingPage({
     <div className={styles.page}>
       <PageHeader
         eyebrow="Billing"
-        title="Plano, trial e historico de cobranca"
+        title="Plano, trial e histórico de cobranca"
         description="Controle assinatura, acompanhe uso do workspace e veja invoices em um lugar mais claro para operar."
         actions={
           <>
@@ -147,7 +147,7 @@ export default async function BillingPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Overage IA</span>
           <strong className={styles.statValue}>{formatMoney(billing.metrics.aiOverageRevenueCents, "BRL")}</strong>
-          <span className={styles.statHint}>{billing.metrics.aiOverageAnalyses} analises acima da franquia.</span>
+              <span className={styles.statHint}>{billing.metrics.aiOverageAnalyses} análises acima da franquia.</span>
         </div>
       </section>
 
@@ -157,7 +157,7 @@ export default async function BillingPage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Current subscription</span>
               <h2 className={styles.panelTitle}>Assinatura atual</h2>
-              <p className={styles.panelDescription}>Visao executiva do plano e do estado da cobranca.</p>
+              <p className={styles.panelDescription}>Visão executiva do plano e do estado da cobranca.</p>
             </div>
             <div className={styles.tagWrap}>
               <Badge variant={billingIsActive ? "success" : "warning"}>{BILLING_STATUS_LABELS[billing.organization.billingStatus]}</Badge>
@@ -170,8 +170,8 @@ export default async function BillingPage({
                 {billing.organization.billingStatus === BillingStatus.TRIALING && billing.organization.billingTrialEndsAt
                   ? `Trial ativo ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.organization.billingTrialEndsAt)}.`
                   : billing.organization.billingCurrentPeriodEndsAt
-                    ? `Periodo atual ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.organization.billingCurrentPeriodEndsAt)}.`
-                    : "Ainda nao ha uma assinatura ativa ou trial corrente registrado."}
+                    ? `Período atual ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.organization.billingCurrentPeriodEndsAt)}.`
+                    : "Ainda não ha uma assinatura ativa ou trial corrente registrado."}
               </span>
             </div>
             <div className={styles.actionCluster}>
@@ -224,7 +224,7 @@ export default async function BillingPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Checkout and upgrades</span>
-              <h2 className={styles.panelTitle}>Planos disponiveis</h2>
+              <h2 className={styles.panelTitle}>Planos disponíveis</h2>
             </div>
             <div className={styles.subGrid3}>
               {checkoutPlans.map((plan) => {
@@ -370,10 +370,10 @@ export default async function BillingPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Invoices</span>
-              <h2 className={styles.panelTitle}>Historico de cobranca</h2>
+              <h2 className={styles.panelTitle}>Histórico de cobranca</h2>
             </div>
             {!currentFeatures.includes("invoice_history") ? (
-              <div className={styles.surfaceMuted}>Historico detalhado de invoices fica disponivel a partir do plano Growth.</div>
+              <div className={styles.surfaceMuted}>Histórico detalhado de invoices fica disponível a partir do plano Growth.</div>
             ) : billing.invoices.length ? (
               <div className={styles.list}>
                 {billing.invoices.map((invoice) => (
@@ -416,7 +416,7 @@ export default async function BillingPage({
               <div className={styles.surfaceMuted}>
                 {isStripeConfigured()
                   ? "Nenhuma invoice encontrada ainda para este workspace."
-                  : "Configure Stripe para exibir invoices e historico de cobranca aqui."}
+                  : "Configure Stripe para exibir invoices e histórico de cobranca aqui."}
               </div>
             )}
 
@@ -444,7 +444,7 @@ export default async function BillingPage({
                 <strong>
                   {billing.metrics.trialStartedAt
                     ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.metrics.trialStartedAt)
-                    : "Nao"}
+                    : "Não"}
                 </strong>
               </div>
               <div className={styles.metricRow}>
@@ -452,7 +452,7 @@ export default async function BillingPage({
                 <strong>
                   {billing.metrics.activatedAt
                     ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.metrics.activatedAt)
-                    : "Ainda nao"}
+                    : "Ainda não"}
                 </strong>
               </div>
               <div className={styles.metricRow}>
@@ -475,14 +475,14 @@ export default async function BillingPage({
             <div className={styles.surfaceMuted}>
               <span className={styles.itemDescription}>
                 {isStripeConfigured()
-                  ? "Configurado para checkout, portal do cliente e historico de invoices."
-                  : "Ainda nao configurado. O produto continua com trial e pricing, mas sem cobranca automatica."}
+                  ? "Configurado para checkout, portal do cliente e histórico de invoices."
+                  : "Ainda não configurado. O produto continua com trial e pricing, mas sem cobranca automatica."}
               </span>
             </div>
             <div className={styles.surfaceMuted}>
               <span className={styles.itemDescription}>
-                Customer: {billing.organization.stripeCustomerId ?? "Nao criado"}<br />
-                Subscription: {billing.organization.stripeSubscriptionId ?? "Nao criada"}
+                Customer: {billing.organization.stripeCustomerId ?? "Não criado"}<br />
+                Subscription: {billing.organization.stripeSubscriptionId ?? "Não criada"}
               </span>
             </div>
           </div>

@@ -174,7 +174,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
           <Input id="department" name="department" defaultValue={defaultValues?.department} required />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="location">Localizacao</Label>
+          <Label htmlFor="location">Localização</Label>
           <Input id="location" name="location" defaultValue={defaultValues?.location} required />
         </div>
         <div className="space-y-2">
@@ -190,7 +190,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
           <Input id="educationLevel" name="educationLevel" defaultValue={defaultValues?.educationLevel ?? ""} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="minExperienceYears">Experiencia minima (anos)</Label>
+          <Label htmlFor="minExperienceYears">Experiência minima (anos)</Label>
           <Input
             id="minExperienceYears"
             name="minExperienceYears"
@@ -224,11 +224,11 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
         <div className="workspace-form-header">
           <div className="workspace-form-copy">
             <h3 className="workspace-form-title">Criterios da vaga</h3>
-            <p className="workspace-form-description">Base para score, triagem e aderencia do candidato.</p>
+            <p className="workspace-form-description">Base para score, triagem e aderência do candidato.</p>
           </div>
           <Button type="button" variant="outline" onClick={addCriterion}>
             <Plus className="mr-2 h-4 w-4" />
-            Adicionar criterio
+            Adicionar critério
           </Button>
         </div>
 
@@ -248,7 +248,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
                   <Input
                     value={criterion.label}
                     onChange={(event) => updateCriterion(index, { label: event.target.value })}
-                    placeholder="Ex.: Experiencia com produtos SaaS B2B"
+                    placeholder="Ex.: Experiência com produtos SaaS B2B"
                   />
                 </div>
                 <div className="space-y-2 md:col-span-2">
@@ -272,7 +272,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
                     className="min-h-20"
                     value={criterion.notes ?? ""}
                     onChange={(event) => updateCriterion(index, { notes: event.target.value })}
-                    placeholder="Detalhes de contexto, exemplos de aderencia ou sinais de alerta."
+                    placeholder="Detalhes de contexto, exemplos de aderência ou sinais de alerta."
                   />
                 </div>
               </div>
@@ -330,7 +330,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
                     onChange={(event) => updateScorecardItem(index, { isRequired: event.target.value === "true" })}
                   >
                     <option value="true">Sim</option>
-                    <option value="false">Nao</option>
+                    <option value="false">Não</option>
                   </Select>
                 </div>
                 <div className="flex items-end md:col-span-1">
@@ -356,8 +356,8 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
       <section className="workspace-form-section">
         <div className="workspace-form-header">
           <div className="workspace-form-copy">
-            <h3 className="workspace-form-title">Automacoes do pipeline</h3>
-            <p className="workspace-form-description">Mova automaticamente aplicacoes com base nos eventos chave da entrevista.</p>
+            <h3 className="workspace-form-title">Automações do pipeline</h3>
+            <p className="workspace-form-description">Mova automaticamente aplicações com base nos eventos chave da entrevista.</p>
           </div>
           <Button type="button" variant="outline" onClick={addAutomationRule} disabled={!canUseAutomations}>
             <Plus className="mr-2 h-4 w-4" />
@@ -367,7 +367,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
 
         {!canUseAutomations ? (
           <div className="workspace-form-subsection border-dashed text-sm text-muted-foreground">
-            Automacoes por vaga fazem parte dos planos Growth e Business. No Starter, o restante da vaga continua funcionando normalmente.
+            Automações por vaga fazem parte dos planos Growth e Business. No Starter, o restante da vaga continua funcionando normalmente.
           </div>
         ) : null}
 
@@ -410,7 +410,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
                         onChange={(event) => updateAutomationRule(index, { enabled: event.target.value === "true" })}
                       >
                         <option value="true">Sim</option>
-                        <option value="false">Nao</option>
+                        <option value="false">Não</option>
                       </Select>
                     </div>
                     <div className="flex items-end md:col-span-1">
@@ -433,7 +433,7 @@ export function JobForm({ action, stages, canUseAutomations = true, defaultValue
             : null}
           {canUseAutomations && !automationRules.length ? (
             <div className="workspace-form-subsection border-dashed text-sm text-muted-foreground">
-              Nenhuma automacao configurada. Adicione regras apenas se quiser mover aplicacoes automaticamente.
+              Nenhuma automacao configurada. Adicione regras apenas se quiser mover aplicações automaticamente.
             </div>
           ) : null}
         </div>

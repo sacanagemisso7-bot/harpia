@@ -56,28 +56,28 @@ export default async function SettingsPage() {
   const integrations = [
     {
       title: "OpenAI",
-      description: "Parsing de curriculo, score refinado e copiloto de triagem.",
+      description: "Parsing de currículo, score refinado e copiloto de triagem.",
       icon: Cpu,
       ready: !!env.OPENAI_API_KEY,
-      meta: env.OPENAI_API_KEY ? env.OPENAI_RESUME_MODEL : "Nao configurado"
+      meta: env.OPENAI_API_KEY ? env.OPENAI_RESUME_MODEL : "Não configurado"
     },
     {
       title: "SMTP",
       description: "Envio de emails operacionais para candidatos e convites internos.",
       icon: Mail,
       ready: isEmailConfigured(),
-      meta: isEmailConfigured() ? env.EMAIL_FROM : "Nao configurado"
+      meta: isEmailConfigured() ? env.EMAIL_FROM : "Não configurado"
     },
     {
       title: "Google Calendar",
       description: "Sincronizacao opcional de entrevistas com calendario externo.",
       icon: CalendarClock,
       ready: isGoogleCalendarSyncConfigured(),
-      meta: isGoogleCalendarSyncConfigured() ? env.GOOGLE_CALENDAR_ID : "Nao configurado"
+      meta: isGoogleCalendarSyncConfigured() ? env.GOOGLE_CALENDAR_ID : "Não configurado"
     },
     {
       title: "Storage",
-      description: "Persistencia de curriculos em disco local ou bucket S3-compatible.",
+      description: "Persistencia de currículos em disco local ou bucket S3-compatible.",
       icon: Database,
       ready: storageDriver === "local" ? true : isS3Configured(),
       meta: storageDriver === "local" ? "Driver local" : "Driver S3"
@@ -87,14 +87,14 @@ export default async function SettingsPage() {
       description: "Checkout, portal do cliente e sincronizacao de assinatura.",
       icon: CreditCard,
       ready: isStripeConfigured(),
-      meta: isStripeConfigured() ? "Checkout configuravel" : "Nao configurado"
+      meta: isStripeConfigured() ? "Checkout configuravel" : "Não configurado"
     },
     {
       title: "Observability",
       description: "Forwarding opcional de eventos operacionais para provedor externo.",
       icon: Activity,
       ready: isObservabilityConfigured(),
-      meta: isObservabilityConfigured() ? env.OBSERVABILITY_SERVICE_NAME : "Nao configurado"
+      meta: isObservabilityConfigured() ? env.OBSERVABILITY_SERVICE_NAME : "Não configurado"
     }
   ];
   const readyIntegrations = integrations.filter((integration) => integration.ready).length;
@@ -107,8 +107,8 @@ export default async function SettingsPage() {
     <div className={styles.page}>
       <PageHeader
         eyebrow="Settings"
-        title="Configuracoes da organizacao"
-        description="Billing, equipe, integracoes e governanca do workspace em uma leitura mais direta."
+        title="Configurações da organização"
+        description="Billing, equipe, integrações e governan?a do workspace em uma leitura mais direta."
       />
 
       <section className={styles.statsGrid}>
@@ -128,7 +128,7 @@ export default async function SettingsPage() {
           <p className={styles.statHint}>Convites aguardando aceitacao</p>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Integracoes prontas</span>
+          <span className={styles.statLabel}>Integrações prontas</span>
           <strong className={styles.statValue}>{readyIntegrations}</strong>
           <p className={styles.statHint}>De {integrations.length} conectores avaliados</p>
         </div>
@@ -172,7 +172,7 @@ export default async function SettingsPage() {
                 {organization.billingStatus === BillingStatus.TRIALING && organization.billingTrialEndsAt
                   ? `Trial ativo ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(organization.billingTrialEndsAt)}.`
                   : organization.billingCurrentPeriodEndsAt
-                    ? `Periodo atual ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(organization.billingCurrentPeriodEndsAt)}.`
+                    ? `Período atual ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(organization.billingCurrentPeriodEndsAt)}.`
                     : "Nenhum trial ou assinatura ativa registrada ainda."}
               </p>
             </div>
@@ -213,7 +213,7 @@ export default async function SettingsPage() {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Workspace</span>
-              <h2 className={styles.panelTitle}>Configuracoes da organizacao</h2>
+              <h2 className={styles.panelTitle}>Configurações da organização</h2>
               <p className={styles.panelDescription}>Dados base usados pelo tenant e exibidos para o time.</p>
             </div>
 
@@ -231,7 +231,7 @@ export default async function SettingsPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Playbooks</span>
               <h2 className={styles.panelTitle}>Templates por departamento</h2>
-              <p className={styles.panelDescription}>Padronize triagem, entrevista e decisao para vagas recorrentes.</p>
+              <p className={styles.panelDescription}>Padronize triagem, entrevista e decisão para vagas recorrentes.</p>
             </div>
 
             <DepartmentPlaybookForm action={upsertDepartmentPlaybook} submitLabel="Salvar playbook" />
@@ -288,7 +288,7 @@ export default async function SettingsPage() {
             {assignableRoles.length ? (
               <TeamInviteForm action={inviteTeamMember} assignableRoles={assignableRoles} />
             ) : (
-              <div className={styles.emptyState}>Seu papel nao pode convidar novos membros.</div>
+              <div className={styles.emptyState}>Seu papel não pode convidar novos membros.</div>
             )}
 
             <div className={styles.list}>
@@ -341,7 +341,7 @@ export default async function SettingsPage() {
                         action={updateTeamMemberRole.bind(null, member.id)}
                       />
                     ) : (
-                      <p className={styles.itemDescription}>Papel visivel, sem permissao de alteracao para seu nivel atual.</p>
+                      <p className={styles.itemDescription}>Papel visivel, sem permissao de alteracao para seu n?vel atual.</p>
                     )}
                   </div>
                 );
@@ -353,7 +353,7 @@ export default async function SettingsPage() {
         <aside className={styles.column}>
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Integracoes</span>
+              <span className={styles.panelEyebrow}>Integrações</span>
               <h2 className={styles.panelTitle}>Readiness do ambiente</h2>
               <p className={styles.panelDescription}>Panorama do que ja esta pronto para demo ou producao.</p>
             </div>
@@ -387,7 +387,7 @@ export default async function SettingsPage() {
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Audit trail</span>
               <h2 className={styles.panelTitle}>Eventos criticos do workspace</h2>
-              <p className={styles.panelDescription}>Rastreabilidade para operacao, suporte e governanca.</p>
+              <p className={styles.panelDescription}>Rastreabilidade para operação, suporte e governan?a.</p>
             </div>
 
             <div className={styles.list}>
@@ -404,7 +404,7 @@ export default async function SettingsPage() {
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyState}>Ainda nao ha eventos de auditoria registrados.</div>
+                <div className={styles.emptyState}>Ainda não ha eventos de auditoria registrados.</div>
               )}
             </div>
           </section>

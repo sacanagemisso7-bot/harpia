@@ -78,7 +78,7 @@ export default async function JobDetailPage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Media de score</span>
           <strong className={styles.statValue}>{formatScore(averageScore)}</strong>
-          <span className={styles.statHint}>Leitura media da aderencia dos perfis.</span>
+          <span className={styles.statHint}>Leitura media da aderência dos perfis.</span>
         </div>
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Obrigatorios</span>
@@ -86,9 +86,9 @@ export default async function JobDetailPage({
           <span className={styles.statHint}>Criterios que definem o corte minimo da vaga.</span>
         </div>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Automacoes</span>
+          <span className={styles.statLabel}>Automações</span>
           <strong className={styles.statValue}>{canUseAutomations ? activeAutomations : 0}</strong>
-          <span className={styles.statHint}>Regras ativas que movem a aplicacao automaticamente.</span>
+          <span className={styles.statHint}>Regras ativas que movem a aplicação automaticamente.</span>
         </div>
       </section>
 
@@ -112,7 +112,7 @@ export default async function JobDetailPage({
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Criteria</span>
-              <h2 className={styles.panelTitle}>Sinais de aderencia</h2>
+              <h2 className={styles.panelTitle}>Sinais de aderência</h2>
               <p className={styles.panelDescription}>Base de score para triagem e para a leitura do time entrevistador.</p>
             </div>
             <div className={styles.list}>
@@ -137,7 +137,7 @@ export default async function JobDetailPage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Scorecard</span>
               <h2 className={styles.panelTitle}>Roteiro de entrevista</h2>
-              <p className={styles.panelDescription}>Itens que padronizam a avaliacao da vaga entre entrevistadores.</p>
+              <p className={styles.panelDescription}>Itens que padronizam a avaliação da vaga entre entrevistadores.</p>
             </div>
             {job.scorecardItems.length ? (
               <div className={styles.list}>
@@ -164,7 +164,7 @@ export default async function JobDetailPage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Candidates</span>
               <h2 className={styles.panelTitle}>Fila priorizada</h2>
-              <p className={styles.panelDescription}>Aplicacoes ordenadas por score com proxima acao operavel.</p>
+              <p className={styles.panelDescription}>Aplicações ordenadas por score com próxima ação operavel.</p>
             </div>
             {job.applications.length ? (
               <div className={styles.list}>
@@ -197,7 +197,7 @@ export default async function JobDetailPage({
                       )}
                       <Button asChild variant="outline" size="sm">
                         <Link href={`/applications/${application.id}`}>
-                          Abrir aplicacao
+                          Abrir aplicação
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>
@@ -222,7 +222,7 @@ export default async function JobDetailPage({
             <div className={styles.itemHeader}>
               <div className={styles.itemLead}>
                 <span className={styles.panelEyebrow}>Operational summary</span>
-                <h3 className={styles.panelTitle}>Leitura rapida</h3>
+                <h3 className={styles.panelTitle}>Leitura r?pida</h3>
               </div>
               <span className={styles.iconLead}>
                 <UsersRound className="h-4 w-4" />
@@ -234,7 +234,7 @@ export default async function JobDetailPage({
                 <strong>{job.seniority}</strong>
               </div>
               <div className={styles.metricRow}>
-                <span>Experiencia minima</span>
+                <span>Experiência minima</span>
                 <strong>{job.minExperienceYears ?? 0} anos</strong>
               </div>
               <div className={styles.metricRow}>
@@ -277,7 +277,7 @@ export default async function JobDetailPage({
               <div className={styles.surfaceMuted}>
                 {canUseAutomations
                   ? "Nenhuma automacao configurada para esta vaga."
-                  : "Automacoes por vaga fazem parte do plano Growth."}
+                  : "Automações por vaga fazem parte do plano Growth."}
               </div>
             )}
           </div>
@@ -299,7 +299,7 @@ export default async function JobDetailPage({
               </Link>
               <Link href="/pipeline" className={styles.linkItem}>
                 <strong>Pipeline</strong>
-                <span>Abra a visao por etapa e acompanhe gargalos.</span>
+                <span>Abra a visão por etapa e acompanhe gargalos.</span>
               </Link>
               <Link href="/hiring" className={styles.linkItem}>
                 <strong>Hiring workspace</strong>

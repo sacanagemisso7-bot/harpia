@@ -71,7 +71,7 @@ async function getApplicationContext(organizationId: string, applicationId: stri
   });
 
   if (!application) {
-    throw new Error("Aplicacao nao encontrada no workspace atual.");
+    throw new Error("Aplicação não encontrada no workspace atual.");
   }
 
   return application;
@@ -86,7 +86,7 @@ async function getEmployeeContext(organizationId: string, employeeId: string) {
   });
 
   if (!employee) {
-    throw new Error("Colaborador nao encontrado no workspace atual.");
+    throw new Error("Colaborador não encontrado no workspace atual.");
   }
 
   return employee;
@@ -101,7 +101,7 @@ async function getHrRequestContext(organizationId: string, requestId: string) {
   });
 
   if (!request) {
-    throw new Error("Solicitacao interna nao encontrada no workspace atual.");
+    throw new Error("Solicitação interna não encontrada no workspace atual.");
   }
 
   return request;
@@ -116,7 +116,7 @@ async function getPeopleTaskContext(organizationId: string, taskId: string) {
   });
 
   if (!task) {
-    throw new Error("People task nao encontrada no workspace atual.");
+    throw new Error("People task não encontrada no workspace atual.");
   }
 
   return task;
@@ -135,7 +135,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       const content = asString(input.payload.content);
 
       if (!content || (!candidateId && !applicationId)) {
-        throw new Error("A nota precisa de conteudo e de um candidato ou aplicacao.");
+        throw new Error("A nota precisa de conteudo e de um candidato ou aplicação.");
       }
 
       if (applicationId) {
@@ -151,7 +151,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       });
 
       if (!candidate) {
-        throw new Error("Candidato nao encontrado no workspace atual.");
+        throw new Error("Candidato não encontrado no workspace atual.");
       }
 
       return `Criar uma nota interna para ${candidate.fullName}.`;
@@ -198,7 +198,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       const stageId = asString(input.payload.stageId);
 
       if (!applicationId || !stageId) {
-        throw new Error("A movimentacao de etapa precisa de aplicacao e etapa de destino.");
+        throw new Error("A movimentação de etapa precisa de aplicação e etapa de destino.");
       }
 
       const [application, stage] = await Promise.all([
@@ -212,7 +212,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       ]);
 
       if (!stage) {
-        throw new Error("Etapa de destino nao encontrada no workspace atual.");
+        throw new Error("Etapa de destino não encontrada no workspace atual.");
       }
 
       return `Mover ${application.candidate.fullName} da vaga ${application.job.title} para ${stage.name}.`;
@@ -262,7 +262,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
               fromStageId: application.currentStageId,
               toStageId: stageId,
               movedById: input.userId,
-              notes: "Movimentacao confirmada via agente corporativo."
+              notes: "Movimentação confirmada via agente corporativo."
             }
           }
         }
@@ -293,7 +293,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
         : [];
 
       if (!jobId || !applicationIds.length) {
-        throw new Error("A shortlist precisa de uma vaga e pelo menos uma aplicacao.");
+        throw new Error("A shortlist precisa de uma vaga e pelo menos uma aplicação.");
       }
 
       const job = await prisma.job.findFirst({
@@ -304,10 +304,10 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       });
 
       if (!job) {
-        throw new Error("Vaga nao encontrada no workspace atual.");
+        throw new Error("Vaga não encontrada no workspace atual.");
       }
 
-      return `Salvar a shortlist "${name}" para a vaga ${job.title} com ${applicationIds.length} aplicacoes.`;
+      return `Salvar a shortlist "${name}" para a vaga ${job.title} com ${applicationIds.length} aplicações.`;
     },
     async execute(input) {
       const jobId = asString(input.payload.jobId);
@@ -401,7 +401,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       const startsAt = asDate(input.payload.startsAt);
 
       if (!applicationId || !startsAt) {
-        throw new Error("O agendamento precisa de uma aplicacao e horario de inicio.");
+        throw new Error("O agendamento precisa de uma aplicação e horario de inicio.");
       }
 
       const application = await getApplicationContext(input.organizationId, applicationId);
@@ -536,7 +536,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
   },
   create_hr_request: {
     type: "create_hr_request",
-    label: "Criar solicitacao interna",
+    label: "Criar solicitação interna",
     riskLevel: AgentRiskLevel.LOW,
     requiresApproval: false,
     async buildPreview(input) {
@@ -544,10 +544,10 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       const category = (asString(input.payload.category) as HrRequestCategory | null) ?? HrRequestCategory.GENERAL_SUPPORT;
 
       if (!title) {
-        throw new Error("A solicitacao interna precisa de um titulo.");
+        throw new Error("A solicitação interna precisa de um titulo.");
       }
 
-      return `Abrir uma solicitacao interna na categoria ${category.toLowerCase()} com o titulo "${title}".`;
+      return `Abrir uma solicitação interna na categoria ${category.toLowerCase()} com o titulo "${title}".`;
     },
     async execute(input) {
       const title = asString(input.payload.title);
@@ -577,7 +577,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       });
 
       return {
-        summary: "Solicitacao interna criada via agente corporativo.",
+        summary: "Solicitação interna criada via agente corporativo.",
         targetType: "hr_request",
         targetId: request.id,
         resultPayload: asJsonValue({
@@ -588,7 +588,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
   },
   update_hr_request: {
     type: "update_hr_request",
-    label: "Atualizar solicitacao interna",
+    label: "Atualizar solicitação interna",
     riskLevel: AgentRiskLevel.MEDIUM,
     requiresApproval: false,
     requiredPermission: "manage_hr_requests",
@@ -597,11 +597,11 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       const status = (asString(input.payload.status) as HrRequestStatus | null) ?? HrRequestStatus.IN_PROGRESS;
 
       if (!requestId) {
-        throw new Error("A atualizacao precisa de uma solicitacao.");
+        throw new Error("A atualizacao precisa de uma solicitação.");
       }
 
       const request = await getHrRequestContext(input.organizationId, requestId);
-      return `Atualizar a solicitacao "${request.title}" para ${status.toLowerCase()}.`;
+      return `Atualizar a solicitação "${request.title}" para ${status.toLowerCase()}.`;
     },
     async execute(input) {
       const requestId = asString(input.payload.requestId);
@@ -619,7 +619,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       });
 
       return {
-        summary: "Solicitacao interna atualizada via agente corporativo.",
+        summary: "Solicitação interna atualizada via agente corporativo.",
         targetType: "hr_request",
         targetId: updated.id,
         resultPayload: asJsonValue({

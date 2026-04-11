@@ -23,8 +23,8 @@ export type CompanyChatActionProposal = {
   label: string;
   description: string;
   payload: Record<string, unknown>;
-  riskLevel?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
-  requiresApproval?: boolean;
+  riskLevel?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL" | null;
+  requiresApproval?: boolean | null;
 };
 
 export type CompanyChatToolTrace = {

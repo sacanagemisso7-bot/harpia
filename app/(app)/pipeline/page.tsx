@@ -56,7 +56,7 @@ export default async function PipelinePage({
 
       <section className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicacoes</span>
+          <span className={styles.statLabel}>Aplicações</span>
           <strong className={styles.statValue}>{totalApplications}</strong>
           <p className={styles.statHint}>Volume visivel no board atual</p>
         </div>
@@ -73,7 +73,7 @@ export default async function PipelinePage({
         <div className={styles.statCard}>
           <span className={styles.statLabel}>Vagas abertas</span>
           <strong className={styles.statValue}>{jobs.items.length}</strong>
-          <p className={styles.statHint}>Opcoes disponiveis no filtro atual</p>
+          <p className={styles.statHint}>Opcoes disponíveis no filtro atual</p>
         </div>
       </section>
 
@@ -101,7 +101,7 @@ export default async function PipelinePage({
             <div className={styles.panelHeader}>
               <span className={styles.panelEyebrow}>Pipeline board</span>
               <h2 className={styles.panelTitle}>Estado atual do funil</h2>
-              <p className={styles.panelDescription}>Cada etapa mostra volume, score e a capacidade do time de mover aplicacoes sem sair da propria tela.</p>
+              <p className={styles.panelDescription}>Cada etapa mostra volume, score e a capacidade do time de mover aplicações sem sair da propria tela.</p>
             </div>
 
             <div className={styles.boardWrap}>
@@ -169,7 +169,7 @@ export default async function PipelinePage({
 
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Leitura rapida</span>
+              <span className={styles.panelEyebrow}>Leitura r?pida</span>
               <h2 className={styles.panelTitle}>Etapas mais carregadas</h2>
               <p className={styles.panelDescription}>Use esta leitura para saber onde o funil esta acumulando volume e onde vale atacar primeiro.</p>
             </div>
@@ -182,7 +182,7 @@ export default async function PipelinePage({
                     <Badge variant="outline">{stage.currentFor.length}</Badge>
                   </div>
                   <p className={styles.itemDescription}>
-                    {stage.isTerminal ? "Etapa terminal." : stage.isDefault ? "Etapa padrao do fluxo." : "Etapa intermediaria do pipeline."}
+                    {stage.isTerminal ? "Etapa terminal." : stage.isDefault ? "Etapa padrao do fluxo." : "Etapa intermedi?ria do pipeline."}
                   </p>
                 </div>
               ))}

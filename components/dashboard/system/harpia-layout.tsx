@@ -1,9 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import type { Route } from "next";
 import { useMemo, useState } from "react";
 
 import { hasPermission } from "@/lib/auth/permission-matrix";
+import { brandPaths } from "@/lib/brand";
+import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Button } from "@/components/ui/button";
 
 import type { DashboardData, DashboardFocusItem, DashboardViewer } from "./dashboard-model";
 import { sidebarItems } from "./dashboard-model";
@@ -36,9 +40,9 @@ function buildFocusItems(data: DashboardData) {
       href: alert.href as Route,
       source: "priority" as const,
       insights: [
-        "Este item apareceu no radar operacional da organizacao.",
+        "Este item apareceu no radar operacional da organização.",
         "Vale revisar o responsavel e a janela de resposta antes que o impacto cresca.",
-        "Abrir o fluxo certo agora reduz ruido no restante da operacao."
+        "Abrir o fluxo certo agora reduz ruido no restante da operação."
       ]
     })),
     ...data.requests
@@ -55,7 +59,7 @@ function buildFocusItems(data: DashboardData) {
         source: "priority" as const,
         insights: [
           "O SLA ja saiu da faixa ideal ou esta perto disso.",
-          "Revisar ownership e proxima acao costuma destravar esse tipo de fila.",
+          "Revisar ownership e próxima ação costuma destravar esse tipo de fila.",
           "O contexto completo esta na area de requests."
         ]
       }))
@@ -71,9 +75,9 @@ function buildFocusItems(data: DashboardData) {
     href: entry.href as Route,
     source: "hiring" as const,
     insights: [
-      "Perfil com leitura forte para decisao mais rapida.",
+      "Perfil com leitura forte para decisão mais r?pida.",
       "Vale validar se o stage atual ainda faz sentido para o score observado.",
-      "Abrir o caso mostra entrevista, historico e proximas acoes."
+      "Abrir o caso mostra entrevista, histórico e próximas ações."
     ]
   }));
 
@@ -89,7 +93,7 @@ function buildFocusItems(data: DashboardData) {
       source: "operations" as const,
       insights: [
         "Fluxo ativo de entrada com etapas em andamento.",
-        "Uma leitura rapida do progresso evita gargalos escondidos no onboarding.",
+        "Uma leitura r?pida do progresso evita gargalos escondidos no onboarding.",
         "O detalhe completo fica na area de people ops."
       ]
     })),
@@ -103,7 +107,7 @@ function buildFocusItems(data: DashboardData) {
       href: "/people/offboarding" as Route,
       source: "operations" as const,
       insights: [
-        "Saidas costumam exigir checagem de compliance e handoff.",
+        "Saídas costumam exigir checagem de compliance e handoff.",
         "Vale confirmar documentos e ownership das ultimas etapas.",
         "O fluxo completo esta na area de offboarding."
       ]
@@ -118,7 +122,7 @@ function buildFocusItems(data: DashboardData) {
       href: "/people/calendar" as Route,
       source: "operations" as const,
       insights: [
-        "Evento proximo que ajuda a orientar a cadencia do dia.",
+        "Evento próximo que ajuda a orientar a cadencia do dia.",
         "Agendas e marcos de people ops influenciam a fila operacional.",
         "Abrir o calendario mostra o contexto completo do evento."
       ]
@@ -160,7 +164,7 @@ export function HarpiaLayout({
     {
       label: "Candidates",
       value: data.hiring.applicationCount,
-      hint: `${data.hiring.jobCount} vagas em operacao`
+      hint: `${data.hiring.jobCount} vagas em operação`
     },
     {
       label: "Today",
@@ -193,7 +197,7 @@ export function HarpiaLayout({
           <div className={styles.topbarTitle}>
             <span className={styles.eyebrow}>Overview</span>
             <h1 className={styles.title}>Workspace</h1>
-            <p className={styles.subtitle}>Uma leitura direta da operacao, sem excesso visual e sem elementos desnecessarios.</p>
+            <p className={styles.subtitle}>Uma leitura direta da operação, sem excesso visual e sem elementos desnecessarios.</p>
           </div>
 
           <div className={styles.topbarMeta}>
@@ -203,6 +207,12 @@ export function HarpiaLayout({
                 {item}
               </span>
             ))}
+            <div className={styles.topbarControls}>
+              <ThemeToggle className={styles.themeDock} />
+              <Button asChild variant="outline" size="sm" className={styles.pdfButton}>
+                <Link href={brandPaths.executiveDeck}>PDF executivo</Link>
+              </Button>
+            </div>
           </div>
         </header>
 

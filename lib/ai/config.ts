@@ -1,6 +1,10 @@
 import { env } from "@/lib/env";
 
 const GEMINI_OPENAI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/";
+const AI_TEMP_UNAVAILABLE_COOLDOWN_MS = 5 * 60 * 1000;
+
+let aiTemporarilyUnavailableUntil = 0;
+let aiTemporaryUnavailableReason: string | null = null;
 
 export function getAiProvider() {
   return env.AI_PROVIDER;
@@ -16,6 +20,24 @@ export function getAiApiKey() {
 
 export function isAiConfigured() {
   return Boolean(getAiApiKey());
+}
+
+export function isAiTemporarilyUnavailable() {
+  return aiTemporarilyUnavailableUntil > Date.now();
+}
+
+export function getAiTemporaryUnavailableReason() {
+  return isAiTemporarilyUnavailable() ? aiTemporaryUnavailableReason : null;
+}
+
+export function markAiTemporarilyUnavailable(reason: string, cooldownMs = AI_TEMP_UNAVAILABLE_COOLDOWN_MS) {
+  aiTemporarilyUnavailableUntil = Date.now() + cooldownMs;
+  aiTemporaryUnavailableReason = reason;
+}
+
+export function clearAiTemporaryUnavailable() {
+  aiTemporarilyUnavailableUntil = 0;
+  aiTemporaryUnavailableReason = null;
 }
 
 export function getAiChatModel() {
@@ -37,7 +59,7 @@ export function getAiBaseUrl() {
 export function getAiDefaultHeaders() {
   if (env.AI_PROVIDER === "gemini") {
     return {
-      "x-goog-api-client": "hireflow-ai/0.1.0"
+      "x-goog-api-client": "harpia/1.0.0"
     };
   }
 

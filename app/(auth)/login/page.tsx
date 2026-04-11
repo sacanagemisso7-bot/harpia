@@ -1,11 +1,18 @@
 import { HarpiaLogo } from "@/components/brand/harpia-logo";
 import { LoginForm } from "@/components/auth/login-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { normalizeCallbackPath } from "@/lib/auth/callback-url";
 import { brand } from "@/lib/brand";
 
-import { authenticate } from "./actions";
+type LoginPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
+};
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: LoginPageProps) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+  const callbackValue = resolvedSearchParams.callbackUrl;
+  const callbackUrl = normalizeCallbackPath(Array.isArray(callbackValue) ? callbackValue[0] : callbackValue);
+
   return (
     <main className="grid min-h-screen lg:grid-cols-[minmax(0,1fr)_460px]">
       <section className="hidden bg-[image:var(--tw-gradient-stops)] from-transparent via-transparent to-transparent p-10 lg:flex lg:flex-col lg:justify-between">
@@ -22,7 +29,7 @@ export default function LoginPage() {
           <div className="rounded-[1.5rem] border border-white/60 bg-white/70 p-6 shadow-[0_20px_60px_rgba(35,54,45,0.08)] backdrop-blur">
             <p className="text-sm font-semibold">Acesso para times operacionais</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              Entre com sua conta para acessar pipelines, operacoes internas e contexto consolidado da organizacao.
+              Entre com sua conta para acessar pipelines, operações internas e contexto consolidado da organização.
             </p>
           </div>
         </div>
@@ -36,11 +43,11 @@ export default function LoginPage() {
             </div>
             <CardTitle>Entrar no {brand.name}</CardTitle>
             <CardDescription>
-              Use suas credenciais para acessar o workspace da sua organizacao.
+              Use suas credenciais para acessar o workspace da sua organização.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <LoginForm action={authenticate} />
+            <LoginForm callbackUrl={callbackUrl} />
           </CardContent>
         </Card>
       </section>

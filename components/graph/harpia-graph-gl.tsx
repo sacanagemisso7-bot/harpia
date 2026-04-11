@@ -2,9 +2,10 @@
 
 import { Environment, Float, PerspectiveCamera } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useMemo, useRef, type MutableRefObject } from "react";
+import { useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import { Color, type Group } from "three";
 import { m, useMotionValueEvent, useReducedMotion, useTime, useTransform } from "framer-motion";
+import { useTheme } from "next-themes";
 
 import { HarpiaConnections, type HarpiaConnectionData } from "@/components/graph/harpia-connections";
 import { HarpiaNode, type HarpiaNodeData } from "@/components/graph/harpia-node";
@@ -42,9 +43,11 @@ function smoothProgress(value: number) {
 
 function GraphParticles({
   variant,
+  themeMode,
   pointerRef
 }: {
   variant: "hero" | "dashboard";
+  themeMode: "light" | "dark";
   pointerRef: MutableRefObject<{ x: number; y: number }>;
 }) {
   const pointsRef = useRef<Group>(null);
@@ -124,8 +127,8 @@ function GraphParticles({
           <pointsMaterial
             transparent
             depthWrite={false}
-            color={new Color(index === 2 ? "#D6C6A5" : "#F4F1EA")}
-            opacity={layer.opacity}
+            color={new Color(index === 2 ? (themeMode === "light" ? "#B8A98A" : "#D6C6A5") : themeMode === "light" ? "#6A6156" : "#F4F1EA")}
+            opacity={themeMode === "light" ? layer.opacity * 0.7 : layer.opacity}
             size={layer.size}
             sizeAttenuation
           />
@@ -135,8 +138,8 @@ function GraphParticles({
   );
 }
 
-function ClusterHalos({ clusters }: { clusters: HarpiaGraphClusterGL[] }) {
-  const accent = useMemo(() => new Color("#D6C6A5"), []);
+function ClusterHalos({ clusters, themeMode }: { clusters: HarpiaGraphClusterGL[]; themeMode: "light" | "dark" }) {
+  const accent = useMemo(() => new Color(themeMode === "light" ? "#B8A98A" : "#D6C6A5"), [themeMode]);
 
   return (
     <>
@@ -162,6 +165,7 @@ function GraphScene({
   nodes,
   edges,
   clusters,
+  themeMode,
   scanRef,
   activeCluster,
   activeNodeId,
@@ -171,6 +175,7 @@ function GraphScene({
   onNodeSelect,
   pointerRef
 }: HarpiaGraphGLProps & {
+  themeMode: "light" | "dark";
   scanRef: MutableRefObject<number>;
   pointerRef: MutableRefObject<{ x: number; y: number }>;
 }) {
@@ -205,19 +210,20 @@ function GraphScene({
 
   return (
     <>
-      <color attach="background" args={["#0B0B0C"]} />
-      <fog attach="fog" args={["#0B0B0C", 7.6, 16]} />
-      <ambientLight intensity={0.42} color="#F4F1EA" />
-      <directionalLight intensity={0.32} position={[0, 2, 6]} color="#F4F1EA" />
-      <pointLight intensity={0.48} position={[2.8, 1.4, 3.8]} color="#D6C6A5" />
-      <pointLight intensity={0.14} position={[-3.4, -1.2, 2.4]} color="#F4F1EA" />
+      <color attach="background" args={[themeMode === "light" ? "#F5F3EE" : "#0B0B0C"]} />
+      <fog attach="fog" args={[themeMode === "light" ? "#F5F3EE" : "#0B0B0C", 7.6, 16]} />
+      <ambientLight intensity={themeMode === "light" ? 0.5 : 0.42} color={themeMode === "light" ? "#4A433A" : "#F4F1EA"} />
+      <directionalLight intensity={themeMode === "light" ? 0.28 : 0.32} position={[0, 2, 6]} color={themeMode === "light" ? "#6A6156" : "#F4F1EA"} />
+      <pointLight intensity={themeMode === "light" ? 0.34 : 0.48} position={[2.8, 1.4, 3.8]} color={themeMode === "light" ? "#B8A98A" : "#D6C6A5"} />
+      <pointLight intensity={themeMode === "light" ? 0.08 : 0.14} position={[-3.4, -1.2, 2.4]} color={themeMode === "light" ? "#6A6156" : "#F4F1EA"} />
 
       <group ref={cameraGroupRef}>
-        <GraphParticles variant={variant ?? "dashboard"} pointerRef={pointerRef} />
-        {clusters?.length ? <ClusterHalos clusters={clusters} /> : null}
+        <GraphParticles variant={variant ?? "dashboard"} themeMode={themeMode} pointerRef={pointerRef} />
+        {clusters?.length ? <ClusterHalos clusters={clusters} themeMode={themeMode} /> : null}
         <HarpiaConnections
           nodes={nodes}
           edges={edges}
+          themeMode={themeMode}
           activeCluster={activeCluster ?? null}
           activeNodeId={activeNodeId ?? null}
           hoveredNodeId={hoveredNodeId ?? null}
@@ -227,6 +233,7 @@ function GraphScene({
             key={node.id}
             node={node}
             index={index}
+            themeMode={themeMode}
             activeCluster={activeCluster ?? null}
             activeNodeId={activeNodeId ?? null}
             hoveredNodeId={hoveredNodeId ?? null}
@@ -243,11 +250,11 @@ function GraphScene({
         <group>
           <mesh position={[0, 2.5, -4]}>
             <sphereGeometry args={[1.2, 24, 24]} />
-            <meshBasicMaterial color="#F4F1EA" transparent opacity={0.035} />
+            <meshBasicMaterial color={themeMode === "light" ? "#6A6156" : "#F4F1EA"} transparent opacity={themeMode === "light" ? 0.025 : 0.035} />
           </mesh>
           <mesh position={[3.6, -1.8, -3.2]}>
             <sphereGeometry args={[0.9, 24, 24]} />
-            <meshBasicMaterial color="#D6C6A5" transparent opacity={0.05} />
+            <meshBasicMaterial color={themeMode === "light" ? "#B8A98A" : "#D6C6A5"} transparent opacity={themeMode === "light" ? 0.035 : 0.05} />
           </mesh>
         </group>
       </Environment>
@@ -270,6 +277,8 @@ export function HarpiaGraphGL({
   onScanChange
 }: HarpiaGraphGLProps) {
   const reducedMotion = useReducedMotion();
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const pointerRef = useRef({ x: 0, y: 0 });
   const scanRef = useRef(0.52);
   const lastScanBucketRef = useRef<number | null>(null);
@@ -283,6 +292,11 @@ export function HarpiaGraphGL({
     return smoothProgress(linear);
   });
   const scanOverlayX = useTransform(scanProgress, [0, 1], ["-18%", "118%"]);
+  const themeMode = mounted && resolvedTheme === "light" ? "light" : "dark";
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useMotionValueEvent(scanProgress, "change", (latest) => {
     const bucket = Math.round(latest * 48);
@@ -311,6 +325,7 @@ export function HarpiaGraphGL({
     <div
       className={cn(styles.root, className)}
       data-variant={variant}
+      data-theme={themeMode}
       onPointerMove={handlePointerMove}
       onPointerLeave={handlePointerLeave}
     >
@@ -329,6 +344,7 @@ export function HarpiaGraphGL({
           nodes={nodes}
           edges={edges}
           clusters={clusters}
+          themeMode={themeMode}
           activeCluster={activeCluster}
           activeNodeId={activeNodeId}
           hoveredNodeId={hoveredNodeId}
