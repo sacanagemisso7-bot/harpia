@@ -33,17 +33,22 @@ export function SavedViewForm({ query, type, action }: SavedViewFormProps) {
   }, [router, state.success]);
 
   return (
-    <form action={formAction} className="flex flex-col gap-3 lg:flex-row lg:items-end">
+    <form action={formAction} className="flex flex-col gap-3 rounded-[0.5rem] border border-border bg-card p-4">
       <input type="hidden" name="query" value={query} />
       <input type="hidden" name="type" value={type} />
-      <div className="min-w-0 flex-1 space-y-2">
-        <Label htmlFor={`${type}-view-name`}>Salvar view atual</Label>
-        <Input id={`${type}-view-name`} name="name" placeholder="Ex.: Vagas abertas prioritarias" />
+      <div className="space-y-1">
+        <Label htmlFor={`${type}-view-name`}>Salvar visualização atual</Label>
+        <p className="text-xs leading-5 text-muted-foreground">Guarde filtros e contexto para voltar depois com um clique.</p>
       </div>
-      <Button type="submit" disabled={pending}>
-        <BookmarkPlus className="mr-2 h-4 w-4" />
-        {pending ? "Salvando..." : "Salvar view"}
-      </Button>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end">
+        <div className="min-w-0 flex-1 space-y-2">
+          <Input id={`${type}-view-name`} name="name" placeholder="Ex.: Vagas abertas prioritárias" />
+        </div>
+        <Button type="submit" disabled={pending}>
+          <BookmarkPlus className="mr-2 h-4 w-4" />
+          {pending ? "Salvando..." : "Salvar view"}
+        </Button>
+      </div>
       <FormMessage message={state.error} />
     </form>
   );

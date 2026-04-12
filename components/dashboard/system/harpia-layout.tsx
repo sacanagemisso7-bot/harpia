@@ -1,13 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import type { Route } from "next";
 import { useMemo, useState } from "react";
 
-import { hasPermission } from "@/lib/auth/permission-matrix";
-import { brandPaths } from "@/lib/brand";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { Button } from "@/components/ui/button";
+import { HarpiaCommandPalette, type HarpiaCommandItem } from "@/components/navigation/harpia-command-palette";
+import { hasPermission } from "@/lib/auth/permission-matrix";
 
 import type { DashboardData, DashboardFocusItem, DashboardViewer } from "./dashboard-model";
 import { sidebarItems } from "./dashboard-model";
@@ -35,14 +33,14 @@ function buildFocusItems(data: DashboardData) {
       title: alert.title,
       subtitle: alert.description,
       meta: alert.type,
-      value: alert.severity === "high" ? "alta" : "media",
+      value: alert.severity === "high" ? "alta" : "média",
       tone: alert.severity === "high" ? ("critical" as const) : ("attention" as const),
       href: alert.href as Route,
       source: "priority" as const,
       insights: [
         "Este item apareceu no radar operacional da organização.",
-        "Vale revisar o responsavel e a janela de resposta antes que o impacto cresca.",
-        "Abrir o fluxo certo agora reduz ruido no restante da operação."
+        "Vale revisar o responsável e a janela de resposta antes que o impacto cresça.",
+        "Abrir o fluxo certo agora reduz ruído no restante da operação."
       ]
     })),
     ...data.requests
@@ -51,16 +49,16 @@ function buildFocusItems(data: DashboardData) {
       .map((request) => ({
         id: `request-${request.id}`,
         title: request.title,
-        subtitle: request.assigneeUser?.name ?? "Sem responsavel definido",
+        subtitle: request.assigneeUser?.name ?? "Sem responsável definido",
         meta: request.status,
         value: request.effectiveSlaStatus.toLowerCase(),
         tone: request.effectiveSlaStatus === "BREACHED" ? ("critical" as const) : ("attention" as const),
         href: "/requests" as Route,
         source: "priority" as const,
         insights: [
-          "O SLA ja saiu da faixa ideal ou esta perto disso.",
+          "O SLA já saiu da faixa ideal ou está perto disso.",
           "Revisar ownership e próxima ação costuma destravar esse tipo de fila.",
-          "O contexto completo esta na area de requests."
+          "O contexto completo está na área de solicitações."
         ]
       }))
   ].slice(0, 5);
@@ -75,8 +73,8 @@ function buildFocusItems(data: DashboardData) {
     href: entry.href as Route,
     source: "hiring" as const,
     insights: [
-      "Perfil com leitura forte para decisão mais r?pida.",
-      "Vale validar se o stage atual ainda faz sentido para o score observado.",
+      "Perfil com leitura forte para decisão mais rápida.",
+      "Vale validar se o estágio atual ainda faz sentido para o score observado.",
       "Abrir o caso mostra entrevista, histórico e próximas ações."
     ]
   }));
@@ -93,8 +91,8 @@ function buildFocusItems(data: DashboardData) {
       source: "operations" as const,
       insights: [
         "Fluxo ativo de entrada com etapas em andamento.",
-        "Uma leitura r?pida do progresso evita gargalos escondidos no onboarding.",
-        "O detalhe completo fica na area de people ops."
+        "Uma leitura rápida do progresso evita gargalos escondidos no onboarding.",
+        "O detalhe completo fica na área de people ops."
       ]
     })),
     ...data.offboarding.slice(0, 1).map((entry) => ({
@@ -108,8 +106,8 @@ function buildFocusItems(data: DashboardData) {
       source: "operations" as const,
       insights: [
         "Saídas costumam exigir checagem de compliance e handoff.",
-        "Vale confirmar documentos e ownership das ultimas etapas.",
-        "O fluxo completo esta na area de offboarding."
+        "Vale confirmar documentos e ownership das últimas etapas.",
+        "O fluxo completo está na área de offboarding."
       ]
     })),
     ...data.events.slice(0, 2).map((event) => ({
@@ -122,9 +120,9 @@ function buildFocusItems(data: DashboardData) {
       href: "/people/calendar" as Route,
       source: "operations" as const,
       insights: [
-        "Evento próximo que ajuda a orientar a cadencia do dia.",
+        "Evento próximo que ajuda a orientar a cadência do dia.",
         "Agendas e marcos de people ops influenciam a fila operacional.",
-        "Abrir o calendario mostra o contexto completo do evento."
+        "Abrir o calendário mostra o contexto completo do evento."
       ]
     }))
   ].slice(0, 5);
@@ -144,6 +142,18 @@ export function HarpiaLayout({
     [viewer.role]
   );
 
+  const commandItems: HarpiaCommandItem[] = useMemo(
+    () =>
+      navItems.map((item) => ({
+        id: item.id,
+        label: item.label,
+        href: item.href,
+        section: "Dashboard",
+        keywords: [item.icon, item.label]
+      })),
+    [navItems]
+  );
+
   const { priorityItems, hiringItems, operationsItems } = useMemo(() => buildFocusItems(data), [data]);
   const allFocusItems = [...priorityItems, ...hiringItems, ...operationsItems];
   const [selectedItemId, setSelectedItemId] = useState<string | null>(priorityItems[0]?.id ?? hiringItems[0]?.id ?? null);
@@ -152,32 +162,25 @@ export function HarpiaLayout({
 
   const metricCards = [
     {
-      label: "Employees",
+      label: "Colaboradores",
       value: data.metrics.employees,
       hint: `${data.metrics.onboardingActive} onboarding ativos`
     },
     {
-      label: "Requests",
+      label: "Solicitações",
       value: data.metrics.openRequests,
       hint: `${data.metrics.requestsAtRisk} fluxos em risco`
     },
     {
-      label: "Candidates",
+      label: "Candidatos",
       value: data.hiring.applicationCount,
       hint: `${data.hiring.jobCount} vagas em operação`
     },
     {
-      label: "Today",
+      label: "Hoje",
       value: data.metrics.eventsToday,
-      hint: `${data.metrics.overdueTasks} pendencias vencidas`
+      hint: `${data.metrics.overdueTasks} pendências vencidas`
     }
-  ];
-
-  const topbarPills = [
-    viewer.organizationName,
-    `${data.hiring.jobCount} vagas`,
-    `${data.hiring.applicationCount} candidatos`,
-    `${data.metrics.pendingCompliance} pendencias`
   ];
 
   function handleReset() {
@@ -195,23 +198,19 @@ export function HarpiaLayout({
       <main className={styles.main}>
         <header className={styles.topbar}>
           <div className={styles.topbarTitle}>
-            <span className={styles.eyebrow}>Overview</span>
-            <h1 className={styles.title}>Workspace</h1>
-            <p className={styles.subtitle}>Uma leitura direta da operação, sem excesso visual e sem elementos desnecessarios.</p>
+            <span className={styles.eyebrow}>{viewer.organizationName}</span>
+            <h1 className={styles.title}>Dashboard</h1>
+            <p className={styles.subtitle}>Prioridades, filas e mudanças relevantes em um só lugar.</p>
           </div>
 
           <div className={styles.topbarMeta}>
-            {topbarPills.map((item) => (
-              <span key={item} className={styles.metaPill}>
-                <span className={styles.metaDot} aria-hidden="true" />
-                {item}
-              </span>
-            ))}
             <div className={styles.topbarControls}>
+              <HarpiaCommandPalette
+                items={commandItems}
+                triggerClassName={styles.commandTrigger}
+                triggerLabel="Buscar ou ir para..."
+              />
               <ThemeToggle className={styles.themeDock} />
-              <Button asChild variant="outline" size="sm" className={styles.pdfButton}>
-                <Link href={brandPaths.executiveDeck}>PDF executivo</Link>
-              </Button>
             </div>
           </div>
         </header>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Sparkles } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
@@ -46,7 +46,7 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
     }
   }, [state.submissionId, state.success]);
 
-  function handleSubmit(formData: FormData) {
+  function submit(formData: FormData) {
     startTransition(async () => {
       const nextState = await action(initialState, formData);
       setState(nextState);
@@ -55,42 +55,36 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
 
   return (
     <form
-      className="chat-pane-shell space-y-4"
+      className="space-y-3 rounded-[0.5rem] border border-border/90 bg-background px-3 py-3"
       onSubmit={(event) => {
         event.preventDefault();
-        handleSubmit(new FormData(event.currentTarget));
+        submit(new FormData(event.currentTarget));
       }}
     >
       {threadId ? <input type="hidden" name="threadId" value={threadId} /> : null}
-
-      <div className="space-y-2 px-1">
-        <p className="section-intro">Mensagem</p>
-        <p className="text-sm text-muted-foreground">
-          Pergunte como você perguntaria a alguém do time. O Harpia cuida do contexto e responde no mesmo fluxo.
-        </p>
-      </div>
 
       <Textarea
         name="message"
         value={draft}
         onChange={(event) => setDraft(event.target.value)}
-        className="min-h-[132px] border-transparent bg-transparent px-0 text-[0.98rem] leading-7 shadow-none hover:border-transparent focus-visible:ring-0"
-        placeholder="Pergunte do jeito mais natural possível. Ex.: O que está travando o onboarding hoje?"
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && !event.shiftKey) {
+            event.preventDefault();
+            event.currentTarget.form?.requestSubmit();
+          }
+        }}
+        className="min-h-[96px] resize-none border-0 bg-transparent px-0 py-0 text-[0.95rem] leading-7 shadow-none focus-visible:ring-0"
+        placeholder="Envie uma mensagem..."
       />
 
       <FormMessage message={state.error} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
-          <span className="interactive-chip text-xs">People ops</span>
-          <span className="interactive-chip text-xs">Hiring</span>
-          <span className="interactive-chip text-xs">Compliance</span>
-        </div>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/80 pt-3">
+        <p className="text-xs text-muted-foreground">Enter envia. Shift + Enter quebra a linha.</p>
 
         <Button type="submit" disabled={pending || !draft.trim()}>
-          <Sparkles className="mr-2 h-4 w-4" />
-          {pending ? "Pensando..." : "Enviar mensagem"}
-          {!pending ? <ArrowUpRight className="ml-2 h-4 w-4" /> : null}
+          {pending ? "Respondendo..." : "Enviar"}
+          {!pending ? <ArrowUp className="ml-2 h-4 w-4" /> : null}
         </Button>
       </div>
     </form>

@@ -29,9 +29,9 @@ import {
 } from "lucide-react";
 
 import { HarpiaLogo } from "@/components/brand/harpia-logo";
+import { HarpiaCommandPalette, type HarpiaCommandItem } from "@/components/navigation/harpia-command-palette";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 import { hasPermission, type AppPermission } from "@/lib/auth/permission-matrix";
-import { brandPaths } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
 import styles from "./harpia-system-shell.module.css";
@@ -239,7 +239,7 @@ const navItems: NavItem[] = [
 ];
 
 const sectionLabels: Record<NavSection, string> = {
-  workspace: "Principal",
+  workspace: "Geral",
   people: "People ops",
   admin: "Administração",
   self: "Minha área"
@@ -250,49 +250,41 @@ const sectionOrder: NavSection[] = ["workspace", "people", "admin", "self"];
 const routeMeta = [
   {
     match: (pathname: string) => pathname.startsWith("/chat"),
-    eyebrow: "Company Chat",
-    title: "Chat operacional",
-    description: "Pergunte em linguagem natural, consulte o contexto e transforme resposta em ação."
+    title: "Company Chat",
+    description: "Converse com contexto real do workspace e transforme resposta em ação."
   },
   {
     match: (pathname: string) => pathname.startsWith("/people/command-center"),
-    eyebrow: "People ops",
-    title: "Central de operações",
+    title: "Central",
     description: "Alertas, filas, workflows e riscos do RH em uma leitura direta."
   },
   {
     match: (pathname: string) => pathname.startsWith("/employees"),
-    eyebrow: "People",
     title: "Colaboradores",
     description: "Base, perfis, histórico e próximas ações do time."
   },
   {
     match: (pathname: string) => pathname.startsWith("/requests"),
-    eyebrow: "Service desk",
     title: "Solicitações",
     description: "Fila interna, SLA e ownership sem ruído."
   },
   {
     match: (pathname: string) => pathname.startsWith("/hiring"),
-    eyebrow: "Contratação",
     title: "Contratação",
     description: "Vagas, candidatos e decisão em um fluxo único."
   },
   {
     match: (pathname: string) => pathname.startsWith("/analytics"),
-    eyebrow: "Analytics",
     title: "Analytics",
     description: "Indicadores para entender ritmo, gargalo e resultado."
   },
   {
     match: (pathname: string) => pathname.startsWith("/settings/billing"),
-    eyebrow: "Workspace",
     title: "Billing",
     description: "Plano atual, consumo e próximas mudanças."
   },
   {
     match: (pathname: string) => pathname.startsWith("/settings"),
-    eyebrow: "Workspace",
     title: "Configurações",
     description: "Configurações centrais da operação."
   }
@@ -308,12 +300,12 @@ function matchesPath(pathname: string, href: Route) {
 
 function resolveRouteCopy(pathname: string, fallbackLabel: string) {
   const matched = routeMeta.find((entry) => entry.match(pathname));
+
   if (matched) {
     return matched;
   }
 
   return {
-    eyebrow: "Workspace",
     title: fallbackLabel,
     description: "Fluxos, contexto e operação no mesmo ambiente de trabalho."
   };
@@ -359,7 +351,7 @@ export function HarpiaSystemShellClient({
     try {
       setSidebarCollapsed(window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "1");
     } catch {
-      // Keep the default expanded state if persistence is unavailable.
+      // Ignore storage failures and keep default UI working.
     }
   }, []);
 
@@ -375,7 +367,7 @@ export function HarpiaSystemShellClient({
     try {
       window.localStorage.setItem(SIDEBAR_STORAGE_KEY, sidebarCollapsed ? "1" : "0");
     } catch {
-      // Keep the interaction working even if persistence fails.
+      // Ignore storage failures and keep interaction working.
     }
   }, [mounted, sidebarCollapsed]);
 
@@ -409,7 +401,65 @@ export function HarpiaSystemShellClient({
     .filter((group) => group.items.length > 0);
 
   const currentCopy = resolveRouteCopy(pathname, activeItem?.label ?? "Workspace");
-  const currentRoleLabel = getRoleLabel(user.role as never) ?? user.role;
+  const currentRoleLabel = getRoleLabel(user.role);
+  const commandItems: HarpiaCommandItem[] = [
+    ...(hasPermission(user.role, "view_hr_requests")
+      ? [
+          {
+            id: "requests-risk",
+            label: "Solicitações em risco",
+            description: "Abrir a fila filtrada por SLA em risco.",
+            href: "/requests?view=risk" as Route,
+            section: "Atalhos",
+            keywords: ["requests", "sla", "risk", "risco"]
+          }
+        ]
+      : []),
+    ...(hasPermission(user.role, "view_people_tasks")
+      ? [
+          {
+            id: "tasks-overdue",
+            label: "Tarefas vencidas",
+            description: "Abrir tarefas com prazo vencido.",
+            href: "/people/tasks?view=overdue" as Route,
+            section: "Atalhos",
+            keywords: ["tasks", "overdue", "vencidas", "atrasadas"]
+          }
+        ]
+      : []),
+    ...(hasPermission(user.role, "view_employees")
+      ? [
+          {
+            id: "employees-managerless",
+            label: "Colaboradores sem gestor",
+            description: "Abrir a base filtrada por pessoas sem owner claro.",
+            href: "/employees?view=managerless" as Route,
+            section: "Atalhos",
+            keywords: ["employees", "managerless", "gestor", "owner"]
+          }
+        ]
+      : []),
+    ...(hasPermission(user.role, "review_agent_approvals")
+      ? [
+          {
+            id: "approvals-pending",
+            label: "Aprovações pendentes",
+            description: "Abrir a fila de revisão do agente.",
+            href: "/people/agent-approvals" as Route,
+            section: "Atalhos",
+            keywords: ["approvals", "agent", "review", "pending"]
+          }
+        ]
+      : []),
+    ...visibleNav.map((item) => ({
+      id: item.id,
+      label: item.label,
+      description: item.description,
+      href: item.href,
+      section: sectionLabels[item.section],
+      keywords: [item.id, item.section]
+    }))
+  ];
 
   if (isDashboardRoute) {
     return <div className={styles.dashboardRoute}>{children}</div>;
@@ -473,7 +523,6 @@ export function HarpiaSystemShellClient({
                         </span>
                         <span className={styles.navCopy}>
                           <span className={styles.navLabel}>{item.label}</span>
-                          <span className={styles.navDescription}>{item.description}</span>
                         </span>
                       </Link>
                     );
@@ -541,23 +590,19 @@ export function HarpiaSystemShellClient({
       <div className={styles.main}>
         <header className={styles.topbar}>
           <div className={styles.topbarIntro}>
-            <span className={styles.topbarEyebrow}>{currentCopy.eyebrow}</span>
+            <span className={styles.topbarEyebrow}>{user.organizationName}</span>
             <h1 className={styles.topbarTitle}>{currentCopy.title}</h1>
             <p className={styles.topbarSubtitle}>{currentCopy.description}</p>
           </div>
 
           <div className={styles.topbarMeta}>
-            <div className={styles.topbarChips}>
-              <span className={styles.topbarChip}>{user.organizationName}</span>
-              <Link href={brandPaths.executiveDeck} className={styles.billingChip}>
-                PDF executivo
-              </Link>
-              {showBillingSignal ? (
+            {showBillingSignal ? (
+              <div className={styles.topbarChips}>
                 <Link href={"/settings/billing" as Route} className={styles.billingChip}>
                   {billingSignal.join(" • ")}
                 </Link>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
 
             <div className={styles.topbarControls}>
               <button
@@ -569,6 +614,12 @@ export function HarpiaSystemShellClient({
                 {mobileNavOpen ? <X className={styles.mobileMenuIcon} /> : <Menu className={styles.mobileMenuIcon} />}
                 <span>{mobileNavOpen ? "Fechar" : "Menu"}</span>
               </button>
+
+              <HarpiaCommandPalette
+                items={commandItems}
+                triggerClassName={styles.commandTrigger}
+                triggerLabel="Buscar páginas e módulos"
+              />
 
               <ThemeToggle className={styles.themeControl} />
 

@@ -5,34 +5,25 @@
 
 .hero,
 .panel {
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 1.35rem;
-  background:
-    linear-gradient(180deg, hsl(var(--card) / 0.92), hsl(var(--secondary) / 0.72)),
-    radial-gradient(circle at top left, hsl(var(--primary) / 0.12), transparent 28%);
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(18px);
-}
-
-.hero {
   display: grid;
   gap: 1rem;
-  padding: 1.1rem;
+  padding: 1rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.55rem;
+  background: hsl(var(--card));
 }
 
 .heroIntro,
 .panelHeader {
   display: grid;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .eyebrow,
 .sectionLabel {
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: hsl(var(--muted-foreground));
 }
@@ -40,9 +31,9 @@
 .heroTitle,
 .panelTitle {
   margin: 0;
-  font-size: 1.16rem;
+  font-size: 1.12rem;
   font-weight: 600;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.03em;
   color: hsl(var(--foreground));
 }
 
@@ -61,138 +52,46 @@
   gap: 0.8rem;
 }
 
-.metricTile {
-  display: grid;
-  gap: 0.35rem;
-  min-height: 7rem;
-  padding: 0.95rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.metricTile span {
-  font-size: 0.62rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: hsl(var(--muted-foreground));
-}
-
-.metricTile strong {
-  font-family: var(--font-display);
-  font-size: 2rem;
-  line-height: 0.92;
-  letter-spacing: -0.08em;
-  color: hsl(var(--foreground));
-}
-
-.metricTile p {
-  margin: 0;
-  font-size: 0.78rem;
-  line-height: 1.55;
-  color: hsl(var(--muted-foreground));
-}
-
-.quickActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.7rem;
-}
-
+.metricTile,
 .quickLink,
-.inlineLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-height: 2.5rem;
-  padding: 0 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  color: hsl(var(--foreground));
-  text-decoration: none;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
-
-.quickLink:hover,
-.inlineLink:hover {
-  border-color: rgba(214, 198, 165, 0.24);
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(320px, 0.95fr);
-  gap: 1rem;
-}
-
-.primaryColumn,
-.secondaryColumn {
-  display: grid;
-  gap: 1rem;
-  align-content: start;
-}
-
-.panel {
-  display: grid;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.alertList,
-.queueList,
-.workflowList,
-.eventList,
-.complianceList,
-.snapshotList {
-  display: grid;
-  gap: 0.75rem;
-}
-
-.alertItem,
+.actionRow,
 .queueItem,
 .workflowItem,
 .eventItem,
 .complianceItem,
 .snapshotItem {
+  border: 1px solid hsl(var(--border) / 0.82);
+  border-radius: 0.5rem;
+  background: hsl(var(--background));
+}
+
+.metricTile {
   display: grid;
-  gap: 0.32rem;
+  gap: 0.35rem;
+  min-height: 6.7rem;
   padding: 0.9rem;
-  border: 1px solid rgba(148, 163, 184, 0.1);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.025);
-}
-
-.alertItem {
-  text-decoration: none;
   color: inherit;
+  text-decoration: none;
 }
 
-.listRow,
-.sectionHeader,
-.snapshotItem {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
+.metricTile span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: hsl(var(--muted-foreground));
 }
 
-.alertItem strong,
-.queueItem strong,
-.workflowItem strong,
-.eventItem strong,
-.complianceItem strong,
-.snapshotItem strong {
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+.metricTile strong {
+  font-size: 1.8rem;
+  line-height: 1;
+  letter-spacing: -0.05em;
   color: hsl(var(--foreground));
 }
 
-.alertItem p,
+.metricTile p,
+.quickLinkCopy span,
+.actionCopy p,
 .queueItem p,
 .workflowItem p,
 .eventItem p,
@@ -204,9 +103,107 @@
   color: hsl(var(--muted-foreground));
 }
 
-.queueSection {
+.metricTile:hover,
+.quickLink:hover,
+.actionRow:hover,
+.queueItem:hover,
+.complianceItem:hover,
+.snapshotItem:hover {
+  background: hsl(var(--secondary));
+}
+
+.quickActions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.quickLink {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  min-height: 4.25rem;
+  padding: 0.85rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.quickLinkIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.45rem;
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+  flex-shrink: 0;
+}
+
+.quickLinkCopy {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.quickLinkCopy strong,
+.actionCopy strong,
+.queueItem strong,
+.workflowItem strong,
+.eventItem strong,
+.complianceItem strong,
+.snapshotItem strong {
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: hsl(var(--foreground));
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.9fr);
+  gap: 1rem;
+}
+
+.primaryColumn,
+.secondaryColumn,
+.stack,
+.subSection,
+.workflowPanel,
+.snapshotList {
   display: grid;
   gap: 0.75rem;
+  align-content: start;
+}
+
+.sectionHeader,
+.listRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.inlineLink {
+  color: hsl(var(--muted-foreground));
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 600;
+}
+
+.inlineLink:hover {
+  color: hsl(var(--foreground));
+}
+
+.actionRow,
+.queueItem,
+.workflowItem,
+.eventItem,
+.complianceItem,
+.snapshotItem {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.85rem 0.9rem;
+  color: inherit;
+  text-decoration: none;
 }
 
 .workflowGrid {
@@ -215,15 +212,9 @@
   gap: 0.9rem;
 }
 
-.workflowPanel {
-  display: grid;
-  gap: 0.75rem;
-}
-
 .workflowItem span {
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
   color: hsl(var(--foreground));
 }
 
@@ -232,14 +223,14 @@
   height: 0.45rem;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: hsl(var(--secondary));
 }
 
 .progressFill {
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: inherit;
-  background: linear-gradient(90deg, rgba(214, 198, 165, 0.88), rgba(184, 169, 138, 0.84));
+  background: hsl(var(--primary));
 }
 
 .eventItem,
@@ -252,15 +243,17 @@
   display: grid;
   place-items: center;
   min-height: 5rem;
-  border: 1px dashed rgba(148, 163, 184, 0.16);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  padding: 1rem;
+  border: 1px dashed hsl(var(--border) / 0.85);
+  border-radius: 0.5rem;
+  background: hsl(var(--background));
   font-size: 0.8rem;
   color: hsl(var(--muted-foreground));
 }
 
 @media (max-width: 1180px) {
-  .metricStrip {
+  .metricStrip,
+  .quickActions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -271,39 +264,8 @@
 
 @media (max-width: 760px) {
   .metricStrip,
+  .quickActions,
   .workflowGrid {
     grid-template-columns: 1fr;
   }
 }
-
-:global(html.light) .hero,
-:global(html.light) .panel,
-:global(html.light) .metricTile,
-:global(html.light) .alertItem,
-:global(html.light) .queueItem,
-:global(html.light) .workflowItem,
-:global(html.light) .eventItem,
-:global(html.light) .complianceItem,
-:global(html.light) .snapshotItem,
-:global(html.light) .quickLink,
-:global(html.light) .inlineLink,
-:global(html.light) .emptyRow {
-  border-color: hsl(var(--border) / 0.92);
-  background:
-    linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.86)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent 42%);
-  box-shadow:
-    0 14px 28px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.94);
-}
-
-:global(html.light) .progressTrack {
-  background: hsl(var(--secondary));
-}
-
-:global(html.light) .quickLink:hover,
-:global(html.light) .inlineLink:hover,
-:global(html.light) .alertItem:hover {
-  border-color: hsl(var(--primary) / 0.22);
-}
-

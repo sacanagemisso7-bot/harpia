@@ -27,7 +27,7 @@ export function KnowledgeUploadForm({ action }: KnowledgeUploadFormProps) {
     <form action={formAction} className="workspace-form" encType="multipart/form-data">
       <div className="workspace-form-grid">
         <div className="space-y-2">
-          <Label htmlFor="title">Titulo</Label>
+          <Label htmlFor="title">Título</Label>
           <Input id="title" name="title" placeholder="Ex.: Playbook de triagem para Product Engineering" />
         </div>
         <div className="space-y-2">
@@ -57,7 +57,7 @@ export function KnowledgeUploadForm({ action }: KnowledgeUploadFormProps) {
       <div className="space-y-2">
         <Label htmlFor="document">Arquivo</Label>
         <Input id="document" name="document" type="file" accept=".pdf,.txt,.md" />
-        <p className="workspace-form-note">Aceita PDF, Markdown e texto puro para ingestão e indexacao automatica.</p>
+        <p className="workspace-form-note">Aceita PDF, Markdown e texto puro para ingestão e indexação automática.</p>
       </div>
 
       <FormMessage message={state.error} />

@@ -153,6 +153,9 @@ enum SavedViewType {
   JOBS
   CANDIDATES
   PIPELINE
+  EMPLOYEES
+  REQUESTS
+  PEOPLE_TASKS
 }
 
 enum AutomationTrigger {

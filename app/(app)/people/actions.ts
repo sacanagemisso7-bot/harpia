@@ -66,6 +66,36 @@ export async function updatePeopleTaskStatusAction(formData: FormData) {
   revalidatePeopleSurface();
 }
 
+export async function bulkUpdatePeopleTaskStatusAction(formData: FormData) {
+  const user = await requirePermission("manage_people_tasks");
+  const taskIds = formData
+    .getAll("taskIds")
+    .map((value) => String(value))
+    .filter(Boolean);
+  const status = formData.get("status");
+
+  if (!taskIds.length || typeof status !== "string") {
+    return;
+  }
+
+  const parsed = peopleTaskStatusSchema.shape.status.safeParse(status);
+
+  if (!parsed.success) {
+    return;
+  }
+
+  for (const taskId of taskIds) {
+    await updatePeopleTaskStatus({
+      organizationId: user.organizationId,
+      actorId: user.id,
+      taskId,
+      status: parsed.data
+    });
+  }
+
+  revalidatePeopleSurface();
+}
+
 export async function addPeopleTaskCommentAction(formData: FormData) {
   const user = await requirePermission("manage_people_tasks");
   const parsed = peopleTaskCommentSchema.safeParse({

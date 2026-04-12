@@ -2,148 +2,202 @@ import Link from "next/link";
 import type { Route } from "next";
 import { BellRing, BriefcaseBusiness, CalendarClock, ClipboardList, ShieldAlert, Sparkles } from "lucide-react";
 
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { requirePermission } from "@/lib/auth/permissions";
 import { getPeopleDashboard } from "@/modules/people-ops/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
+
+function getAlertIcon(type: string) {
+  if (type === "overdue_task") {
+    return ClipboardList;
+  }
+
+  if (type === "hr_request") {
+    return ShieldAlert;
+  }
+
+  if (type === "watchtower") {
+    return Sparkles;
+  }
+
+  return BellRing;
+}
 
 export default async function OperationsInboxPage() {
   const user = await requirePermission("view_ops_inbox");
   const inbox = await getPeopleDashboard(user.organizationId);
 
+  const stats = [
+    { label: "Solicitações abertas", value: inbox.metrics.openRequests },
+    { label: "Tarefas vencidas", value: inbox.metrics.overdueTasks },
+    { label: "Compliance pendente", value: inbox.metrics.pendingCompliance },
+    { label: "SLAs em risco", value: inbox.metrics.requestsAtRisk }
+  ];
+
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Operations inbox"
-        title="Inbox operacional da empresa"
-        description="Priorize o que esta travando people ops, service desk interno, compliance e processos do dia a dia."
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Operations inbox</span>
+        <h2 className={styles.title}>Inbox operacional</h2>
+        <p className={styles.description}>
+          Uma fila única para enxergar o que está travando requests, tasks, compliance e a operação diária do time.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Solicitações abertas</span>
-          <strong className={styles.statValue}>{inbox.metrics.openRequests}</strong>
-          <span className={styles.statHint}>Itens que ainda exigem retorno ou resolucao.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Tarefas vencidas</span>
-          <strong className={styles.statValue}>{inbox.metrics.overdueTasks}</strong>
-          <span className={styles.statHint}>Atrasos que podem contaminar a rotina do time.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Compliance pendente</span>
-          <strong className={styles.statValue}>{inbox.metrics.pendingCompliance}</strong>
-          <span className={styles.statHint}>Policies e obrigatorios ainda em aberto.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>SLAs em risco</span>
-          <strong className={styles.statValue}>{inbox.metrics.requestsAtRisk}</strong>
-          <span className={styles.statHint}>Casos que pedem decisão ou resposta mais r?pida.</span>
-        </div>
-      </section>
+      <div className={styles.statRow}>
+        {stats.map((stat) => (
+          <div key={stat.label} className={styles.statPill}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Priority queue</span>
-              <h2 className={styles.panelTitle}>Fila de prioridades</h2>
-              <p className={styles.panelDescription}>Leitura unica do que esta exigindo ação imediata na operação interna.</p>
-            </div>
-            {inbox.alerts.length ? (
-              <div className={styles.linkList}>
-                {inbox.alerts.map((item, index) => (
-                  <Link key={`${item.type}-${index}`} href={item.href as Route} className={styles.linkItem}>
-                    <strong>
-                      {item.type === "overdue_task" ? (
-                        <ClipboardList className="mr-2 inline h-4 w-4 text-amber-600" />
-                      ) : item.type === "hr_request" ? (
-                        <ShieldAlert className="mr-2 inline h-4 w-4 text-destructive" />
-                      ) : (
-                        <Sparkles className="mr-2 inline h-4 w-4 text-primary" />
-                      )}
-                      {item.title}
-                    </strong>
-                    <span>{item.description}</span>
-                    <span>{item.severity === "high" ? "Alta prioridade" : "Aten??o"}</span>
-                  </Link>
-                ))}
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/requests">Solicitações</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/people/tasks">People tasks</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/people/command-center">Command center</Link>
+            </Button>
+          </div>
+          <span className={styles.shortcutHint}>A ideia aqui é priorizar rápido, não navegar por vários resumos diferentes.</span>
+        </div>
+      </div>
+
+      <div className={styles.body}>
+        <section className={styles.listPanel}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelHeaderRow}>
+              <div>
+                <h3 className={styles.panelTitle}>Fila prioritária</h3>
+                <p className={styles.panelDescription}>O que pede ação primeiro dentro da operação interna.</p>
               </div>
+            </div>
+          </div>
+
+          <div className={styles.list}>
+            {inbox.alerts.length ? (
+              inbox.alerts.map((item, index) => {
+                const Icon = getAlertIcon(item.type);
+
+                return (
+                  <Link key={`${item.type}-${index}`} href={item.href as Route} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>
+                          <Icon className="mr-2 inline h-4 w-4" />
+                          {item.title}
+                        </p>
+                        <p className={styles.rowSubtitle}>{item.description}</p>
+                      </div>
+                      <Badge variant={item.severity === "high" ? "destructive" : "warning"}>
+                        {item.severity === "high" ? "Alta" : "Atenção"}
+                      </Badge>
+                    </div>
+                  </Link>
+                );
+              })
             ) : (
-              <div className={styles.emptyState}>Nenhum item critico no inbox operacional agora.</div>
+              <div className={styles.emptyWrap}>
+                <p className={styles.emptyState}>Nenhum item crítico no inbox operacional agora.</p>
+              </div>
             )}
           </div>
-        </div>
+        </section>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Now</span>
-            <strong className={styles.spotlightValue}>{inbox.alerts.length}</strong>
-            <p className={styles.panelDescription}>Itens com prioridade real aguardando ação do time.</p>
-          </div>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura curta</h3>
+            </div>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Quick read</span>
-                <h3 className={styles.panelTitle}>Resumo curto</h3>
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Onboarding ativo</span>
+                <span className={styles.metaValue}>{inbox.metrics.onboardingActive}</span>
               </div>
-              <span className={styles.iconLead}>
-                <BellRing className="h-4 w-4" />
-              </span>
-            </div>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>Onboarding ativo</span>
-                <strong>{inbox.metrics.onboardingActive}</strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Offboarding ativo</span>
+                <span className={styles.metaValue}>{inbox.metrics.offboardingActive}</span>
               </div>
-              <div className={styles.metricRow}>
-                <span>Offboarding ativo</span>
-                <strong>{inbox.metrics.offboardingActive}</strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Eventos hoje</span>
+                <span className={styles.metaValue}>{inbox.metrics.eventsToday}</span>
               </div>
-              <div className={styles.metricRow}>
-                <span>Eventos hoje</span>
-                <strong>{inbox.metrics.eventsToday}</strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Alertas ativos</span>
+                <span className={styles.metaValue}>{inbox.alerts.length}</span>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Hiring</span>
-                <h3 className={styles.panelTitle}>Módulo complementar</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <BriefcaseBusiness className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Navegação rápida</h3>
             </div>
-            <div className={styles.surfaceMuted}>
-              <span className={styles.itemDescription}>
-                {inbox.hiring.applicationCount} aplicações, {inbox.hiring.jobCount} vagas abertas e {inbox.hiring.slaAlerts} alertas operacionais.
-              </span>
-            </div>
-            <Link href="/hiring" className={styles.linkItem}>
-              <strong>Abrir módulo de hiring</strong>
-              <span>Continue a leitura do lado de recrutamento quando necessario.</span>
-            </Link>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>
-                  <CalendarClock className="mr-2 inline h-4 w-4" />
-                  Eventos
-                </span>
-                <strong>{inbox.metrics.eventsToday}</strong>
-              </div>
+            <div className={styles.sectionStack}>
+              <Link href="/requests" className={styles.detailCell}>
+                <span className={styles.metaValue}>Abrir solicitações</span>
+                <p className={styles.detailText}>Continue a triagem dos casos internos e dos SLAs.</p>
+              </Link>
+              <Link href="/people/tasks" className={styles.detailCell}>
+                <span className={styles.metaValue}>Abrir people tasks</span>
+                <p className={styles.detailText}>Veja os atrasos, pendências e tarefas operacionais do time.</p>
+              </Link>
+              <Link href="/people/compliance" className={styles.detailCell}>
+                <span className={styles.metaValue}>Abrir compliance</span>
+                <p className={styles.detailText}>Verifique políticas, aceites e itens críticos em aberto.</p>
+              </Link>
             </div>
-          </div>
+          </section>
+
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Hiring complementar</h3>
+              <p className={styles.panelDescription}>O módulo de recrutamento aparece aqui só quando ajuda a leitura da operação.</p>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.metaValue}>
+                    <BriefcaseBusiness className="mr-2 inline h-4 w-4" />
+                    Hiring
+                  </span>
+                  <Badge variant="outline">{inbox.hiring.applicationCount}</Badge>
+                </div>
+                <p className={styles.detailText}>
+                  {inbox.hiring.jobCount} vagas abertas e {inbox.hiring.slaAlerts} alertas operacionais no recrutamento.
+                </p>
+              </div>
+
+              <div className={styles.detailCell}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.metaValue}>
+                    <CalendarClock className="mr-2 inline h-4 w-4" />
+                    Eventos
+                  </span>
+                  <Badge variant="outline">{inbox.metrics.eventsToday}</Badge>
+                </div>
+                <p className={styles.detailText}>Agenda do dia e marcos próximos dentro da operação.</p>
+              </div>
+
+              <Button asChild variant="outline">
+                <Link href="/hiring">Abrir módulo de hiring</Link>
+              </Button>
+            </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

@@ -440,8 +440,8 @@ export function buildGraphModel(data: DashboardData): HarpiaGraphModel {
 
 export function buildContextInsights(node: HarpiaNode, data: DashboardData) {
   return [
-    node.score >= 84 ? "Sinal forte para avancar." : node.score >= 72 ? "Leitura pede validacao." : "Entrada ainda aberta.",
-    node.staleHours >= 72 ? `Sem movimento ha ${node.staleHours}h.` : `Fluxo ativo nas ultimas ${node.staleHours}h.`,
+    node.score >= 84 ? "Sinal forte para avançar." : node.score >= 72 ? "Leitura pede validação." : "Entrada ainda aberta.",
+    node.staleHours >= 72 ? `Sem movimento há ${node.staleHours}h.` : `Fluxo ativo nas últimas ${node.staleHours}h.`,
     node.cluster === "decision"
       ? `${data.metrics.requestsAtRisk} fluxos pedem ação imediata.`
       : node.cluster === "analysis"

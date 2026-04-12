@@ -40,7 +40,7 @@
     --accent-secondary: 36 27% 60%;
     --accent-tertiary: 33 15% 78%;
     --accent-warm: 37 25% 63%;
-    --radius: 0.92rem;
+    --radius: 0.5rem;
     --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-snappy: cubic-bezier(0.2, 0.9, 0.3, 1);
     --motion-fast: 140ms;
@@ -1495,6 +1495,136 @@
   to {
     opacity: 1;
     transform: translate3d(0, 0, 0);
+  }
+}
+
+@layer base {
+  html.dark body,
+  :root body {
+    background: #0f1113;
+  }
+
+  html.light body {
+    background: #f4f5f7;
+  }
+
+  body::before,
+  body::after {
+    display: none;
+  }
+
+  input,
+  textarea,
+  select {
+    box-shadow: none;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    background: rgba(127, 138, 151, 0.34) padding-box;
+  }
+}
+
+@layer utilities {
+  .page-stage::before,
+  .page-stage::after {
+    display: none;
+  }
+
+  .page-stage > :nth-child(odd),
+  .page-stage > :nth-child(even),
+  .stagger-grid > :nth-child(3n + 2),
+  .stagger-grid > :nth-child(3n) {
+    margin: 0;
+  }
+
+  .panel,
+  .scene-shell,
+  .scene-rail,
+  .scene-float,
+  .shell-card,
+  .shell-topbar,
+  .site-frame,
+  .marketing-grid-card,
+  .hero-panel,
+  .hero-signal,
+  .chat-pane-shell,
+  .chat-message-shell,
+  .workspace-form-section,
+  .workspace-form-subsection {
+    clip-path: none;
+    border-radius: 0.5rem;
+    border: 1px solid hsl(var(--border) / 0.9);
+    background: hsl(var(--card));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    backdrop-filter: none;
+  }
+
+  .panel::after,
+  .scene-shell::before,
+  .scene-rail::before,
+  .scene-float::before,
+  .scene-shell::after,
+  .scene-rail::after,
+  .scene-float::after,
+  .surface-border::before {
+    display: none;
+  }
+
+  .scene-label::before {
+    width: 1rem;
+    background: hsl(var(--border));
+  }
+
+  .command-link,
+  .data-row,
+  .chat-rail-item,
+  .context-card,
+  .toolbar-pill,
+  .nav-item-shell,
+  .field-shell,
+  .brand-mark,
+  .theme-toggle,
+  .theme-toggle-button,
+  .shell-topbar-action {
+    clip-path: none;
+    border-radius: 0.5rem;
+    border: 1px solid hsl(var(--border) / 0.9);
+    background: hsl(var(--card));
+    box-shadow: none;
+  }
+
+  .command-link:hover,
+  .data-row:hover,
+  .chat-rail-item:hover,
+  .context-card:hover,
+  .panel-hover:hover {
+    transform: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    border-color: hsl(var(--border));
+  }
+
+  .interactive-chip,
+  .trace-pill,
+  .shell-topbar-chip,
+  .theme-toggle-button-active {
+    border-radius: 0.45rem;
+    border: 1px solid hsl(var(--border) / 0.9);
+    background: hsl(var(--secondary));
+    box-shadow: none;
+  }
+
+  .data-row,
+  .command-link {
+    padding: 0.85rem 0.95rem;
+  }
+
+  .glass-strip,
+  .grid-fade,
+  .hero-orb {
+    background: none;
+    mask-image: none;
+    animation: none;
   }
 }
 

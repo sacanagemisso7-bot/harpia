@@ -1,42 +1,20 @@
 .shell {
-  --sidebar-width: 300px;
+  --sidebar-width: 272px;
   min-height: 100svh;
   display: grid;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-  background:
-    radial-gradient(circle at 0% 0%, rgba(214, 198, 165, 0.12), transparent 20%),
-    radial-gradient(circle at 100% 0%, rgba(214, 198, 165, 0.08), transparent 18%),
-    linear-gradient(180deg, #0b0b0c 0%, #1a1a1d 48%, #111315 100%);
+  background: hsl(var(--background));
   color: hsl(var(--foreground));
 }
 
 .shellCollapsed {
-  --sidebar-width: 104px;
+  --sidebar-width: 84px;
 }
 
 .dashboardRoute {
-  position: relative;
   min-height: 100svh;
-  background:
-    radial-gradient(circle at 14% 18%, rgba(214, 198, 165, 0.12), transparent 22%),
-    radial-gradient(circle at 84% 82%, rgba(117, 134, 111, 0.06), transparent 20%),
-    #0b0b0c;
+  background: hsl(var(--background));
   color: hsl(var(--foreground));
-  overflow: clip;
-}
-
-.dashboardRoute::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(11, 11, 12, 0.04), rgba(11, 11, 12, 0.18)),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px),
-    linear-gradient(180deg, rgba(148, 163, 184, 0.03) 1px, transparent 1px);
-  background-size: auto, 7rem 7rem, 7rem 7rem;
-  mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.92), transparent 84%);
-  pointer-events: none;
-  opacity: 0.34;
 }
 
 .mobileBackdrop {
@@ -48,11 +26,8 @@
   top: 0;
   height: 100svh;
   padding: 1rem;
-  border-right: 1px solid rgba(148, 163, 184, 0.1);
-  background:
-    linear-gradient(180deg, rgba(11, 11, 12, 0.92), rgba(11, 11, 12, 0.78)),
-    radial-gradient(circle at top left, rgba(214, 198, 165, 0.08), transparent 24%);
-  backdrop-filter: blur(18px);
+  border-right: 1px solid hsl(var(--border) / 0.9);
+  background: hsl(var(--card));
   z-index: 20;
 }
 
@@ -73,16 +48,11 @@
 .brandCard {
   display: flex;
   align-items: center;
-  min-height: 4.6rem;
-  padding: 1rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 1.3rem;
-  background:
-    linear-gradient(180deg, rgba(26, 26, 29, 0.92), rgba(26, 26, 29, 0.8)),
-    radial-gradient(circle at top left, rgba(214, 198, 165, 0.12), transparent 32%);
-  box-shadow:
-    0 20px 40px rgba(0, 0, 0, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  min-height: 4rem;
+  padding: 0.9rem 1rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.5rem;
+  background: hsl(var(--card));
   color: inherit;
   text-decoration: none;
 }
@@ -98,40 +68,30 @@
   align-items: center;
   justify-content: center;
   gap: 0.45rem;
-  min-height: 2.8rem;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 1rem;
-  background:
-    linear-gradient(180deg, rgba(26, 26, 29, 0.92), rgba(26, 26, 29, 0.78)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 48%);
-  color: rgba(239, 244, 250, 0.92);
-  transition:
-    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  min-height: 2.5rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.5rem;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
+}
+
+.sidebarToggle {
+  width: 2.5rem;
+  padding: 0;
+  flex-shrink: 0;
 }
 
 .sidebarToggle:hover,
 .compactUtilityButton:hover,
 .mobileMenuButton:hover {
-  border-color: rgba(214, 198, 165, 0.22);
-  box-shadow:
-    0 14px 24px rgba(0, 0, 0, 0.18),
-    0 0 0 1px rgba(214, 198, 165, 0.06);
-}
-
-.sidebarToggle {
-  width: 2.8rem;
-  padding: 0;
-  flex-shrink: 0;
+  background: hsl(var(--secondary));
 }
 
 .sidebarToggleIcon,
 .mobileMenuIcon,
 .signOutIcon {
-  width: 0.96rem;
-  height: 0.96rem;
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
 .navGroups {
@@ -141,84 +101,77 @@
   align-content: start;
   gap: 1rem;
   overflow-y: auto;
-  padding-right: 0.2rem;
+  padding-right: 0.15rem;
 }
 
 .navGroup {
   display: grid;
-  gap: 0.62rem;
+  gap: 0.55rem;
 }
 
 .navGroupLabel {
-  padding: 0 0.25rem;
+  padding: 0 0.1rem;
   font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(166, 178, 194, 0.56);
+  color: hsl(var(--muted-foreground));
 }
 
 .navList {
   display: grid;
-  gap: 0.44rem;
+  gap: 0.3rem;
 }
 
 .navLink {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 0.85rem;
-  min-height: 3.6rem;
-  padding: 0.8rem 0.85rem;
+  gap: 0.75rem;
+  min-height: 3.15rem;
+  padding: 0.7rem 0.8rem;
   border: 1px solid transparent;
-  border-radius: 1.08rem;
-  color: rgba(166, 178, 194, 0.82);
+  border-radius: 0.5rem;
+  color: hsl(var(--muted-foreground));
   text-decoration: none;
-  transition:
-    color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.navLink:hover,
+.navLink:hover {
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
+}
+
 .navLinkActive {
-  border-color: rgba(148, 163, 184, 0.16);
-  background:
-    linear-gradient(180deg, rgba(26, 26, 29, 0.84), rgba(26, 26, 29, 0.66)),
-    radial-gradient(circle at left top, rgba(214, 198, 165, 0.12), transparent 26%);
-  box-shadow:
-    0 16px 28px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
-  color: rgba(239, 244, 250, 0.96);
+  border-color: hsl(var(--border));
+  background: hsl(var(--secondary));
+  color: hsl(var(--foreground));
 }
 
 .navIconWrap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.55rem;
-  height: 2.55rem;
-  border-radius: 0.94rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-  color: rgba(216, 223, 232, 0.84);
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.45rem;
+  background: hsl(var(--background));
+  color: inherit;
 }
 
 .navLinkActive .navIconWrap {
-  background: rgba(214, 198, 165, 0.14);
-  border-color: rgba(214, 198, 165, 0.24);
+  background: hsl(var(--card));
 }
 
 .navIcon {
-  width: 1.02rem;
-  height: 1.02rem;
+  width: 0.95rem;
+  height: 0.95rem;
 }
 
 .navCopy {
   min-width: 0;
   display: grid;
-  gap: 0.14rem;
+  gap: 0.12rem;
 }
 
 .navLabel {
@@ -232,13 +185,13 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.73rem;
-  color: rgba(166, 178, 194, 0.72);
+  font-size: 0.74rem;
+  color: hsl(var(--muted-foreground));
 }
 
 .sidebarFooter {
   display: grid;
-  gap: 0.8rem;
+  gap: 0.75rem;
   margin-top: auto;
 }
 
@@ -248,42 +201,40 @@
 
 .workspaceCard {
   display: grid;
-  gap: 0.6rem;
-  padding: 0.95rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 1.1rem;
-  background:
-    linear-gradient(180deg, rgba(26, 26, 29, 0.84), rgba(26, 26, 29, 0.7)),
-    radial-gradient(circle at top left, rgba(214, 198, 165, 0.08), transparent 26%);
+  gap: 0.55rem;
+  padding: 0.85rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.5rem;
+  background: hsl(var(--card));
 }
 
 .workspaceLabel {
-  font-size: 0.62rem;
+  font-size: 0.64rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(166, 178, 194, 0.58);
+  color: hsl(var(--muted-foreground));
 }
 
 .workspaceTitle {
   font-size: 0.9rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: rgba(239, 244, 250, 0.96);
+  color: hsl(var(--foreground));
 }
 
 .workspaceMeta {
   font-size: 0.78rem;
-  color: rgba(166, 178, 194, 0.76);
+  color: hsl(var(--muted-foreground));
 }
 
 .workspaceSelect {
-  min-height: 2.8rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 0.9rem;
-  background: rgba(11, 11, 12, 0.76);
-  padding: 0 0.85rem;
-  color: rgba(239, 244, 250, 0.96);
+  min-height: 2.5rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.45rem;
+  background: hsl(var(--background));
+  padding: 0 0.75rem;
+  color: hsl(var(--foreground));
 }
 
 .workspaceAction,
@@ -291,30 +242,19 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  min-height: 2.8rem;
-  border: 1px solid rgba(148, 163, 184, 0.14);
-  border-radius: 0.95rem;
-  background:
-    linear-gradient(180deg, rgba(26, 26, 29, 0.92), rgba(26, 26, 29, 0.78)),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 48%);
-  color: rgba(239, 244, 250, 0.92);
+  gap: 0.45rem;
+  min-height: 2.5rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.5rem;
+  background: hsl(var(--card));
+  color: hsl(var(--foreground));
   font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  transition:
-    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  font-weight: 600;
 }
 
 .workspaceAction:hover,
 .signOutButton:hover {
-  border-color: rgba(214, 198, 165, 0.22);
-  box-shadow:
-    0 14px 24px rgba(0, 0, 0, 0.18),
-    0 0 0 1px rgba(214, 198, 165, 0.06);
+  background: hsl(var(--secondary));
 }
 
 .signOutButton {
@@ -331,7 +271,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 1rem;
-  padding: 1rem 1.15rem 1.15rem;
+  padding: 1rem 1.2rem 1.2rem;
 }
 
 .topbar {
@@ -339,52 +279,43 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  padding: 1.1rem 1.2rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 1.35rem;
-  background:
-    linear-gradient(180deg, rgba(26, 26, 29, 0.84), rgba(26, 26, 29, 0.7)),
-    radial-gradient(circle at top left, rgba(214, 198, 165, 0.08), transparent 28%);
-  box-shadow:
-    0 20px 44px rgba(0, 0, 0, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(18px);
+  padding: 0 0 1rem;
+  border-bottom: 1px solid hsl(var(--border) / 0.85);
 }
 
 .topbarIntro {
   display: grid;
-  gap: 0.28rem;
+  gap: 0.2rem;
 }
 
 .topbarEyebrow {
   font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(166, 178, 194, 0.58);
+  color: hsl(var(--muted-foreground));
 }
 
 .topbarTitle {
   margin: 0;
-  font-family: var(--font-display);
-  font-size: clamp(1.9rem, 2.2vw, 2.6rem);
-  line-height: 0.95;
-  letter-spacing: -0.08em;
-  color: rgba(239, 244, 250, 0.98);
+  font-size: clamp(1.55rem, 2vw, 2.15rem);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  color: hsl(var(--foreground));
 }
 
 .topbarSubtitle {
-  margin: 0.22rem 0 0;
+  margin: 0.15rem 0 0;
   max-width: 40rem;
   font-size: 0.84rem;
-  line-height: 1.6;
-  color: rgba(166, 178, 194, 0.78);
+  line-height: 1.55;
+  color: hsl(var(--muted-foreground));
 }
 
 .topbarMeta {
   display: grid;
   justify-items: end;
-  gap: 0.8rem;
+  gap: 0.75rem;
 }
 
 .topbarChips,
@@ -392,7 +323,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: 0.7rem;
+  gap: 0.65rem;
 }
 
 .topbarChip,
@@ -400,61 +331,68 @@
 .accountChip {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  min-height: 2.4rem;
-  padding: 0 0.85rem;
-  border: 1px solid rgba(148, 163, 184, 0.12);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-  font-size: 0.74rem;
-  color: rgba(216, 223, 232, 0.82);
+  gap: 0.45rem;
+  min-height: 2.25rem;
+  padding: 0 0.8rem;
+  border: 1px solid hsl(var(--border) / 0.9);
+  border-radius: 0.45rem;
+  background: hsl(var(--card));
+  font-size: 0.76rem;
+  color: hsl(var(--muted-foreground));
 }
 
 .billingChip {
   text-decoration: none;
-  color: rgba(239, 244, 250, 0.92);
+}
+
+.billingChip:hover {
+  color: hsl(var(--foreground));
+  background: hsl(var(--secondary));
 }
 
 .themeControl {
   align-self: center;
 }
 
+.commandTrigger {
+  min-width: 16rem;
+}
+
 .accountChip {
   display: grid;
-  gap: 0.08rem;
+  gap: 0.05rem;
   justify-items: start;
-  padding-inline: 1rem;
-  border-radius: 1rem;
+  padding-inline: 0.85rem;
 }
 
 .accountChip strong {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: rgba(239, 244, 250, 0.96);
+  color: hsl(var(--foreground));
 }
 
 .accountChip span {
-  font-size: 0.68rem;
+  font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(166, 178, 194, 0.62);
+  color: hsl(var(--muted-foreground));
 }
 
 .mobileMenuButton {
   display: none;
   padding-inline: 0.9rem;
   font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .content {
   min-width: 0;
   min-height: 0;
-  padding: 0.2rem 0 1rem;
+  padding: 0.15rem 0 1rem;
 }
 
 .shellCollapsed .sidebarHeader {
@@ -463,8 +401,8 @@
 }
 
 .shellCollapsed .brandCard {
-  min-height: 4rem;
-  padding: 0.8rem;
+  min-height: 3.5rem;
+  padding: 0.6rem;
   justify-content: center;
 }
 
@@ -482,17 +420,16 @@
   grid-template-columns: 1fr;
   justify-items: center;
   min-height: auto;
-  padding: 0.6rem;
+  padding: 0.55rem;
 }
 
 .shellCollapsed .navIconWrap {
-  width: 3rem;
-  height: 3rem;
-  border-radius: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .shellCollapsed .navList {
-  gap: 0.6rem;
+  gap: 0.45rem;
 }
 
 .shellCollapsed .sidebarFooter {
@@ -501,13 +438,13 @@
 
 .shellCollapsed .sidebarFooterCompact {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.6rem;
   margin-top: auto;
 }
 
 @media (max-width: 1180px) {
   .shell {
-    --sidebar-width: 272px;
+    --sidebar-width: 248px;
   }
 
   .topbar {
@@ -535,10 +472,10 @@
     display: block;
     position: fixed;
     inset: 0;
-    background: rgba(6, 7, 8, 0.54);
+    background: rgba(0, 0, 0, 0.42);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 220ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity 180ms ease;
     z-index: 39;
   }
 
@@ -550,12 +487,10 @@
   .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
-    width: min(88vw, 320px);
+    width: min(88vw, 300px);
     height: 100svh;
-    border-right: 1px solid rgba(148, 163, 184, 0.1);
-    border-bottom: 0;
     transform: translateX(-110%);
-    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: transform 220ms ease;
     z-index: 40;
   }
 
@@ -564,7 +499,7 @@
   }
 
   .main {
-    padding-inline: 0.85rem;
+    padding-inline: 0.9rem;
   }
 
   .mobileMenuButton {
@@ -577,12 +512,13 @@
 }
 
 @media (max-width: 640px) {
-  .topbar {
-    padding: 1rem;
+  .topbarTitle {
+    font-size: 1.45rem;
   }
 
-  .topbarTitle {
-    font-size: 1.7rem;
+  .commandTrigger {
+    min-width: 0;
+    width: 100%;
   }
 
   .topbarChips,
@@ -593,98 +529,4 @@
   .accountChip {
     width: 100%;
   }
-}
-
-:global(html.light) .shell {
-  background:
-    radial-gradient(circle at 0% 0%, rgba(184, 169, 138, 0.12), transparent 20%),
-    radial-gradient(circle at 100% 0%, rgba(184, 169, 138, 0.08), transparent 18%),
-    linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface-2)), hsl(var(--background)));
-}
-
-:global(html.light) .sidebar,
-:global(html.light) .topbar,
-:global(html.light) .brandCard,
-:global(html.light) .workspaceCard,
-:global(html.light) .navLink:hover,
-:global(html.light) .navLinkActive,
-:global(html.light) .sidebarToggle,
-:global(html.light) .compactUtilityButton,
-:global(html.light) .mobileMenuButton,
-:global(html.light) .workspaceAction,
-:global(html.light) .signOutButton,
-:global(html.light) .topbarChip,
-:global(html.light) .billingChip,
-:global(html.light) .accountChip {
-  box-shadow:
-    0 16px 30px rgba(15, 23, 42, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.92);
-}
-
-:global(html.light) .sidebar {
-  border-right-color: hsl(var(--border) / 0.92);
-  background:
-    linear-gradient(180deg, hsl(var(--card) / 0.98), hsl(var(--surface-3) / 0.9)),
-    radial-gradient(circle at top left, hsl(var(--accent-warm) / 0.12), transparent 24%);
-}
-
-:global(html.light) .brandCard,
-:global(html.light) .workspaceCard,
-:global(html.light) .topbar,
-:global(html.light) .sidebarToggle,
-:global(html.light) .compactUtilityButton,
-:global(html.light) .mobileMenuButton,
-:global(html.light) .workspaceAction,
-:global(html.light) .signOutButton,
-:global(html.light) .topbarChip,
-:global(html.light) .billingChip,
-:global(html.light) .accountChip {
-  border-color: hsl(var(--border) / 0.88);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.82)),
-    linear-gradient(180deg, hsl(var(--card) / 0.96), hsl(var(--secondary) / 0.86));
-  color: hsl(var(--foreground));
-}
-
-:global(html.light) .navGroupLabel,
-:global(html.light) .workspaceLabel,
-:global(html.light) .topbarEyebrow,
-:global(html.light) .accountChip span {
-  color: hsl(var(--muted-foreground));
-}
-
-:global(html.light) .navLink {
-  color: hsl(var(--muted-foreground));
-}
-
-:global(html.light) .navDescription,
-:global(html.light) .workspaceMeta,
-:global(html.light) .topbarSubtitle {
-  color: hsl(var(--muted-foreground));
-}
-
-:global(html.light) .navIconWrap {
-  border-color: hsl(var(--border) / 0.82);
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.82));
-  color: hsl(var(--foreground));
-}
-
-:global(html.light) .navLink:hover,
-:global(html.light) .navLinkActive {
-  border-color: hsl(var(--primary) / 0.26);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.84)),
-    linear-gradient(180deg, hsl(var(--card) / 0.96), hsl(var(--secondary) / 0.88));
-  color: hsl(var(--foreground));
-}
-
-:global(html.light) .navLinkActive .navIconWrap {
-  background: hsl(var(--accent-warm) / 0.14);
-  border-color: hsl(var(--accent-warm) / 0.24);
-}
-
-:global(html.light) .workspaceSelect {
-  border-color: hsl(var(--border) / 0.86);
-  background: rgba(255, 255, 255, 0.88);
-  color: hsl(var(--foreground));
 }

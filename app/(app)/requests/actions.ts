@@ -58,6 +58,36 @@ export async function updateHrRequestStatusAction(formData: FormData) {
   revalidateRequestSurface();
 }
 
+export async function bulkUpdateHrRequestStatusAction(formData: FormData) {
+  const user = await requirePermission("manage_hr_requests");
+  const requestIds = formData
+    .getAll("requestIds")
+    .map((value) => String(value))
+    .filter(Boolean);
+  const status = formData.get("status");
+
+  if (!requestIds.length || typeof status !== "string") {
+    return;
+  }
+
+  const parsed = hrRequestStatusSchema.shape.status.safeParse(status);
+
+  if (!parsed.success) {
+    return;
+  }
+
+  for (const requestId of requestIds) {
+    await updateHrRequestStatus({
+      organizationId: user.organizationId,
+      actorId: user.id,
+      requestId,
+      status: parsed.data
+    });
+  }
+
+  revalidateRequestSurface();
+}
+
 export async function addHrRequestCommentAction(formData: FormData) {
   const user = await requirePermission("view_hr_requests");
   const parsed = hrRequestCommentSchema.safeParse({

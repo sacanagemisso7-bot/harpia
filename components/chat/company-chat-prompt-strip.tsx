@@ -2,7 +2,6 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Sparkles } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
@@ -24,8 +23,7 @@ export function CompanyChatPromptStrip({
   prompts,
   threadId,
   className,
-  buttonClassName,
-  iconClassName
+  buttonClassName
 }: CompanyChatPromptStripProps) {
   const router = useRouter();
   const [state, setState] = useState(initialState);
@@ -69,10 +67,12 @@ export function CompanyChatPromptStrip({
           type="button"
           disabled={pending}
           data-testid="company-chat-prompt"
-          className={cn("interactive-chip text-xs text-muted-foreground", buttonClassName)}
+          className={cn(
+            "inline-flex min-h-9 items-center rounded-[0.45rem] border border-border/90 bg-background px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-60",
+            buttonClassName
+          )}
           onClick={() => submitPrompt(prompt)}
         >
-          <Sparkles className={cn("h-3.5 w-3.5", iconClassName)} />
           <span>{prompt}</span>
         </button>
       ))}

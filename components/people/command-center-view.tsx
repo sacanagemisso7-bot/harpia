@@ -4,10 +4,9 @@ import {
   BellRing,
   BriefcaseBusiness,
   CalendarClock,
-  CheckCircle2,
   ClipboardList,
-  FileWarning,
   ShieldAlert,
+  Sparkles,
   UsersRound
 } from "lucide-react";
 
@@ -95,50 +94,108 @@ function formatDate(date: Date) {
   }).format(date);
 }
 
+function humanizeStatus(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
 export function CommandCenterView({ data }: CommandCenterViewProps) {
-  const metrics = [
-    { label: "Base ativa", value: data.metrics.employees, hint: `${data.metrics.onboardingActive} entradas em curso` },
-    { label: "Fila interna", value: data.metrics.openRequests, hint: `${data.metrics.requestsAtRisk} com risco de SLA` },
-    { label: "Pendencias", value: data.metrics.overdueTasks, hint: `${data.metrics.pendingCompliance} pontos de compliance` },
-    { label: "Agenda", value: data.metrics.eventsToday, hint: `${data.metrics.offboardingActive} saídas ativas` }
+  const nowCards = [
+    {
+      label: "Solicitações abertas",
+      value: data.metrics.openRequests,
+      hint: `${data.metrics.requestsAtRisk} em risco`,
+      href: "/requests" as Route
+    },
+    {
+      label: "Tarefas vencidas",
+      value: data.metrics.overdueTasks,
+      hint: "Pendências pedindo ação",
+      href: "/people/tasks?view=overdue" as Route
+    },
+    {
+      label: "Compliance pendente",
+      value: data.metrics.pendingCompliance,
+      hint: "Itens sem fechamento",
+      href: "/people/compliance" as Route
+    },
+    {
+      label: "Eventos hoje",
+      value: data.metrics.eventsToday,
+      hint: `${data.metrics.onboardingActive} entradas em curso`,
+      href: "/people/calendar" as Route
+    }
   ];
 
-  const quickLinks = [
-    { href: "/employees" as Route, label: "Colaboradores", icon: UsersRound },
-    { href: "/requests" as Route, label: "Service desk", icon: BellRing },
-    { href: "/people/tasks" as Route, label: "People tasks", icon: ClipboardList },
-    { href: "/chat" as Route, label: "Company chat", icon: CheckCircle2 }
+  const quickActions = [
+    {
+      href: "/requests?view=risk" as Route,
+      label: "Abrir SLAs em risco",
+      hint: "Fila crítica",
+      icon: BellRing
+    },
+    {
+      href: "/people/tasks?view=overdue" as Route,
+      label: "Ver tarefas vencidas",
+      hint: "Pendências do time",
+      icon: ClipboardList
+    },
+    {
+      href: "/employees?view=managerless" as Route,
+      label: "Revisar pessoas sem gestor",
+      hint: "Ownership",
+      icon: UsersRound
+    },
+    {
+      href: "/chat" as Route,
+      label: "Perguntar ao Harpia",
+      hint: "Assistência contextual",
+      icon: Sparkles
+    }
   ];
 
   const atRiskRequests = data.requests.filter((request) => request.effectiveSlaStatus !== "ON_TRACK").slice(0, 4);
+  const overdueTasks = data.overdueTasks.slice(0, 4);
+  const nextEvents = data.events.slice(0, 4);
+  const onboardingRuns = data.onboarding.slice(0, 3);
+  const offboardingRuns = data.offboarding.slice(0, 3);
+  const complianceItems = data.compliance.slice(0, 4);
 
   return (
     <div className={styles.workspace}>
       <section className={styles.hero}>
         <div className={styles.heroIntro}>
-          <span className={styles.eyebrow}>Live overview</span>
-          <h2 className={styles.heroTitle}>Tudo que pede ação hoje.</h2>
-          <p className={styles.heroDescription}>O command center junta fila, workflows, agenda e compliance numa leitura direta da operação.</p>
+          <span className={styles.eyebrow}>Agora</span>
+          <h2 className={styles.heroTitle}>O que pede ação primeiro.</h2>
+          <p className={styles.heroDescription}>Menos leitura de painel e mais rotas claras para fila, owner e próximo passo.</p>
         </div>
 
         <div className={styles.metricStrip}>
-          {metrics.map((metric) => (
-            <div key={metric.label} className={styles.metricTile}>
+          {nowCards.map((metric) => (
+            <Link key={metric.label} href={metric.href} className={styles.metricTile}>
               <span>{metric.label}</span>
               <strong>{metric.value}</strong>
               <p>{metric.hint}</p>
-            </div>
+            </Link>
           ))}
         </div>
 
         <div className={styles.quickActions}>
-          {quickLinks.map((item) => {
+          {quickActions.map((item) => {
             const Icon = item.icon;
 
             return (
               <Link key={item.href} href={item.href} className={styles.quickLink}>
-                <Icon className="h-4 w-4" />
-                {item.label}
+                <div className={styles.quickLinkIcon}>
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className={styles.quickLinkCopy}>
+                  <strong>{item.label}</strong>
+                  <span>{item.hint}</span>
+                </div>
               </Link>
             );
           })}
@@ -149,44 +206,44 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
         <div className={styles.primaryColumn}>
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.eyebrow}>Prioridades</span>
-              <h3 className={styles.panelTitle}>O que pode travar primeiro</h3>
-              <p className={styles.panelDescription}>Alertas criticos, requests em risco e tarefas que ja passaram da janela ideal.</p>
+              <span className={styles.eyebrow}>Fila crítica</span>
+              <h3 className={styles.panelTitle}>Onde o RH pode travar</h3>
+              <p className={styles.panelDescription}>Alertas, SLAs e pendências atrasadas organizados por impacto imediato.</p>
             </div>
 
-            <div className={styles.alertList}>
+            <div className={styles.stack}>
               {data.alerts.length ? (
                 data.alerts.slice(0, 3).map((alert) => (
-                  <Link key={`${alert.type}-${alert.title}`} href={alert.href as Route} className={styles.alertItem}>
-                    <div className={styles.listRow}>
+                  <Link key={`${alert.type}-${alert.title}`} href={alert.href as Route} className={styles.actionRow}>
+                    <div className={styles.actionCopy}>
                       <strong>{alert.title}</strong>
-                      <Badge variant={alert.severity === "high" ? "destructive" : "warning"}>
-                        {alert.severity === "high" ? "Critico" : "Aten??o"}
-                      </Badge>
+                      <p>{alert.description}</p>
                     </div>
-                    <p>{alert.description}</p>
+                    <Badge variant={alert.severity === "high" ? "destructive" : "warning"}>
+                      {alert.severity === "high" ? "Crítico" : "Atenção"}
+                    </Badge>
                   </Link>
                 ))
               ) : (
-                <div className={styles.emptyRow}>Nenhum alerta critico no momento.</div>
+                <div className={styles.emptyRow}>Nenhum alerta crítico no momento.</div>
               )}
             </div>
 
-            <div className={styles.queueSection}>
+            <div className={styles.subSection}>
               <div className={styles.sectionHeader}>
-                <span className={styles.sectionLabel}>Requests em risco</span>
-                <Link href={"/requests" as Route} className={styles.inlineLink}>
+                <span className={styles.sectionLabel}>Solicitações em risco</span>
+                <Link href={"/requests?view=risk" as Route} className={styles.inlineLink}>
                   Abrir fila
                 </Link>
               </div>
 
-              <div className={styles.queueList}>
+              <div className={styles.stack}>
                 {atRiskRequests.length ? (
                   atRiskRequests.map((request) => (
-                    <div key={request.id} className={styles.queueItem}>
+                    <Link key={request.id} href={"/requests" as Route} className={styles.queueItem}>
                       <div>
                         <strong>{request.title}</strong>
-                        <p>{request.assigneeUser?.name ?? "Sem responsavel definido"}</p>
+                        <p>{request.assigneeUser?.name ?? "Sem responsável definido"}</p>
                       </div>
                       <Badge
                         variant={
@@ -197,31 +254,34 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                               : "outline"
                         }
                       >
-                        {request.effectiveSlaStatus}
+                        {humanizeStatus(request.effectiveSlaStatus)}
                       </Badge>
-                    </div>
+                    </Link>
                   ))
                 ) : (
-                  <div className={styles.emptyRow}>Nenhuma request fora da faixa ideal.</div>
+                  <div className={styles.emptyRow}>Nenhuma solicitação fora da faixa ideal.</div>
                 )}
               </div>
             </div>
 
-            <div className={styles.queueSection}>
+            <div className={styles.subSection}>
               <div className={styles.sectionHeader}>
-                <span className={styles.sectionLabel}>Pendencias vencidas</span>
+                <span className={styles.sectionLabel}>Tarefas vencidas</span>
+                <Link href={"/people/tasks?view=overdue" as Route} className={styles.inlineLink}>
+                  Abrir tasks
+                </Link>
               </div>
 
-              <div className={styles.queueList}>
-                {data.overdueTasks.length ? (
-                  data.overdueTasks.slice(0, 3).map((task) => (
-                    <div key={task.id} className={styles.queueItem}>
+              <div className={styles.stack}>
+                {overdueTasks.length ? (
+                  overdueTasks.map((task) => (
+                    <Link key={task.id} href={"/people/tasks?view=overdue" as Route} className={styles.queueItem}>
                       <div>
                         <strong>{task.title}</strong>
                         <p>{task.relatedEmployee?.fullName ?? "Sem colaborador"}</p>
                       </div>
-                      <Badge variant="warning">{task.status}</Badge>
-                    </div>
+                      <Badge variant="warning">{humanizeStatus(task.status)}</Badge>
+                    </Link>
                   ))
                 ) : (
                   <div className={styles.emptyRow}>Nenhuma tarefa vencida agora.</div>
@@ -232,9 +292,9 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
 
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
-              <span className={styles.eyebrow}>Workflows</span>
-              <h3 className={styles.panelTitle}>Entradas e saídas em curso</h3>
-              <p className={styles.panelDescription}>Acompanhe progresso, ownership e o ponto em que cada fluxo esta parado.</p>
+              <span className={styles.eyebrow}>Fluxos</span>
+              <h3 className={styles.panelTitle}>Onboarding e offboarding</h3>
+              <p className={styles.panelDescription}>Veja rápido quem está em movimento e onde o progresso precisa de atenção.</p>
             </div>
 
             <div className={styles.workflowGrid}>
@@ -245,9 +305,9 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                     Ver fluxo
                   </Link>
                 </div>
-                <div className={styles.workflowList}>
-                  {data.onboarding.length ? (
-                    data.onboarding.slice(0, 3).map((run) => {
+                <div className={styles.stack}>
+                  {onboardingRuns.length ? (
+                    onboardingRuns.map((run) => {
                       const progress = getProgress(run.steps);
 
                       return (
@@ -276,9 +336,9 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                     Ver fluxo
                   </Link>
                 </div>
-                <div className={styles.workflowList}>
-                  {data.offboarding.length ? (
-                    data.offboarding.slice(0, 3).map((run) => {
+                <div className={styles.stack}>
+                  {offboardingRuns.length ? (
+                    offboardingRuns.map((run) => {
                       const progress = getProgress(run.steps);
 
                       return (
@@ -307,13 +367,12 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Agenda</span>
-              <h3 className={styles.panelTitle}>Hoje e próximos marcos</h3>
-              <p className={styles.panelDescription}>Eventos do dia e pontos que pedem acompanhamento antes de escalar.</p>
+              <h3 className={styles.panelTitle}>Próximos marcos</h3>
             </div>
 
-            <div className={styles.eventList}>
-              {data.events.length ? (
-                data.events.slice(0, 4).map((event) => (
+            <div className={styles.stack}>
+              {nextEvents.length ? (
+                nextEvents.map((event) => (
                   <div key={event.id} className={styles.eventItem}>
                     <CalendarClock className="h-4 w-4" />
                     <div>
@@ -326,7 +385,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyRow}>Sem eventos no calendario.</div>
+                <div className={styles.emptyRow}>Sem eventos no calendário.</div>
               )}
             </div>
           </section>
@@ -334,14 +393,13 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Compliance</span>
-              <h3 className={styles.panelTitle}>Itens que merecem revisão</h3>
-              <p className={styles.panelDescription}>Controles, pendencias e janelas de vencimento em uma unica lista.</p>
+              <h3 className={styles.panelTitle}>Itens pendentes</h3>
             </div>
 
-            <div className={styles.complianceList}>
-              {data.compliance.length ? (
-                data.compliance.slice(0, 4).map((item) => (
-                  <div key={item.id} className={styles.complianceItem}>
+            <div className={styles.stack}>
+              {complianceItems.length ? (
+                complianceItems.map((item) => (
+                  <Link key={item.id} href={"/people/compliance" as Route} className={styles.complianceItem}>
                     <div className={styles.listRow}>
                       <strong>{item.title}</strong>
                       <ShieldAlert className="h-4 w-4 text-muted-foreground" />
@@ -350,7 +408,7 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
                       {item.employee?.fullName ?? "Colaborador"}
                       {item.dueAt ? ` • ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
                     </p>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className={styles.emptyRow}>Sem itens de compliance pendentes.</div>
@@ -361,32 +419,31 @@ export function CommandCenterView({ data }: CommandCenterViewProps) {
           <section className={styles.panel}>
             <div className={styles.panelHeader}>
               <span className={styles.eyebrow}>Hiring</span>
-              <h3 className={styles.panelTitle}>Snapshot de recrutamento</h3>
-              <p className={styles.panelDescription}>Leitura r?pida de vagas, candidatos e alertas de SLA ligados ao hiring.</p>
+              <h3 className={styles.panelTitle}>Snapshot</h3>
             </div>
 
             <div className={styles.snapshotList}>
-              <div className={styles.snapshotItem}>
+              <Link href={"/hiring" as Route} className={styles.snapshotItem}>
                 <BriefcaseBusiness className="h-4 w-4" />
                 <div>
                   <strong>{data.hiring.jobCount} vagas</strong>
                   <p>Vagas em operação</p>
                 </div>
-              </div>
-              <div className={styles.snapshotItem}>
+              </Link>
+              <Link href={"/hiring" as Route} className={styles.snapshotItem}>
                 <UsersRound className="h-4 w-4" />
                 <div>
                   <strong>{data.hiring.applicationCount} candidatos</strong>
                   <p>Aplicações ativas</p>
                 </div>
-              </div>
-              <div className={styles.snapshotItem}>
-                <FileWarning className="h-4 w-4" />
+              </Link>
+              <Link href={"/hiring" as Route} className={styles.snapshotItem}>
+                <ShieldAlert className="h-4 w-4" />
                 <div>
                   <strong>{data.hiring.slaAlerts} alertas</strong>
                   <p>Itens com risco de atraso</p>
                 </div>
-              </div>
+              </Link>
             </div>
           </section>
         </div>

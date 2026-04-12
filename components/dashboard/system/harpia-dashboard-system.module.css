@@ -214,6 +214,10 @@
   flex-shrink: 0;
 }
 
+.commandTrigger {
+  min-width: 17rem;
+}
+
 .pdfButton {
   min-height: 2.7rem;
   border-color: var(--dashboard-border) !important;
@@ -699,6 +703,11 @@
   .topbarMeta,
   .boardLegend {
     justify-content: flex-start;
+  }
+
+  .commandTrigger {
+    min-width: 0;
+    width: 100%;
   }
 
   .metricsGrid {

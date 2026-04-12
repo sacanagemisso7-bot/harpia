@@ -6,8 +6,9 @@ import { PeopleWorkflowKind } from "@prisma/client";
 import { requirePermission } from "@/lib/auth/permissions";
 import { createEmployeeCheckIn } from "@/modules/checkins/service";
 import { employeeCheckInSchema } from "@/modules/checkins/validators";
-import { createEmployee } from "@/modules/employees/service";
+import { createEmployee, updateEmployeeStatus } from "@/modules/employees/service";
 import { employeeFormSchema } from "@/modules/employees/validators";
+import { EmployeeStatus } from "@prisma/client";
 import { createWorkflowRunFromTemplate } from "@/modules/people-ops/service";
 
 function revalidateEmployeeSurface(employeeId?: string) {
@@ -53,6 +54,49 @@ export async function createEmployeeAction(formData: FormData) {
   });
 
   revalidateEmployeeSurface(employee.id);
+}
+
+export async function updateEmployeeStatusAction(formData: FormData) {
+  const user = await requirePermission("manage_employees");
+  const employeeId = String(formData.get("employeeId") ?? "");
+  const status = String(formData.get("status") ?? "");
+
+  if (!employeeId || !Object.values(EmployeeStatus).includes(status as EmployeeStatus)) {
+    return;
+  }
+
+  await updateEmployeeStatus({
+    organizationId: user.organizationId,
+    actorId: user.id,
+    employeeId,
+    status: status as EmployeeStatus
+  });
+
+  revalidateEmployeeSurface(employeeId);
+}
+
+export async function bulkUpdateEmployeeStatusAction(formData: FormData) {
+  const user = await requirePermission("manage_employees");
+  const employeeIds = formData
+    .getAll("employeeIds")
+    .map((value) => String(value))
+    .filter(Boolean);
+  const status = String(formData.get("status") ?? "");
+
+  if (!employeeIds.length || !Object.values(EmployeeStatus).includes(status as EmployeeStatus)) {
+    return;
+  }
+
+  for (const employeeId of employeeIds) {
+    await updateEmployeeStatus({
+      organizationId: user.organizationId,
+      actorId: user.id,
+      employeeId,
+      status: status as EmployeeStatus
+    });
+  }
+
+  revalidateEmployeeSurface();
 }
 
 export async function createEmployeeCheckInAction(formData: FormData) {

@@ -57,3 +57,50 @@ export async function createEmployee(input: {
 
   return employee;
 }
+
+export async function updateEmployeeStatus(input: {
+  organizationId: string;
+  actorId: string;
+  employeeId: string;
+  status: EmployeeStatus;
+}) {
+  const employee = await prisma.employee.findFirst({
+    where: {
+      id: input.employeeId,
+      organizationId: input.organizationId
+    },
+    select: {
+      id: true,
+      fullName: true,
+      status: true
+    }
+  });
+
+  if (!employee || employee.status === input.status) {
+    return employee;
+  }
+
+  const updated = await prisma.employee.update({
+    where: {
+      id: employee.id
+    },
+    data: {
+      status: input.status
+    }
+  });
+
+  await createAuditEvent({
+    organizationId: input.organizationId,
+    actorId: input.actorId,
+    action: "employee.status_updated",
+    entityType: "employee",
+    entityId: updated.id,
+    summary: `Status de ${updated.fullName} alterado para ${updated.status}.`,
+    metadata: {
+      previousStatus: employee.status,
+      nextStatus: updated.status
+    }
+  });
+
+  return updated;
+}

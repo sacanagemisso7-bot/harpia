@@ -134,15 +134,15 @@ async function loadPeopleDashboard(organizationId: string) {
       title: run.summary ?? "Watchtower executou uma nova varredura operacional.",
       description:
         run.status === "FAILED"
-          ? run.error ?? "A varredura automatica encontrou um erro e precisa de revisÃ£o."
-          : "Leitura automatica do agente sobre gargalos, pendencias e riscos operacionais.",
+          ? run.error ?? "A varredura automática encontrou um erro e precisa de revisão."
+          : "Leitura automática do agente sobre gargalos, pendências e riscos operacionais.",
       href: "/people/command-center",
       severity: run.riskLevel === "HIGH" || run.riskLevel === "CRITICAL" ? ("high" as const) : ("medium" as const)
     })),
     ...tasks.tasks.slice(0, 3).map((task) => ({
       type: "overdue_task" as const,
       title: `Tarefa vencida: ${task.title}`,
-      description: task.relatedEmployee ? `${task.relatedEmployee.fullName} segue com pendencia operacional.` : "Ha uma tarefa operacional atrasada.",
+      description: task.relatedEmployee ? `${task.relatedEmployee.fullName} segue com pendência operacional.` : "Há uma tarefa operacional atrasada.",
       href: "/people/tasks",
       severity: "high" as const
     })),
@@ -152,7 +152,7 @@ async function loadPeopleDashboard(organizationId: string) {
       .map((request) => ({
         type: "hr_request" as const,
         title: `${request.title} com SLA ${request.effectiveSlaStatus.toLowerCase()}`,
-        description: `SolicitaÃ§Ã£o em ${request.status.toLowerCase()} na fila interna.`,
+        description: `Solicitação em ${request.status.toLowerCase()} na fila interna.`,
         href: "/requests",
         severity: request.effectiveSlaStatus === "BREACHED" ? ("high" as const) : ("medium" as const)
       })),
