@@ -34,19 +34,24 @@ export function TeamMemberRoleForm({ currentRole, allowedRoles, action }: TeamMe
   }, [router, state.success]);
 
   return (
-    <form action={formAction} className="flex flex-col gap-2 lg:flex-row lg:items-center">
-      <Select name="role" defaultValue={currentRole} className="min-w-[180px]">
-        {allowedRoles.map((role) => (
-          <option key={role.value} value={role.value}>
-            {role.label}
-          </option>
-        ))}
-      </Select>
-      <Button type="submit" variant="outline" size="sm" disabled={pending}>
-        {pending ? "Salvando..." : "Atualizar papel"}
-      </Button>
-      <FormMessage message={state.error} />
-      {state.success ? <p className="text-xs text-emerald-700">{state.success}</p> : null}
+    <form action={formAction} className="grid gap-3 md:grid-cols-[minmax(0,220px)_auto] md:items-end">
+      <div className="grid gap-2">
+        <Select name="role" defaultValue={currentRole}>
+          {allowedRoles.map((role) => (
+            <option key={role.value} value={role.value}>
+              {role.label}
+            </option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <Button type="submit" variant="outline" size="sm" disabled={pending}>
+          {pending ? "Salvando..." : "Atualizar papel"}
+        </Button>
+        <FormMessage message={state.error} />
+        {state.success ? <p className="text-xs text-emerald-700">{state.success}</p> : null}
+      </div>
     </form>
   );
 }

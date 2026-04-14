@@ -1,132 +1,119 @@
-import { BriefcaseBusiness, FileSearch2, UserRoundPlus } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, FileSearch2, UserRoundPlus } from "lucide-react";
 
 import { CandidateForm } from "@/components/candidates/candidate-form";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { requirePermission } from "@/lib/auth/permissions";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 import { createCandidate } from "../actions";
 
 export default async function NewCandidatePage() {
   await requirePermission("manage_candidates");
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Talent intake"
-        title="Novo candidato"
-        description="Cadastre um perfil manualmente e deixe a base pronta para currículo, score e aplicação."
-        actions={<Badge variant="outline">Manual import</Badge>}
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Talentos</span>
+        <h2 className={styles.title}>Novo candidato</h2>
+        <p className={styles.description}>
+          Cadastre o perfil uma vez, deixe a base pronta para currículo, análise com IA e aplicação em vaga sem abrir
+          uma sequência de telas.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Entrada</span>
-          <strong className={styles.statValue}>1</strong>
-          <span className={styles.statHint}>Perfil novo inserido direto na base de talentos.</span>
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>Entrada manual</strong>
+          <span>Base de talentos organizada desde o primeiro contato</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Resume</span>
-          <strong className={styles.statValue}>PDF</strong>
-          <span className={styles.statHint}>Pode ser enviado depois para parsing e IA.</span>
+        <div className={styles.statPill}>
+          <strong>Currículo depois</strong>
+          <span>O PDF pode entrar assim que o perfil estiver salvo</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicação</span>
-          <strong className={styles.statValue}>Open</strong>
-          <span className={styles.statHint}>O perfil pode ser vinculado a qualquer vaga aberta.</span>
+        <div className={styles.statPill}>
+          <strong>Aplicação rápida</strong>
+          <span>Vincule o perfil direto em qualquer vaga aberta</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Coverage</span>
-          <strong className={styles.statValue}>360</strong>
-          <span className={styles.statHint}>Contato, contexto e origem no mesmo cadastro.</span>
-        </div>
-      </section>
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Profile setup</span>
-              <h2 className={styles.panelTitle}>Crie o perfil com o minimo necessario para operar rapido.</h2>
-              <p className={styles.panelDescription}>
-                Nome, contato, contexto atual e origem ja deixam o candidato pronto para os próximos passos.
-              </p>
-            </div>
-
-            <CandidateForm action={createCandidate} submitLabel="Criar candidato" />
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
+            <Button asChild size="sm">
+              <Link href="/candidates">
+                Voltar para candidatos
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/jobs">Abrir vagas</Link>
+            </Button>
           </div>
+          <span className={styles.shortcutHint}>Menos cadastro cerimonial e mais perfil pronto para operar.</span>
         </div>
+      </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Sequence</span>
-                <h3 className={styles.panelTitle}>Depois do cadastro</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <UserRoundPlus className="h-4 w-4" />
-              </span>
-            </div>
-            <div className={styles.list}>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Upload do currículo</strong>
-                <span className={styles.itemDescription}>Armazena o PDF e prepara o perfil para parsing estruturado.</span>
-              </div>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Análise com IA</strong>
-                <span className={styles.itemDescription}>Gera resumo, skills, gaps e perguntas sugeridas.</span>
-              </div>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Aplicação em vaga</strong>
-                <span className={styles.itemDescription}>Entra no pipeline com score inicial e etapa definida.</span>
-              </div>
-            </div>
+      <div className={styles.body}>
+        <section className={styles.formPanel}>
+          <div className={styles.panelHeader}>
+            <h3 className={styles.panelTitle}>Dados essenciais</h3>
+            <p className={styles.panelDescription}>
+              Nome, contato, contexto atual e origem já colocam o candidato no fluxo.
+            </p>
           </div>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Good input</span>
-                <h3 className={styles.panelTitle}>O que mais ajuda</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <FileSearch2 className="h-4 w-4" />
-              </span>
-            </div>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>Headline atual</span>
-                <strong>sim</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>Origem correta</span>
-                <strong>sim</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>Localização</span>
-                <strong>sim</strong>
-              </div>
-            </div>
-          </div>
+          <CandidateForm action={createCandidate} submitLabel="Criar candidato" />
+        </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Next step</span>
-                <h3 className={styles.panelTitle}>Melhor workflow</h3>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>O que acontece depois</h3>
+              <Badge variant="outline">Fluxo simples</Badge>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <UserRoundPlus className="mr-2 inline h-4 w-4" />
+                  Perfil salvo
+                </span>
+                <p className={styles.detailText}>O candidato entra imediatamente no workspace de talentos.</p>
               </div>
-              <span className={styles.iconLead}>
-                <BriefcaseBusiness className="h-4 w-4" />
-              </span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <FileSearch2 className="mr-2 inline h-4 w-4" />
+                  Currículo e IA
+                </span>
+                <p className={styles.detailText}>Depois do upload, a IA pode gerar resumo, skills, gaps e perguntas.</p>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>Aplicação em vaga</span>
+                <p className={styles.detailText}>Assim que fizer sentido, o perfil pode entrar em qualquer vaga aberta.</p>
+              </div>
             </div>
-            <div className={styles.surfaceMuted}>
-              Crie primeiro o perfil. Em seguida, suba o currículo e vincule a uma vaga para o score inicial entrar no fluxo.
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Melhor cadastro</h3>
             </div>
-          </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Vale priorizar</span>
+                <p className={styles.detailText}>Headline atual, origem correta, localização e um resumo curto do perfil.</p>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Pode deixar para depois</span>
+                <p className={styles.detailText}>Detalhes finos podem entrar junto com o currículo e as primeiras notas.</p>
+              </div>
+            </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

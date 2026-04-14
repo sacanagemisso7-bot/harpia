@@ -64,7 +64,8 @@
   transform: translateX(-50%);
   border: 1px solid hsl(var(--border) / 0.95);
   border-radius: 0.6rem;
-  background: hsl(var(--card));
+  background: hsl(var(--card) / 0.96);
+  backdrop-filter: blur(18px);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
   overflow: hidden;
 }
@@ -133,12 +134,17 @@
   background: transparent;
   color: inherit;
   text-align: left;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    transform 140ms ease;
 }
 
 .item:hover,
 .itemSelected {
   border-color: hsl(var(--border));
   background: hsl(var(--secondary));
+  transform: translateY(-1px);
 }
 
 .itemCurrent {
@@ -182,7 +188,7 @@
   gap: 0.75rem;
   padding: 0.75rem 1rem;
   border-top: 1px solid hsl(var(--border) / 0.9);
-  background: hsl(var(--background));
+  background: hsl(var(--background) / 0.92);
   font-size: 0.72rem;
   color: hsl(var(--muted-foreground));
 }

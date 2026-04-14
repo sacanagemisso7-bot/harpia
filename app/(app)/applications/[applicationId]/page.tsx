@@ -7,7 +7,6 @@ import { ApplicationStageForm } from "@/components/applications/application-stag
 import { RecalculateScoreForm } from "@/components/applications/recalculate-score-form";
 import { SendTemplateEmailForm } from "@/components/communications/send-template-email-form";
 import { InterviewForm } from "@/components/interviews/interview-form";
-import { PageHeader } from "@/components/layout/page-header";
 import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
 import { Badge } from "@/components/ui/badge";
@@ -21,10 +20,11 @@ import { getTemplateLabel } from "@/lib/email/templates";
 import { getPipelineStages } from "@/lib/pipeline/queries";
 import { formatScore } from "@/lib/utils";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 import {
   createApplicationNote,
   moveApplicationStage,
+  moveApplicationStageQuick,
   recalculateApplicationScore,
   sendApplicationEmail
 } from "../actions";
@@ -38,6 +38,18 @@ function getRecommendationVariant(recommendation: string) {
   if (recommendation === "ADVANCE") return "success" as const;
   if (recommendation === "REJECT") return "destructive" as const;
   return "warning" as const;
+}
+
+function formatTokenLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function getStageButtonVariant(isCurrent: boolean) {
+  return isCurrent ? ("default" as const) : ("outline" as const);
 }
 
 export default async function ApplicationDetailPage({
@@ -94,306 +106,324 @@ export default async function ApplicationDetailPage({
     },
     playbook
   });
+
   const smtpReady = isEmailConfigured();
   const canManageApplication = hasPermission(user.role, "manage_applications");
   const canManageInterviews = hasPermission(user.role, "manage_interviews");
   const canCreateNotes = hasPermission(user.role, "create_hiring_notes");
   const canManageCommunications = hasPermission(user.role, "manage_communications");
 
+  const stats = [
+    { label: "Score", value: formatScore(application.score) },
+    { label: "Etapa", value: application.currentStage?.name || "Sem etapa" },
+    { label: "Entrevistas", value: application.interviews.length },
+    { label: "Notas", value: application.notes.length }
+  ];
+
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Application detail"
-        title={`${application.candidate.fullName} x ${application.job.title}`}
-        description={application.executiveSummary || "Aplicação pronta para triagem, score, pipeline e decisão."}
-        actions={
-          <>
-            <Badge variant="success">{application.currentStage?.name || "Sem etapa"}</Badge>
-            <Badge variant="outline">{formatScore(application.score)}</Badge>
-          </>
-        }
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Application</span>
+        <h2 className={styles.title}>{application.candidate.fullName}</h2>
+        <p className={styles.description}>
+          {application.job.title} · {application.job.department}
+          {application.executiveSummary ? ` · ${application.executiveSummary}` : ""}
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Score</span>
-          <strong className={styles.statValue}>{formatScore(application.score)}</strong>
-          <span className={styles.statHint}>Leitura atual de aderência desta candidatura.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Entrevistas</span>
-          <strong className={styles.statValue}>{application.interviews.length}</strong>
-          <span className={styles.statHint}>Encontros agendados ou concluidos no processo.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Skills</span>
-          <strong className={styles.statValue}>{skills.length}</strong>
-          <span className={styles.statHint}>Sinais detectados a partir do currículo e do processo.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Notas</span>
-          <strong className={styles.statValue}>{application.notes.length}</strong>
-          <span className={styles.statHint}>Contexto interno acumulado pelo time.</span>
-        </div>
-      </section>
+      <div className={styles.statRow}>
+        {stats.map((stat) => (
+          <div key={stat.label} className={styles.statPill}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Assessment</span>
-              <h2 className={styles.panelTitle}>Resumo da avaliação</h2>
-            </div>
-            <div className={styles.surfaceMuted}>
-              <strong className={styles.itemTitle}>Justificativa do score</strong>
-              <span className={styles.itemDescription}>
-                {application.scoreJustification || "Score ainda sem justificativa registrada."}
-              </span>
-            </div>
-            <div className={styles.subGrid2}>
-              <div className={styles.surfaceMuted}>
-                <strong className={styles.itemTitle}>Pontos fortes</strong>
-                <div className={styles.list}>
-                  {strengths.length ? strengths.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Sem highlights registrados.</span>}
-                </div>
-              </div>
-              <div className={styles.surfaceMuted}>
-                <strong className={styles.itemTitle}>Gaps observados</strong>
-                <div className={styles.list}>
-                  {gaps.length ? gaps.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Sem gaps registrados.</span>}
-                </div>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Resumo da avaliação</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant="outline">{application.currentStage?.name || "Sem etapa"}</Badge>
+                <Badge variant="success">{formatScore(application.score)}</Badge>
               </div>
             </div>
-            <div className={styles.surfaceMuted}>
-              <strong className={styles.itemTitle}>Perguntas sugeridas</strong>
-              <div className={styles.list}>
-                {questions.length ? (
-                  questions.map((question) => (
-                    <div key={question} className={styles.rowBetween}>
-                      <span className={styles.itemDescription}>{question}</span>
-                      <Sparkles className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                  ))
+
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Justificativa do score</span>
+              <p className={styles.detailText}>{application.scoreJustification || "Score ainda sem justificativa registrada."}</p>
+            </div>
+
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Pontos fortes</span>
+                {strengths.length ? (
+                  strengths.map((item) => <p key={item} className={styles.detailText}>{item}</p>)
                 ) : (
-                  <span className={styles.itemDescription}>Sem perguntas registradas.</span>
+                  <p className={styles.detailText}>Sem destaques registrados.</p>
+                )}
+              </div>
+
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Gaps observados</span>
+                {gaps.length ? (
+                  gaps.map((item) => <p key={item} className={styles.detailText}>{item}</p>)
+                ) : (
+                  <p className={styles.detailText}>Sem gaps registrados.</p>
                 )}
               </div>
             </div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Copilot</span>
-              <h2 className={styles.panelTitle}>Decisão por etapa</h2>
-              <p className={styles.panelDescription}>Leitura orientada para avancar, segurar ou encerrar nesta fase.</p>
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Perguntas sugeridas</span>
+              {questions.length ? (
+                questions.map((question) => (
+                  <div key={question} className={styles.sectionHeader}>
+                    <p className={styles.detailText}>{question}</p>
+                    <Sparkles className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                ))
+              ) : (
+                <p className={styles.detailText}>Sem perguntas sugeridas no momento.</p>
+              )}
             </div>
-            <div className={styles.spotlight}>
-              <span className={styles.panelEyebrow}>Recommendation</span>
-              <strong className={styles.spotlightValue}>{copilotDecision.recommendation}</strong>
-              <p className={styles.panelDescription}>{copilotDecision.summary}</p>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura do copiloto</h3>
               <Badge variant={getRecommendationVariant(copilotDecision.recommendation)}>
-                {application.currentStage?.name || "Sem etapa"}
+                {formatTokenLabel(copilotDecision.recommendation)}
               </Badge>
             </div>
-            <div className={styles.subGrid2}>
-              <div className={styles.surfaceMuted}>
-                <strong className={styles.itemTitle}>Por que agora</strong>
-                <div className={styles.list}>
-                  {copilotDecision.reasons.length ? (
-                    copilotDecision.reasons.map((reason) => <span key={reason} className={styles.itemDescription}>{reason}</span>)
-                  ) : (
-                    <span className={styles.itemDescription}>Sem justificativas adicionais.</span>
-                  )}
-                </div>
-              </div>
-              <div className={styles.surfaceMuted}>
-                <strong className={styles.itemTitle}>Próximas ações</strong>
-                <div className={styles.list}>
-                  {copilotDecision.nextActions.length ? (
-                    copilotDecision.nextActions.map((action) => <span key={action} className={styles.itemDescription}>{action}</span>)
-                  ) : (
-                    <span className={styles.itemDescription}>Sem próximas ações sugeridas.</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            {playbook ? (
-              <div className={styles.surfaceMuted}>
-                <strong className={styles.itemTitle}>{playbook.title}</strong>
-                <span className={styles.itemDescription}>{playbook.department}</span>
-              </div>
-            ) : (
-              <div className={styles.surfaceMuted}>
-                Nenhum playbook do departamento encontrado. Cadastre um playbook em settings para guiar melhor essa decisão.
-              </div>
-            )}
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>History</span>
-              <h2 className={styles.panelTitle}>Movimentação no pipeline</h2>
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Resumo</span>
+              <p className={styles.detailText}>{copilotDecision.summary}</p>
             </div>
+
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Por que agora</span>
+                {copilotDecision.reasons.length ? (
+                  copilotDecision.reasons.map((reason) => <p key={reason} className={styles.detailText}>{reason}</p>)
+                ) : (
+                  <p className={styles.detailText}>Sem justificativas adicionais.</p>
+                )}
+              </div>
+
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Próximas ações</span>
+                {copilotDecision.nextActions.length ? (
+                  copilotDecision.nextActions.map((action) => <p key={action} className={styles.detailText}>{action}</p>)
+                ) : (
+                  <p className={styles.detailText}>Sem próximas ações sugeridas.</p>
+                )}
+              </div>
+            </div>
+
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Playbook</span>
+              <p className={styles.detailText}>
+                {playbook ? `${playbook.title} · ${playbook.department}` : "Nenhum playbook do departamento encontrado em Settings."}
+              </p>
+            </div>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Movimentação no pipeline</h3>
+            </div>
+
             {application.history.length ? (
-              <div className={styles.timeline}>
+              <div className={styles.commentList}>
                 {application.history.map((entry) => (
-                  <div key={entry.id} className={styles.timelineItem}>
-                    <span className={styles.timelineDot} />
-                    <div className={styles.timelineBody}>
-                      <div className={styles.itemHeader}>
-                        <div className={styles.itemLead}>
-                          <strong className={styles.itemTitle}>
-                            {entry.fromStage?.name || "Inicio"} <ArrowRightLeft className="mx-2 inline h-4 w-4" /> {entry.toStage.name}
-                          </strong>
-                          <span className={styles.itemSubtitle}>{entry.movedBy?.name || "Sistema"}</span>
-                        </div>
-                        <span className={styles.tinyLabel}>{new Intl.DateTimeFormat("pt-BR").format(entry.createdAt)}</span>
-                      </div>
-                      <span className={styles.itemDescription}>{entry.notes || "Sem notas adicionais."}</span>
+                  <div key={entry.id} className={styles.commentItem}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.commentAuthor}>
+                        {entry.fromStage?.name || "Início"} <ArrowRightLeft className="mx-2 inline h-4 w-4" /> {entry.toStage.name}
+                      </span>
+                      <span className={styles.metaLabel}>
+                        {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(entry.createdAt)}
+                      </span>
                     </div>
+                    <p className={styles.commentBody}>{entry.movedBy?.name || "Sistema"}</p>
+                    <p className={styles.commentBody}>{entry.notes || "Sem notas adicionais."}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Sem histórico de etapa registrado ainda.</div>
+              <p className={styles.emptyState}>Sem histórico de etapa registrado ainda.</p>
             )}
-          </div>
+          </section>
 
-          <div className={styles.panel}>
+          <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Notes</span>
-              <h2 className={styles.panelTitle}>Contexto interno</h2>
+              <h3 className={styles.panelTitle}>Notas internas</h3>
+              <p className={styles.panelDescription}>Contexto compartilhado do time sobre esta aplicação.</p>
             </div>
-            <div className={styles.column}>
-              {canCreateNotes ? (
-                <div className={styles.surfaceMuted}>
-                  <NoteForm title="Nova nota da aplicação" action={createApplicationNote.bind(null, application.id)} />
-                </div>
-              ) : null}
-              <NoteFeed notes={application.notes} emptyMessage="Ainda não ha notas internas nesta aplicação." />
-            </div>
-          </div>
+
+            {canCreateNotes ? (
+              <NoteForm
+                title="Registrar nota rápida"
+                action={createApplicationNote.bind(null, application.id)}
+                placeholder="Contexto objetivo para o time sobre esta aplicação."
+                compact
+              />
+            ) : null}
+            <NoteFeed notes={application.notes} emptyMessage="Ainda não há notas internas nesta aplicação." />
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Current score</span>
-            <strong className={styles.spotlightValue}>{formatScore(application.score)}</strong>
-            <p className={styles.panelDescription}>Fit score atual desta aplicação dentro da vaga.</p>
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Controls</span>
-                <h3 className={styles.panelTitle}>Mover e recalcular</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <CircleGauge className="h-4 w-4" />
-              </span>
+        <aside className={styles.detailColumn}>
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Ações rápidas</h3>
+              <p className={styles.panelDescription}>Atualize etapa, recalcule score ou agende a próxima interação.</p>
             </div>
+
             {canManageApplication ? (
-              <div className={styles.actionCluster}>
-                <div className={styles.surfaceMuted}>
-                  <ApplicationStageForm
-                    stages={stages}
-                    currentStageId={application.currentStageId}
-                    action={moveApplicationStage.bind(null, application.id)}
-                  />
+              <div className={styles.sectionStack}>
+                <div className={styles.detailCell}>
+                  <div className={styles.sectionHeader}>
+                    <span className={styles.metaValue}>
+                      <CircleGauge className="mr-2 inline h-4 w-4" />
+                      Etapa
+                    </span>
+                  </div>
+                  <div className={styles.sectionStack}>
+                    <div className={styles.quickActions}>
+                      {stages.map((stage) => (
+                        <form key={stage.id} action={moveApplicationStageQuick.bind(null, application.id)}>
+                          <input type="hidden" name="stageId" value={stage.id} />
+                          <Button
+                            type="submit"
+                            size="sm"
+                            variant={getStageButtonVariant(stage.id === application.currentStageId)}
+                            className={styles.quickActionButton}
+                            disabled={stage.id === application.currentStageId}
+                          >
+                            {stage.name}
+                          </Button>
+                        </form>
+                      ))}
+                    </div>
+
+                    <div className={styles.detailCell}>
+                      <span className={styles.metaLabel}>Mover para qualquer etapa</span>
+                      <ApplicationStageForm
+                        stages={stages}
+                        currentStageId={application.currentStageId}
+                        action={moveApplicationStage.bind(null, application.id)}
+                        compact
+                      />
+                    </div>
+                  </div>
                 </div>
-                <div className={styles.surfaceMuted}>
+
+                <div className={styles.detailCell}>
+                  <div className={styles.sectionHeader}>
+                    <span className={styles.metaValue}>Score</span>
+                  </div>
                   <RecalculateScoreForm action={recalculateApplicationScore.bind(null, application.id)} />
                 </div>
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>
-                Somente recrutadores e administradores podem mover etapa ou recalcular score.
-              </div>
+              <p className={styles.emptyState}>Seu papel pode visualizar a aplicação, mas não alterar etapa nem score.</p>
             )}
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Interviews</span>
-                <h3 className={styles.panelTitle}>Agenda e feedback</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <CalendarClock className="h-4 w-4" />
-              </span>
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Entrevistas</h3>
+              <p className={styles.panelDescription}>Agende novas conversas e acompanhe as já abertas.</p>
             </div>
-            {canManageInterviews ? (
-              <div className={styles.surfaceMuted}>
-                <InterviewForm action={createInterview.bind(null, application.id)} />
-              </div>
-            ) : (
-              <div className={styles.surfaceMuted}>
-                Somente recrutadores e administradores podem agendar entrevistas.
-              </div>
-            )}
+
+            {canManageInterviews ? <InterviewForm action={createInterview.bind(null, application.id)} compact /> : null}
+
             {application.interviews.length ? (
-              <div className={styles.linkList}>
+              <div className={styles.sectionStack}>
                 {application.interviews.map((interview) => (
-                  <Link key={interview.id} href={`/interviews/${interview.id}`} className={styles.linkItem}>
-                    <strong>{interview.title}</strong>
-                    <span>
+                  <Link key={interview.id} href={`/interviews/${interview.id}`} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <CalendarClock className="mr-2 inline h-4 w-4" />
+                        {interview.title}
+                      </span>
+                    </div>
+                    <p className={styles.detailText}>
                       {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(interview.startsAt)}
-                    </span>
-                    <span>{interview.location || interview.meetingUrl || "Sem local ou link"}</span>
+                    </p>
+                    <p className={styles.detailText}>{interview.location || interview.meetingUrl || "Sem local ou link definido."}</p>
                   </Link>
                 ))}
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>Nenhuma entrevista agendada ainda.</div>
+              <p className={styles.emptyState}>Nenhuma entrevista agendada ainda.</p>
             )}
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Context</span>
-                <h3 className={styles.panelTitle}>Candidato e vaga</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <UserRound className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Contexto do candidato</h3>
             </div>
-            <div className={styles.linkList}>
-              <Link href={`/candidates/${application.candidateId}`} className={styles.linkItem}>
-                <strong>{application.candidate.fullName}</strong>
-                <span>{application.candidate.currentTitle || "Sem cargo atual"}</span>
-              </Link>
-              <Link href={`/jobs/${application.jobId}`} className={styles.linkItem}>
-                <strong>{application.job.title}</strong>
-                <span>{application.job.department}</span>
-              </Link>
-            </div>
-            <div className={styles.surfaceMuted}>
-              <strong className={styles.itemTitle}>Skills detectadas</strong>
-              <div className={styles.tagWrap}>
-                {skills.length ? skills.map((skill) => <span key={skill} className={styles.tagPill}>{skill}</span>) : <span className={styles.itemDescription}>Sem skills estruturadas.</span>}
-              </div>
-            </div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Communication</span>
-                <h3 className={styles.panelTitle}>Email com candidato</h3>
+            <Link href={`/candidates/${application.candidateId}`} className={styles.detailCell}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.metaValue}>
+                  <UserRound className="mr-2 inline h-4 w-4" />
+                  {application.candidate.fullName}
+                </span>
               </div>
-              <span className={styles.iconLead}>
-                <BriefcaseBusiness className="h-4 w-4" />
-              </span>
+              <p className={styles.detailText}>{application.candidate.currentTitle || "Sem cargo atual informado."}</p>
+            </Link>
+
+            <Link href={`/jobs/${application.jobId}`} className={styles.detailCell}>
+              <div className={styles.sectionHeader}>
+                <span className={styles.metaValue}>
+                  <BriefcaseBusiness className="mr-2 inline h-4 w-4" />
+                  {application.job.title}
+                </span>
+              </div>
+              <p className={styles.detailText}>{application.job.department}</p>
+            </Link>
+
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Skills detectadas</span>
+              <div className="flex flex-wrap gap-2">
+                {skills.length ? (
+                  skills.map((skill) => (
+                    <Badge key={skill} variant="outline">
+                      {skill}
+                    </Badge>
+                  ))
+                ) : (
+                  <p className={styles.detailText}>Sem skills estruturadas.</p>
+                )}
+              </div>
             </div>
+          </section>
+
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Comunicação</h3>
+              <p className={styles.panelDescription}>Dispare templates sem sair da aplicação.</p>
+            </div>
+
             {application.candidate.email && canManageCommunications ? (
-              <div className={styles.actionCluster}>
-                <div className={styles.surfaceMuted}>
-                  Destinatario: <strong>{application.candidate.email}</strong> {smtpReady ? "" : "- configure SMTP para envio."}
+              <div className={styles.sectionStack}>
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Destinatário</span>
+                  <p className={styles.detailText}>
+                    {application.candidate.email}
+                    {!smtpReady ? " · Configure SMTP para envio." : ""}
+                  </p>
                 </div>
                 {[EmailTemplateType.APPLICATION_RECEIVED, EmailTemplateType.STAGE_ADVANCED, EmailTemplateType.REJECTION].map(
                   (templateType) => (
-                    <div key={templateType} className={styles.surfaceMuted}>
+                    <div key={templateType} className={styles.detailCell}>
                       <SendTemplateEmailForm
                         action={sendApplicationEmail.bind(null, application.id)}
                         templateType={templateType}
@@ -403,14 +433,16 @@ export default async function ApplicationDetailPage({
                   )
                 )}
               </div>
-            ) : application.candidate.email ? (
-              <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem enviar comunicacoes.</div>
             ) : (
-              <div className={styles.surfaceMuted}>Cadastre um email no perfil do candidato para enviar comunicacoes.</div>
+              <p className={styles.emptyState}>
+                {application.candidate.email
+                  ? "Seu papel atual não pode enviar comunicações."
+                  : "Cadastre um e-mail no perfil do candidato para usar os templates."}
+              </p>
             )}
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

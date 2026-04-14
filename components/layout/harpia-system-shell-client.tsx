@@ -75,6 +75,19 @@ type NavItem = {
 
 const SIDEBAR_STORAGE_KEY = "harpia-sidebar-collapsed";
 
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return (
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT" ||
+    target.isContentEditable
+  );
+}
+
 const navItems: NavItem[] = [
   {
     id: "dashboard",
@@ -371,6 +384,22 @@ export function HarpiaSystemShellClient({
     }
   }, [mounted, sidebarCollapsed]);
 
+  useEffect(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (isEditableTarget(event.target)) {
+        return;
+      }
+
+      if (event.key === "[") {
+        event.preventDefault();
+        setSidebarCollapsed((current) => !current);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, []);
+
   const visibleNav = navItems.filter((item) => {
     if (item.id === "revenue" && !canViewRevenueOps) {
       return false;
@@ -523,6 +552,7 @@ export function HarpiaSystemShellClient({
                         </span>
                         <span className={styles.navCopy}>
                           <span className={styles.navLabel}>{item.label}</span>
+                          <span className={styles.navDescription}>{item.description}</span>
                         </span>
                       </Link>
                     );

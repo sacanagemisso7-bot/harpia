@@ -35,11 +35,11 @@ const recommendationValues = ["STRONG_YES", "YES", "MAYBE", "NO", "STRONG_NO"] a
 type RecommendationValue = (typeof recommendationValues)[number];
 
 const recommendationLabels: Record<RecommendationValue, string> = {
-  STRONG_YES: "Strong yes",
-  YES: "Yes",
-  MAYBE: "Maybe",
-  NO: "No",
-  STRONG_NO: "Strong no"
+  STRONG_YES: "Avançar com convicção",
+  YES: "Avançar",
+  MAYBE: "Mais sinais",
+  NO: "Não avançar",
+  STRONG_NO: "Encerrar"
 };
 
 type InterviewFeedbackFormProps = {
@@ -102,16 +102,16 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
   };
 
   return (
-    <form action={formAction} className="workspace-form">
+    <form action={formAction} className="grid gap-4">
       <input type="hidden" name="scorecardRatings" value={JSON.stringify(scorecardRatings)} />
 
-      <div className="workspace-form-grid">
-        <div className="space-y-2">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-2">
           <Label htmlFor="overallScore">Nota geral</Label>
           <ScoreSelect id="overallScore" name="overallScore" defaultValue={defaultValues?.overallScore} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="recommendation">Recomendacao</Label>
+        <div className="grid gap-2">
+          <Label htmlFor="recommendation">Recomendação</Label>
           <Select id="recommendation" name="recommendation" defaultValue={defaultValues?.recommendation ?? "MAYBE"}>
             {recommendationValues.map((value) => (
               <option key={value} value={value}>
@@ -121,46 +121,45 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
           </Select>
         </div>
       </div>
-      <div className="workspace-form-grid workspace-form-grid-3">
-        <div className="space-y-2">
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-2">
           <Label htmlFor="communicationScore">Comunicação</Label>
           <ScoreSelect id="communicationScore" name="communicationScore" defaultValue={defaultValues?.communicationScore} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="roleFitScore">Role fit</Label>
+        <div className="grid gap-2">
+          <Label htmlFor="roleFitScore">Aderência ao papel</Label>
           <ScoreSelect id="roleFitScore" name="roleFitScore" defaultValue={defaultValues?.roleFitScore} />
         </div>
-        <div className="space-y-2">
+        <div className="grid gap-2">
           <Label htmlFor="technicalScore">Técnico</Label>
           <ScoreSelect id="technicalScore" name="technicalScore" defaultValue={defaultValues?.technicalScore} />
         </div>
       </div>
 
       {scorecardItems.length ? (
-        <div className="workspace-form-section">
-          <div className="workspace-form-copy">
-            <p className="workspace-form-title">Scorecard da vaga</p>
-            <p className="workspace-form-description">Avalie os eixos configurados especificamente para esta vaga.</p>
+        <div className="grid gap-4 border border-border/85 bg-card p-4">
+          <div className="grid gap-1">
+            <p className="text-sm font-medium text-foreground">Scorecard da vaga</p>
+            <p className="text-sm text-muted-foreground">Avalie os eixos configurados especificamente para esta vaga.</p>
           </div>
+
           <div className="grid gap-4">
             {scorecardItems.map((item) => {
               const currentScore = scorecardRatings.find((rating) => rating.scorecardItemId === item.id)?.score ?? 3;
 
               return (
-                <div key={item.id} className="workspace-form-subsection">
+                <div key={item.id} className="grid gap-3 border border-border/85 bg-background p-4">
                   <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                     <div className="space-y-1">
-                      <p className="font-medium">{item.label}</p>
+                      <p className="font-medium text-foreground">{item.label}</p>
                       <p className="text-sm text-muted-foreground">
-                        {item.category} - peso {item.weight}/10 {item.isRequired ? "- obrigatorio" : "- complementar"}
+                        {item.category} · peso {item.weight}/10 {item.isRequired ? "· obrigatório" : "· complementar"}
                       </p>
                       {item.description ? <p className="text-sm text-muted-foreground">{item.description}</p> : null}
                     </div>
-                    <div className="w-full max-w-[160px]">
-                      <Select
-                        value={String(currentScore)}
-                        onChange={(event) => updateScorecardRating(item.id, Number(event.target.value))}
-                      >
+                    <div className="w-full max-w-[180px]">
+                      <Select value={String(currentScore)} onChange={(event) => updateScorecardRating(item.id, Number(event.target.value))}>
                         {[1, 2, 3, 4, 5].map((value) => (
                           <option key={value} value={value}>
                             Nota {value}
@@ -176,39 +175,43 @@ export function InterviewFeedbackForm({ action, scorecardItems = [], defaultValu
         </div>
       ) : null}
 
-      <div className="space-y-2">
+      <div className="grid gap-2">
         <Label htmlFor="strengths">Pontos fortes</Label>
         <Textarea
           id="strengths"
           name="strengths"
           className="min-h-24"
           defaultValue={defaultValues?.strengths}
-          placeholder="Descreva evidencias, repertorio, clareza de comunicação e sinais positivos."
+          placeholder="Descreva evidências, repertório, clareza de comunicação e sinais positivos."
         />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="concerns">Riscos ou preocupacoes</Label>
+
+      <div className="grid gap-2">
+        <Label htmlFor="concerns">Riscos ou preocupações</Label>
         <Textarea
           id="concerns"
           name="concerns"
           className="min-h-20"
           defaultValue={defaultValues?.concerns ?? ""}
-          placeholder="Quais gaps, incertezas ou pontos para validar depois?"
+          placeholder="Quais gaps, incertezas ou pontos precisam de validação posterior?"
         />
       </div>
-      <div className="space-y-2">
+
+      <div className="grid gap-2">
         <Label htmlFor="notes">Notas adicionais</Label>
         <Textarea
           id="notes"
           name="notes"
           className="min-h-24"
           defaultValue={defaultValues?.notes ?? ""}
-          placeholder="Resumo livre, contexto da conversa e recomendacao final."
+          placeholder="Resumo livre, contexto da conversa e recomendação final."
         />
       </div>
+
       <FormMessage message={state.error} />
-      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
-      <div className="workspace-form-actions">
+      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
+
+      <div className="flex justify-end">
         <Button type="submit" disabled={pending}>
           <ClipboardPenLine className="mr-2 h-4 w-4" />
           {pending ? "Salvando feedback..." : "Salvar feedback"}

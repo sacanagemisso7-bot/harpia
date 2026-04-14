@@ -127,6 +127,7 @@ export function EmployeesWorkspace({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkStatus, setBulkStatus] = useState<EmployeeStatus>(EmployeeStatus.ACTIVE);
   const [pendingBulk, startBulkTransition] = useTransition();
+  const [pendingStatus, startStatusTransition] = useTransition();
 
   const filteredEmployees = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -208,6 +209,12 @@ export function EmployeesWorkspace({
         return;
       }
 
+      if (event.key === "Escape" && query) {
+        event.preventDefault();
+        setQuery("");
+        return;
+      }
+
       if (!filteredEmployees.length) {
         return;
       }
@@ -232,6 +239,17 @@ export function EmployeesWorkspace({
       if (event.key.toLowerCase() === "x" && selectedId) {
         event.preventDefault();
         toggleSelected(selectedId);
+        return;
+      }
+
+      if (event.key === "X") {
+        event.preventDefault();
+        const visibleIds = filteredEmployees.map((employee) => employee.id);
+        const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+        setSelectedIds(
+          allSelected ? selectedIds.filter((id) => !visibleIds.includes(id)) : Array.from(new Set([...selectedIds, ...visibleIds]))
+        );
+        return;
       }
 
       if (event.key === "Enter" && selectedId) {
@@ -242,7 +260,7 @@ export function EmployeesWorkspace({
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [filteredEmployees, router, selectedId]);
+  }, [filteredEmployees, query, router, selectedId, selectedIds]);
 
   const selectedEmployee = filteredEmployees.find((employee) => employee.id === selectedId) ?? filteredEmployees[0] ?? null;
   const stats = [
@@ -269,6 +287,21 @@ export function EmployeesWorkspace({
 
     setView(employeeViews.some((item) => item.id === nextView) ? (nextView as EmployeeView) : "all");
     setQuery(nextQuery);
+  }
+
+  function applyEmployeeStatus(status: EmployeeStatus) {
+    if (!selectedEmployee || status === selectedEmployee.status) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("employeeId", selectedEmployee.id);
+    formData.set("status", status);
+
+    startStatusTransition(async () => {
+      await updateEmployeeStatusAction(formData);
+      router.refresh();
+    });
   }
 
   function toggleSelected(id: string) {
@@ -324,7 +357,7 @@ export function EmployeesWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona, `Enter` abre o perfil.</span>
+          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona, `Shift + X` marca a vista e `Enter` abre o perfil.</span>
         </div>
 
         <div className={styles.searchWrap}>
@@ -448,22 +481,30 @@ export function EmployeesWorkspace({
                 </div>
 
                 {canManage ? (
-                  <form action={updateEmployeeStatusAction} className={styles.sectionStack}>
-                    <input type="hidden" name="employeeId" value={selectedEmployee.id} />
+                  <div className={styles.detailSection}>
                     <div className={styles.sectionHeader}>
-                      <h4 className={styles.panelTitle}>Atualizar status</h4>
-                      <Button type="submit" variant="outline">
-                        Salvar
-                      </Button>
+                      <div>
+                        <h4 className={styles.panelTitle}>Status</h4>
+                        <p className={styles.detailText}>Atualize o estado sem abrir um fluxo extra.</p>
+                      </div>
+                      {pendingStatus ? <span className={styles.metaLabel}>Atualizando...</span> : null}
                     </div>
-                    <Select name="status" defaultValue={selectedEmployee.status} className={styles.selectCompact}>
+                    <div className={styles.quickActions}>
                       {Object.values(EmployeeStatus).map((status) => (
-                        <option key={status} value={status}>
+                        <Button
+                          key={status}
+                          type="button"
+                          size="sm"
+                          variant={status === selectedEmployee.status ? "default" : "outline"}
+                          className={styles.quickActionButton}
+                          disabled={pendingStatus || status === selectedEmployee.status}
+                          onClick={() => applyEmployeeStatus(status)}
+                        >
                           {formatStatusLabel(status)}
-                        </option>
+                        </Button>
                       ))}
-                    </Select>
-                  </form>
+                    </div>
+                  </div>
                 ) : null}
 
                 <div className={styles.detailSection}>

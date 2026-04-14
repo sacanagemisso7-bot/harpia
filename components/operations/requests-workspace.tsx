@@ -59,6 +59,7 @@ type RequestsWorkspaceProps = {
   createHrRequestAction: (formData: FormData) => Promise<void>;
   updateHrRequestStatusAction: (formData: FormData) => Promise<void>;
   bulkUpdateHrRequestStatusAction: (formData: FormData) => Promise<void>;
+  updateHrRequestDetailsAction: (formData: FormData) => Promise<void>;
   addHrRequestCommentAction: (formData: FormData) => Promise<void>;
   savedViews: Array<{ id: string; name: string; query: string }>;
   saveWorkspaceViewAction: (formData: FormData) => Promise<{ error?: string; success?: string }>;
@@ -95,6 +96,15 @@ function getSlaVariant(status: string) {
   return "success" as const;
 }
 
+function formatDateInput(date: Date | null) {
+  if (!date) {
+    return "";
+  }
+
+  const normalized = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return normalized.toISOString().slice(0, 10);
+}
+
 function isTypingTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -113,6 +123,7 @@ export function RequestsWorkspace({
   createHrRequestAction,
   updateHrRequestStatusAction,
   bulkUpdateHrRequestStatusAction,
+  updateHrRequestDetailsAction,
   addHrRequestCommentAction,
   savedViews,
   saveWorkspaceViewAction,
@@ -133,6 +144,8 @@ export function RequestsWorkspace({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkStatus, setBulkStatus] = useState<HrRequestStatus>(HrRequestStatus.IN_PROGRESS);
   const [pendingBulk, startBulkTransition] = useTransition();
+  const [pendingStatus, startStatusTransition] = useTransition();
+  const [pendingContext, startContextTransition] = useTransition();
 
   const filteredRequests = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -223,6 +236,12 @@ export function RequestsWorkspace({
         return;
       }
 
+      if (event.key === "Escape" && query) {
+        event.preventDefault();
+        setQuery("");
+        return;
+      }
+
       if (!filteredRequests.length) {
         return;
       }
@@ -247,12 +266,23 @@ export function RequestsWorkspace({
       if (event.key.toLowerCase() === "x" && selectedId) {
         event.preventDefault();
         toggleSelected(selectedId);
+        return;
+      }
+
+      if (event.key === "X") {
+        event.preventDefault();
+        const visibleIds = filteredRequests.map((request) => request.id);
+        const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+        setSelectedIds(
+          allSelected ? selectedIds.filter((id) => !visibleIds.includes(id)) : Array.from(new Set([...selectedIds, ...visibleIds]))
+        );
+        return;
       }
     }
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [filteredRequests, selectedId]);
+  }, [filteredRequests, query, selectedId, selectedIds]);
 
   const selectedRequest = filteredRequests.find((request) => request.id === selectedId) ?? filteredRequests[0] ?? null;
   const stats = [
@@ -281,6 +311,21 @@ export function RequestsWorkspace({
     setQuery(nextQuery);
   }
 
+  function applyRequestStatus(status: HrRequestStatus) {
+    if (!selectedRequest || status === selectedRequest.status) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("requestId", selectedRequest.id);
+    formData.set("status", status);
+
+    startStatusTransition(async () => {
+      await updateHrRequestStatusAction(formData);
+      router.refresh();
+    });
+  }
+
   function toggleSelected(id: string) {
     setSelectedIds((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
   }
@@ -299,6 +344,13 @@ export function RequestsWorkspace({
     startBulkTransition(async () => {
       await bulkUpdateHrRequestStatusAction(formData);
       setSelectedIds([]);
+      router.refresh();
+    });
+  }
+
+  function submitRequestContext(formData: FormData) {
+    startContextTransition(async () => {
+      await updateHrRequestDetailsAction(formData);
       router.refresh();
     });
   }
@@ -334,7 +386,7 @@ export function RequestsWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona o item atual.</span>
+          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona o item atual e `Shift + X` marca toda a fila visível.</span>
         </div>
 
         <div className={styles.searchWrap}>
@@ -471,21 +523,67 @@ export function RequestsWorkspace({
                 </div>
 
                 {canManage ? (
-                  <form action={updateHrRequestStatusAction} className={styles.sectionStack}>
+                  <div className={styles.detailSection}>
+                    <div className={styles.sectionHeader}>
+                      <div>
+                        <h4 className={styles.panelTitle}>Próximo status</h4>
+                        <p className={styles.detailText}>Mude o caso no mesmo contexto, sem abrir formulário extra.</p>
+                      </div>
+                      {pendingStatus ? <span className={styles.metaLabel}>Atualizando...</span> : null}
+                    </div>
+                    <div className={styles.quickActions}>
+                      {Object.values(HrRequestStatus).map((status) => (
+                        <Button
+                          key={status}
+                          type="button"
+                          size="sm"
+                          variant={status === selectedRequest.status ? "default" : "outline"}
+                          className={styles.quickActionButton}
+                          disabled={pendingStatus || status === selectedRequest.status}
+                          onClick={() => applyRequestStatus(status)}
+                        >
+                          {formatEnumLabel(status)}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                {canManage ? (
+                  <form action={submitRequestContext} className={styles.sectionStack}>
                     <input type="hidden" name="requestId" value={selectedRequest.id} />
                     <div className={styles.sectionHeader}>
-                      <h4 className={styles.panelTitle}>Atualizar status</h4>
-                      <Button type="submit" variant="outline">
-                        Salvar
+                      <div>
+                        <h4 className={styles.panelTitle}>Contexto rápido</h4>
+                        <p className={styles.detailText}>Ajuste dono, prioridade e prazo sem sair da fila.</p>
+                      </div>
+                      <Button type="submit" variant="outline" disabled={pendingContext}>
+                        {pendingContext ? "Salvando..." : "Salvar contexto"}
                       </Button>
                     </div>
-                    <Select name="status" defaultValue={selectedRequest.status} className={styles.selectCompact}>
-                      {Object.values(HrRequestStatus).map((status) => (
-                        <option key={status} value={status}>
-                          {formatEnumLabel(status)}
-                        </option>
-                      ))}
-                    </Select>
+                    <div className={styles.formGrid2}>
+                      <Select name="assigneeUserId" defaultValue={selectedRequest.assigneeUser?.id ?? ""} className={styles.selectCompact}>
+                        <option value="">Sem responsável</option>
+                        {teamMembers.map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {(member.name ?? "Sem nome")} - {member.role}
+                          </option>
+                        ))}
+                      </Select>
+                      <Select name="priority" defaultValue={selectedRequest.priority} className={styles.selectCompact}>
+                        {Object.values(PeopleTaskPriority).map((priority) => (
+                          <option key={priority} value={priority}>
+                            {formatEnumLabel(priority)}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <Input
+                      type="date"
+                      name="dueAt"
+                      defaultValue={formatDateInput(selectedRequest.dueAt)}
+                      className={styles.fieldCompact}
+                    />
                   </form>
                 ) : null}
 
@@ -514,7 +612,12 @@ export function RequestsWorkspace({
                     <h4 className={styles.panelTitle}>Adicionar comentário</h4>
                     <Button type="submit">Comentar</Button>
                   </div>
-                  <Input name="message" required placeholder="Escreva um comentário curto e objetivo" className={styles.fieldCompact} />
+                  <Input
+                    name="message"
+                    required
+                    placeholder="Escreva um comentário curto e objetivo"
+                    className={styles.fieldCompact}
+                  />
                 </form>
               </>
             ) : (
@@ -561,28 +664,38 @@ export function RequestsWorkspace({
                   ))}
                 </Select>
               </div>
-              <div className={styles.formGrid2}>
-                <Input name="dueAt" type="date" className={styles.fieldCompact} />
-                <Select name="requesterEmployeeId" defaultValue="" className={styles.selectCompact}>
-                  <option value="">Solicitante sem colaborador vinculado</option>
-                  {employees.map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.fullName} - {employee.title}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <Select name="assigneeUserId" defaultValue="" className={styles.selectCompact}>
-                <option value="">Sem responsável inicial</option>
-                {teamMembers.map((member) => (
-                  <option key={member.id} value={member.id}>
-                    {(member.name ?? "Sem nome")} - {member.role}
-                  </option>
-                ))}
-              </Select>
-              <Textarea name="description" required placeholder="Descrição do caso" className={styles.textareaCompact} />
+              <Textarea
+                name="description"
+                required
+                placeholder="Descrição do caso"
+                className={styles.textareaCompact}
+              />
+              <details className={styles.disclosureCard}>
+                <summary className={styles.disclosureSummary}>Responsável, prazo e solicitante</summary>
+                <div className={styles.disclosureBody}>
+                  <div className={styles.formGrid2}>
+                    <Input name="dueAt" type="date" className={styles.fieldCompact} />
+                    <Select name="requesterEmployeeId" defaultValue="" className={styles.selectCompact}>
+                      <option value="">Solicitante sem colaborador vinculado</option>
+                      {employees.map((employee) => (
+                        <option key={employee.id} value={employee.id}>
+                          {employee.fullName} - {employee.title}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                  <Select name="assigneeUserId" defaultValue="" className={styles.selectCompact}>
+                    <option value="">Sem responsável inicial</option>
+                    {teamMembers.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {(member.name ?? "Sem nome")} - {member.role}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              </details>
               <div className={styles.formActions}>
-                <p className={styles.detailText}>Use esse formulário para registrar o contexto mínimo sem perder velocidade.</p>
+                <p className={styles.detailText}>Abra o caso com o essencial e complete o resto só quando fizer sentido.</p>
                 <Button type="submit">Criar caso</Button>
               </div>
             </form>

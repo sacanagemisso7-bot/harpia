@@ -59,6 +59,7 @@ type TasksWorkspaceProps = {
   createPeopleTaskAction: (formData: FormData) => Promise<void>;
   updatePeopleTaskStatusAction: (formData: FormData) => Promise<void>;
   bulkUpdatePeopleTaskStatusAction: (formData: FormData) => Promise<void>;
+  updatePeopleTaskDetailsAction: (formData: FormData) => Promise<void>;
   addPeopleTaskCommentAction: (formData: FormData) => Promise<void>;
   savedViews: Array<{ id: string; name: string; query: string }>;
   saveWorkspaceViewAction: (formData: FormData) => Promise<{ error?: string; success?: string }>;
@@ -99,6 +100,15 @@ function getStatusVariant(task: Pick<TaskRecord, "status" | "isOverdue">) {
   return "outline" as const;
 }
 
+function formatDateInput(date: Date | null) {
+  if (!date) {
+    return "";
+  }
+
+  const normalized = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return normalized.toISOString().slice(0, 10);
+}
+
 function isTypingTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false;
@@ -117,6 +127,7 @@ export function PeopleTasksWorkspace({
   createPeopleTaskAction,
   updatePeopleTaskStatusAction,
   bulkUpdatePeopleTaskStatusAction,
+  updatePeopleTaskDetailsAction,
   addPeopleTaskCommentAction,
   savedViews,
   saveWorkspaceViewAction,
@@ -137,6 +148,8 @@ export function PeopleTasksWorkspace({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkStatus, setBulkStatus] = useState<PeopleTaskStatus>(PeopleTaskStatus.IN_PROGRESS);
   const [pendingBulk, startBulkTransition] = useTransition();
+  const [pendingStatus, startStatusTransition] = useTransition();
+  const [pendingContext, startContextTransition] = useTransition();
 
   const filteredTasks = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -227,6 +240,12 @@ export function PeopleTasksWorkspace({
         return;
       }
 
+      if (event.key === "Escape" && query) {
+        event.preventDefault();
+        setQuery("");
+        return;
+      }
+
       if (!filteredTasks.length) {
         return;
       }
@@ -251,12 +270,23 @@ export function PeopleTasksWorkspace({
       if (event.key.toLowerCase() === "x" && selectedId) {
         event.preventDefault();
         toggleSelected(selectedId);
+        return;
+      }
+
+      if (event.key === "X") {
+        event.preventDefault();
+        const visibleIds = filteredTasks.map((task) => task.id);
+        const allSelected = visibleIds.length > 0 && visibleIds.every((id) => selectedIds.includes(id));
+        setSelectedIds(
+          allSelected ? selectedIds.filter((id) => !visibleIds.includes(id)) : Array.from(new Set([...selectedIds, ...visibleIds]))
+        );
+        return;
       }
     }
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [filteredTasks, selectedId]);
+  }, [filteredTasks, query, selectedId, selectedIds]);
 
   const selectedTask = filteredTasks.find((task) => task.id === selectedId) ?? filteredTasks[0] ?? null;
   const stats = [
@@ -285,6 +315,21 @@ export function PeopleTasksWorkspace({
     setQuery(nextQuery);
   }
 
+  function applyTaskStatus(status: PeopleTaskStatus) {
+    if (!selectedTask || status === selectedTask.status) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.set("taskId", selectedTask.id);
+    formData.set("status", status);
+
+    startStatusTransition(async () => {
+      await updatePeopleTaskStatusAction(formData);
+      router.refresh();
+    });
+  }
+
   function toggleSelected(id: string) {
     setSelectedIds((current) => (current.includes(id) ? current.filter((item) => item !== id) : [...current, id]));
   }
@@ -303,6 +348,13 @@ export function PeopleTasksWorkspace({
     startBulkTransition(async () => {
       await bulkUpdatePeopleTaskStatusAction(formData);
       setSelectedIds([]);
+      router.refresh();
+    });
+  }
+
+  function submitTaskContext(formData: FormData) {
+    startContextTransition(async () => {
+      await updatePeopleTaskDetailsAction(formData);
       router.refresh();
     });
   }
@@ -338,7 +390,7 @@ export function PeopleTasksWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona o item atual.</span>
+          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona o item atual e `Shift + X` marca toda a lista visível.</span>
         </div>
 
         <div className={styles.searchWrap}>
@@ -475,21 +527,67 @@ export function PeopleTasksWorkspace({
                 </div>
 
                 {canManage ? (
-                  <form action={updatePeopleTaskStatusAction} className={styles.sectionStack}>
+                  <div className={styles.detailSection}>
+                    <div className={styles.sectionHeader}>
+                      <div>
+                        <h4 className={styles.panelTitle}>Próximo status</h4>
+                        <p className={styles.detailText}>Resolva a tarefa com um clique, sem depender de select e submit.</p>
+                      </div>
+                      {pendingStatus ? <span className={styles.metaLabel}>Atualizando...</span> : null}
+                    </div>
+                    <div className={styles.quickActions}>
+                      {Object.values(PeopleTaskStatus).map((status) => (
+                        <Button
+                          key={status}
+                          type="button"
+                          size="sm"
+                          variant={status === selectedTask.status ? "default" : "outline"}
+                          className={styles.quickActionButton}
+                          disabled={pendingStatus || status === selectedTask.status}
+                          onClick={() => applyTaskStatus(status)}
+                        >
+                          {formatEnumLabel(status)}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
+
+                {canManage ? (
+                  <form action={submitTaskContext} className={styles.sectionStack}>
                     <input type="hidden" name="taskId" value={selectedTask.id} />
                     <div className={styles.sectionHeader}>
-                      <h4 className={styles.panelTitle}>Atualizar status</h4>
-                      <Button type="submit" variant="outline">
-                        Salvar
+                      <div>
+                        <h4 className={styles.panelTitle}>Contexto rápido</h4>
+                        <p className={styles.detailText}>Atualize dono, prioridade e prazo no mesmo fluxo.</p>
+                      </div>
+                      <Button type="submit" variant="outline" disabled={pendingContext}>
+                        {pendingContext ? "Salvando..." : "Salvar contexto"}
                       </Button>
                     </div>
-                    <Select name="status" defaultValue={selectedTask.status} className={styles.selectCompact}>
-                      {Object.values(PeopleTaskStatus).map((status) => (
-                        <option key={status} value={status}>
-                          {formatEnumLabel(status)}
-                        </option>
-                      ))}
-                    </Select>
+                    <div className={styles.formGrid2}>
+                      <Select name="assigneeUserId" defaultValue={selectedTask.assigneeUser?.id ?? ""} className={styles.selectCompact}>
+                        <option value="">Sem responsável</option>
+                        {teamMembers.map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {(member.name ?? "Sem nome")} - {member.role}
+                          </option>
+                        ))}
+                      </Select>
+                      <Select name="priority" defaultValue={selectedTask.priority} className={styles.selectCompact}>
+                        {Object.values(PeopleTaskPriority).map((priority) => (
+                          <option key={priority} value={priority}>
+                            {formatEnumLabel(priority)}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <Input
+                      type="date"
+                      name="dueAt"
+                      defaultValue={formatDateInput(selectedTask.dueAt)}
+                      className={styles.fieldCompact}
+                    />
                   </form>
                 ) : null}
 
@@ -519,7 +617,12 @@ export function PeopleTasksWorkspace({
                       <h4 className={styles.panelTitle}>Adicionar comentário</h4>
                       <Button type="submit">Comentar</Button>
                     </div>
-                    <Input name="message" required placeholder="Registrar um comentário rápido" className={styles.fieldCompact} />
+                    <Input
+                      name="message"
+                      required
+                      placeholder="Registrar um comentário rápido"
+                      className={styles.fieldCompact}
+                    />
                   </form>
                 ) : null}
               </>
@@ -557,35 +660,40 @@ export function PeopleTasksWorkspace({
                     {Object.values(PeopleTaskPriority).map((priority) => (
                       <option key={priority} value={priority}>
                         {formatEnumLabel(priority)}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className={styles.formGrid2}>
-                  <Select name="assigneeUserId" defaultValue="" className={styles.selectCompact}>
-                    <option value="">Sem responsável do time</option>
-                    {teamMembers.map((member) => (
-                      <option key={member.id} value={member.id}>
-                        {(member.name ?? "Sem nome")} - {member.role}
-                      </option>
-                    ))}
-                  </Select>
-                  <Select name="relatedEmployeeId" defaultValue="" className={styles.selectCompact}>
-                    <option value="">Sem colaborador associado</option>
-                    {employees.map((employee) => (
-                      <option key={employee.id} value={employee.id}>
-                        {employee.fullName} - {employee.title}
-                      </option>
-                    ))}
-                  </Select>
-                </div>
-                <div className={styles.formGrid2}>
-                  <Input name="dueAt" type="date" className={styles.fieldCompact} />
-                  <Input name="sourceType" defaultValue="manual" className={styles.fieldCompact} />
-                </div>
+                    </option>
+                  ))}
+                </Select>
+              </div>
                 <Textarea name="description" placeholder="Descrição da tarefa" className={styles.textareaCompact} />
+                <details className={styles.disclosureCard}>
+                  <summary className={styles.disclosureSummary}>Responsável, prazo e vínculos</summary>
+                  <div className={styles.disclosureBody}>
+                    <div className={styles.formGrid2}>
+                      <Select name="assigneeUserId" defaultValue="" className={styles.selectCompact}>
+                        <option value="">Sem responsável do time</option>
+                        {teamMembers.map((member) => (
+                          <option key={member.id} value={member.id}>
+                            {(member.name ?? "Sem nome")} - {member.role}
+                          </option>
+                        ))}
+                      </Select>
+                      <Select name="relatedEmployeeId" defaultValue="" className={styles.selectCompact}>
+                        <option value="">Sem colaborador associado</option>
+                        {employees.map((employee) => (
+                          <option key={employee.id} value={employee.id}>
+                            {employee.fullName} - {employee.title}
+                          </option>
+                        ))}
+                      </Select>
+                    </div>
+                    <div className={styles.formGrid2}>
+                      <Input name="dueAt" type="date" className={styles.fieldCompact} />
+                      <Input name="sourceType" defaultValue="manual" className={styles.fieldCompact} />
+                    </div>
+                  </div>
+                </details>
                 <div className={styles.formActions}>
-                  <p className={styles.detailText}>Crie a tarefa e ajuste o resto depois, sem travar o fluxo.</p>
+                  <p className={styles.detailText}>Crie a tarefa com o básico e só desça para os vínculos quando precisar.</p>
                   <Button type="submit">Criar tarefa</Button>
                 </div>
               </form>

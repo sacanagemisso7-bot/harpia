@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { FileCheck2, ShieldCheck, UserRound } from "lucide-react";
 
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import { getSelfServicePolicyWorkspace } from "@/modules/compliance/queries";
 
-import styles from "../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 
 export default async function MePage() {
   const user = await requireCurrentUser();
@@ -15,120 +15,151 @@ export default async function MePage() {
     userId: user.id
   });
 
-  return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="My workspace"
-        title="Minha area"
-        description="Um ponto único para acompanhar políticas, pendencias e o seu contexto dentro da operação."
-        actions={<Badge variant="outline">{user.email}</Badge>}
-      />
-
-      {workspace ? (
-        <>
-          <section className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Colaborador</span>
-              <strong className={styles.statValue}>{workspace.employee.fullName}</strong>
-              <span className={styles.statHint}>{workspace.employee.title} em {workspace.employee.department}</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Pendencias</span>
-              <strong className={styles.statValue}>{workspace.pendingAcknowledgements.length}</strong>
-              <span className={styles.statHint}>Aceites que ainda exigem sua confirmacao.</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Requisitos</span>
-              <strong className={styles.statValue}>{workspace.pendingPolicyRequirements.length}</strong>
-              <span className={styles.statHint}>Itens de compliance ligados a policies ativas.</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Histórico</span>
-              <strong className={styles.statValue}>{workspace.acknowledged.length}</strong>
-              <span className={styles.statHint}>Aceites ja registrados no seu perfil.</span>
-            </div>
-          </section>
-
-          <section className={styles.detailLayout}>
-            <div className={styles.column}>
-              <div className={styles.panel}>
-                <div className={styles.panelHeader}>
-                  <span className={styles.panelEyebrow}>Self service</span>
-                  <h2 className={styles.panelTitle}>Seus atalhos</h2>
-                  <p className={styles.panelDescription}>Acesse rapido o que costuma exigir ação sua.</p>
-                </div>
-                <div className={styles.linkList}>
-                  <Link href="/me/policies" className={styles.linkItem}>
-                    <strong>Políticas e aceites</strong>
-                    <span>Resolva pendencias e acompanhe confirmacoes ja registradas.</span>
-                  </Link>
-                  <Link href={`/employees/${workspace.employee.id}`} className={styles.linkItem}>
-                    <strong>Perfil do colaborador</strong>
-                    <span>Abra sua ficha operacional dentro da empresa.</span>
-                  </Link>
-                </div>
-              </div>
-
-              <div className={styles.panel}>
-                <div className={styles.panelHeader}>
-                  <span className={styles.panelEyebrow}>Pending now</span>
-                  <h2 className={styles.panelTitle}>O que precisa da sua ação</h2>
-                </div>
-                {workspace.pendingAcknowledgements.length ? (
-                  <div className={styles.list}>
-                    {workspace.pendingAcknowledgements.map((item) => (
-                      <div key={item.id} className={styles.listItem}>
-                        <strong className={styles.itemTitle}>{item.document?.title ?? item.title}</strong>
-                        <span className={styles.itemDescription}>
-                          {item.document?.versionLabel ? `${item.document.versionLabel} · ` : ""}
-                          {item.title}
-                        </span>
-                        <span className={styles.itemDescription}>
-                          {item.dueAt
-                            ? `Vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}`
-                            : "Sem prazo definido"}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className={styles.emptyState}>Nenhuma pendencia de aceite no momento.</div>
-                )}
-              </div>
-            </div>
-
-            <aside className={styles.stickyAside}>
-              <div className={styles.spotlight}>
-                <span className={styles.panelEyebrow}>Status</span>
-                <strong className={styles.spotlightValue}>{workspace.pendingAcknowledgements.length ? "Pendente" : "Em dia"}</strong>
-                <p className={styles.panelDescription}>Sua situacao atual em relacao a policies da organização.</p>
-              </div>
-              <div className={styles.panel}>
-                <div className={styles.metricStack}>
-                  <div className={styles.metricRow}>
-                    <span><ShieldCheck className="mr-2 inline h-4 w-4" /> Policies</span>
-                    <strong>{workspace.pendingAcknowledgements.length}</strong>
-                  </div>
-                  <div className={styles.metricRow}>
-                    <span><FileCheck2 className="mr-2 inline h-4 w-4" /> Confirmadas</span>
-                    <strong>{workspace.acknowledged.length}</strong>
-                  </div>
-                  <div className={styles.metricRow}>
-                    <span><UserRound className="mr-2 inline h-4 w-4" /> Perfil</span>
-                    <strong>Ativo</strong>
-                  </div>
-                </div>
-              </div>
-            </aside>
-          </section>
-        </>
-      ) : (
-        <div className={styles.panel}>
-          <div className={styles.surfaceMuted}>
-            Seu usuário ainda não esta vinculado a um perfil de colaborador nesta organização.
-          </div>
+  if (!workspace) {
+    return (
+      <div className={styles.workspace}>
+        <div className={styles.header}>
+          <span className={styles.eyebrow}>Minha área</span>
+          <h2 className={styles.title}>Seu acesso ainda não está vinculado</h2>
+          <p className={styles.description}>
+            O usuário atual ainda não está associado a um perfil de colaborador nesta organização.
+          </p>
         </div>
-      )}
+
+        <section className={styles.detailPanel}>
+          <p className={styles.emptyState}>Peça ao time administrador para vincular o seu perfil e liberar o self-service.</p>
+        </section>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Minha área</span>
+        <h2 className={styles.title}>{workspace.employee.fullName}</h2>
+        <p className={styles.description}>
+          {workspace.employee.title} · {workspace.employee.department}
+        </p>
+      </div>
+
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{workspace.pendingAcknowledgements.length}</strong>
+          <span>aceites pendentes</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{workspace.pendingPolicyRequirements.length}</strong>
+          <span>itens de compliance</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{workspace.acknowledged.length}</strong>
+          <span>aceites concluídos</span>
+        </div>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
+            <Button asChild size="sm">
+              <Link href="/me/policies">Abrir políticas</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/employees/${workspace.employee.id}`}>Ver perfil</Link>
+            </Button>
+          </div>
+          <span className={styles.shortcutHint}>Tudo que normalmente exigiria voltar ao RH está concentrado aqui.</span>
+        </div>
+      </div>
+
+      <div className={styles.body}>
+        <section className={styles.listPanel}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelHeaderRow}>
+              <div>
+                <h3 className={styles.panelTitle}>O que precisa da sua ação</h3>
+                <p className={styles.panelDescription}>Aceites pendentes e próximos passos do seu contexto interno.</p>
+              </div>
+              <Badge variant={workspace.pendingAcknowledgements.length ? "warning" : "success"}>
+                {workspace.pendingAcknowledgements.length ? "Pendente" : "Em dia"}
+              </Badge>
+            </div>
+          </div>
+
+          <div className={styles.list}>
+            {workspace.pendingAcknowledgements.length ? (
+              workspace.pendingAcknowledgements.map((item) => (
+                <div key={item.id} className={styles.row}>
+                  <div className={styles.rowTop}>
+                    <div className={styles.rowLead}>
+                      <p className={styles.rowTitle}>{item.document?.title ?? item.title}</p>
+                      <p className={styles.rowSubtitle}>
+                        {item.document?.versionLabel ? `${item.document.versionLabel} · ` : ""}
+                        {item.dueAt
+                          ? `vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}`
+                          : "sem prazo definido"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyWrap}>
+                <p className={styles.emptyState}>Nenhuma pendência de aceite no momento.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Atalhos</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <Link href="/me/policies" className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <ShieldCheck className="mr-2 inline h-4 w-4" />
+                  Políticas e aceites
+                </span>
+                <p className={styles.detailText}>Resolva pendências e acompanhe o histórico já confirmado.</p>
+              </Link>
+              <Link href={`/employees/${workspace.employee.id}`} className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <UserRound className="mr-2 inline h-4 w-4" />
+                  Perfil do colaborador
+                </span>
+                <p className={styles.detailText}>Abra sua ficha operacional e veja tarefas, requests e contexto.</p>
+              </Link>
+            </div>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Resumo rápido</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <FileCheck2 className="mr-2 inline h-4 w-4" />
+                  Histórico
+                </span>
+                <p className={styles.detailText}>{workspace.acknowledged.length} aceite(s) já registrados para você.</p>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>Status atual</span>
+                <p className={styles.detailText}>
+                  {workspace.pendingAcknowledgements.length
+                    ? "Ainda existe pelo menos um aceite esperando sua confirmação."
+                    : "Você está em dia com as políticas ativas no momento."}
+                </p>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
     </div>
   );
 }

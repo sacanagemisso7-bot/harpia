@@ -11,25 +11,29 @@ type OrganizationSettingsFormProps = {
   };
 };
 
-export function OrganizationSettingsForm({
-  action,
-  defaultValues
-}: OrganizationSettingsFormProps) {
+export function OrganizationSettingsForm({ action, defaultValues }: OrganizationSettingsFormProps) {
   return (
-    <form action={action} className="space-y-5">
-      <div className="space-y-2">
+    <form action={action} className="grid gap-4">
+      <div className="grid gap-2">
         <Label htmlFor="name">Nome da organização</Label>
         <Input id="name" name="name" defaultValue={defaultValues.name} />
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="slug">Slug</Label>
-        <Input id="slug" name="slug" defaultValue={defaultValues.slug} />
+
+      <div className="grid gap-2 md:grid-cols-2">
+        <div className="grid gap-2">
+          <Label htmlFor="slug">Slug</Label>
+          <Input id="slug" name="slug" defaultValue={defaultValues.slug} />
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="sizeRange">Faixa de tamanho</Label>
+          <Input id="sizeRange" name="sizeRange" defaultValue={defaultValues.sizeRange ?? ""} placeholder="Ex.: 51-200" />
+        </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="sizeRange">Faixa de tamanho</Label>
-        <Input id="sizeRange" name="sizeRange" defaultValue={defaultValues.sizeRange ?? ""} />
+
+      <div className="flex justify-end">
+        <Button type="submit">Salvar configurações</Button>
       </div>
-      <Button type="submit">Salvar configurações</Button>
     </form>
   );
 }

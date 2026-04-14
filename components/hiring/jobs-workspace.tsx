@@ -198,6 +198,12 @@ export function JobsWorkspace({
         return;
       }
 
+      if (event.key === "Escape" && query) {
+        event.preventDefault();
+        setQuery("");
+        return;
+      }
+
       if (!filteredJobs.length) {
         return;
       }
@@ -222,12 +228,30 @@ export function JobsWorkspace({
       if (event.key === "Enter" && selectedId) {
         event.preventDefault();
         router.push((`/jobs/${selectedId}`) as Route);
+        return;
+      }
+
+      if (event.key.toLowerCase() === "o" && selectedId) {
+        event.preventDefault();
+        router.push((`/jobs/${selectedId}`) as Route);
+        return;
+      }
+
+      if (event.key.toLowerCase() === "e" && selectedId && canManageJobs) {
+        event.preventDefault();
+        router.push((`/jobs/${selectedId}/edit`) as Route);
+        return;
+      }
+
+      if (event.key.toLowerCase() === "n" && canManageJobs) {
+        event.preventDefault();
+        router.push("/jobs/new" as Route);
       }
     }
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [filteredJobs, router, selectedId]);
+  }, [canManageJobs, filteredJobs, query, router, selectedId]);
 
   const selectedJob = filteredJobs.find((job) => job.id === selectedId) ?? filteredJobs[0] ?? null;
   const departmentCount = new Set(jobs.map((job) => job.department)).size;
@@ -292,7 +316,7 @@ export function JobsWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam e `Enter` abre a vaga.</span>
+          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `O` ou `Enter` abrem, `E` edita e `N` cria vaga.</span>
         </div>
 
         <div className={styles.searchWrap}>

@@ -5,19 +5,19 @@ import { notFound } from "next/navigation";
 import { AnalyzeResumeForm } from "@/components/candidates/analyze-resume-form";
 import { ApplyToJobForm } from "@/components/candidates/apply-to-job-form";
 import { ResumeUploadForm } from "@/components/candidates/resume-upload-form";
-import { PageHeader } from "@/components/layout/page-header";
 import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/lib/auth/permissions";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import { getCandidateById } from "@/lib/candidates/queries";
 import { getOpenJobsForCandidate } from "@/lib/jobs/queries";
 import { formatScore } from "@/lib/utils";
 
-import styles from "../../workspace-expansion.module.css";
-import { analyzeCandidateResume, createCandidateNote, uploadResume } from "../actions";
+import styles from "@/components/operations/ops-workspace.module.css";
 import { createApplication } from "../../applications/actions";
+import { analyzeCandidateResume, createCandidateNote, uploadResume } from "../actions";
 
 function formatResumeSize(bytes: number) {
   if (bytes < 1024 * 1024) {
@@ -64,263 +64,292 @@ export default async function CandidateDetailPage({
     parsedProfile?.suggestedInterviewQuestions && Array.isArray(parsedProfile.suggestedInterviewQuestions)
       ? parsedProfile.suggestedInterviewQuestions.filter((item): item is string => typeof item === "string")
       : [];
+
   const canManageCandidate = hasPermission(user.role, "manage_candidates");
   const canManageApplications = hasPermission(user.role, "manage_applications");
   const canCreateNotes = hasPermission(user.role, "create_hiring_notes");
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Candidate profile"
-        title={candidate.fullName}
-        description={
-          candidate.summary ||
-          "Perfil consolidado pronto para upload de currículo, parsing com IA e vinculação a vagas abertas."
-        }
-        actions={
-          <>
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Talentos</span>
+        <h2 className={styles.title}>{candidate.fullName}</h2>
+        <p className={styles.description}>
+          {candidate.summary || "Perfil consolidado pronto para currículo, análise com IA e vínculo com vagas abertas."}
+        </p>
+      </div>
+
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{candidate.resumes.length}</strong>
+          <span>currículo(s)</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{candidate.applications.length}</strong>
+          <span>aplicação(ões)</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{coreSkills.length}</strong>
+          <span>skills detectadas</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{availableJobs.length}</strong>
+          <span>vagas abertas</span>
+        </div>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
             <Badge variant="outline">{candidate.source}</Badge>
             {candidate.yearsExperience ? <Badge variant="success">{candidate.yearsExperience} anos</Badge> : null}
             {candidate.highestEducation ? <Badge variant="outline">{candidate.highestEducation}</Badge> : null}
-          </>
-        }
-      />
+          </div>
+          <span className={styles.shortcutHint}>O perfil, o currículo e a análise ficam no mesmo lugar para reduzir troca de contexto.</span>
+        </div>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Currículos</span>
-          <strong className={styles.statValue}>{candidate.resumes.length}</strong>
-          <span className={styles.statHint}>Arquivos salvos para parsing e reprocessamento.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Aplicações</span>
-          <strong className={styles.statValue}>{candidate.applications.length}</strong>
-          <span className={styles.statHint}>Vagas nas quais o perfil ja esta em movimento.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Skills</span>
-          <strong className={styles.statValue}>{coreSkills.length}</strong>
-          <span className={styles.statHint}>Sinais estruturados identificados pela IA.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Open jobs</span>
-          <strong className={styles.statValue}>{availableJobs.length}</strong>
-          <span className={styles.statHint}>Vagas ainda disponíveis para vincular este perfil.</span>
-        </div>
-      </section>
-
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Profile</span>
-              <h2 className={styles.panelTitle}>Base operacional do candidato</h2>
-              <p className={styles.panelDescription}>Contato, contexto atual e sinais mais uteis para triagem.</p>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Base do candidato</h3>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/candidates">Voltar para candidatos</Link>
+              </Button>
             </div>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoTile}>
-                <strong>Email</strong>
-                <span>{candidate.email || "--"}</span>
+
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>E-mail</span>
+                <span className={styles.metaValue}>{candidate.email || "Não informado"}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Telefone</strong>
-                <span>{candidate.phone || "--"}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Telefone</span>
+                <span className={styles.metaValue}>{candidate.phone || "Não informado"}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Cargo atual</strong>
-                <span>{candidate.currentTitle || "--"}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Cargo atual</span>
+                <span className={styles.metaValue}>{candidate.currentTitle || "Não informado"}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Empresa atual</strong>
-                <span>{candidate.currentCompany || "--"}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Empresa atual</span>
+                <span className={styles.metaValue}>{candidate.currentCompany || "Não informada"}</span>
               </div>
             </div>
-            <div className={styles.tagWrap}>
+
+            <div className="flex flex-wrap gap-2">
               {candidate.location ? (
-                <span className={styles.tagPill}>
+                <Badge variant="outline">
                   <MapPin className="mr-2 h-3.5 w-3.5" />
                   {candidate.location}
-                </span>
+                </Badge>
               ) : null}
               {candidate.linkedinUrl ? (
-                <a href={candidate.linkedinUrl} target="_blank" rel="noreferrer" className={styles.tagPill}>
-                  <Linkedin className="mr-2 h-3.5 w-3.5" />
-                  LinkedIn
+                <a href={candidate.linkedinUrl} target="_blank" rel="noreferrer">
+                  <Badge variant="outline">
+                    <Linkedin className="mr-2 h-3.5 w-3.5" />
+                    LinkedIn
+                  </Badge>
                 </a>
               ) : null}
               {candidate.portfolioUrl ? (
-                <a href={candidate.portfolioUrl} target="_blank" rel="noreferrer" className={styles.tagPill}>
-                  Portfolio
+                <a href={candidate.portfolioUrl} target="_blank" rel="noreferrer">
+                  <Badge variant="outline">Portfólio</Badge>
                 </a>
               ) : null}
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
+          <section className={styles.listPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Resume ledger</span>
-              <h2 className={styles.panelTitle}>Currículos enviados</h2>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Currículos enviados</h3>
+                  <p className={styles.panelDescription}>Arquivos salvos para parsing e reprocessamento.</p>
+                </div>
+              </div>
             </div>
-            {candidate.resumes.length ? (
-              <div className={styles.list}>
-                {candidate.resumes.map((resume) => (
-                  <div key={resume.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{resume.fileName}</strong>
-                        <span className={styles.itemSubtitle}>
-                          {formatResumeSize(resume.sizeBytes)} - {new Intl.DateTimeFormat("pt-BR").format(resume.uploadedAt)}
-                        </span>
+
+            <div className={styles.list}>
+              {candidate.resumes.length ? (
+                candidate.resumes.map((resume) => (
+                  <div key={resume.id} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>{resume.fileName}</p>
+                        <p className={styles.rowSubtitle}>
+                          {formatResumeSize(resume.sizeBytes)} ·{" "}
+                          {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(resume.uploadedAt)}
+                        </p>
                       </div>
-                      <span className={styles.iconLead}>
-                        <FileText className="h-4 w-4" />
-                      </span>
+                      <Badge variant="outline">
+                        <FileText className="mr-2 h-3.5 w-3.5" />
+                        PDF
+                      </Badge>
                     </div>
-                    <p className={styles.richText}>
-                      {resume.extractedText || "Não foi possível extrair o texto deste PDF. O arquivo continua salvo para reprocessamento."}
+                    <p className={styles.rowSubtitle}>
+                      {resume.extractedText ||
+                        "Não foi possível extrair o texto deste PDF. O arquivo segue salvo para novo processamento."}
                     </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhum currículo enviado ainda.</div>
-            )}
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Applications</span>
-              <h2 className={styles.panelTitle}>Vagas em curso</h2>
-              <p className={styles.panelDescription}>Cada aplicação mostra fit score, etapa e resumo executivo.</p>
-            </div>
-            {candidate.applications.length ? (
-              <div className={styles.linkList}>
-                {candidate.applications.map((application) => (
-                  <Link key={application.id} href={`/applications/${application.id}`} className={styles.linkItem}>
-                    <strong>{application.job.title}</strong>
-                    <span>
-                      {application.currentStage?.name || "Sem etapa"} - score {formatScore(application.score)}
-                    </span>
-                    <span>{application.executiveSummary || "Análise de aderência disponível no detalhe da aplicação."}</span>
-                  </Link>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>Ainda sem aplicações para este candidato.</div>
-            )}
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Internal notes</span>
-              <h2 className={styles.panelTitle}>Contexto compartilhado</h2>
-            </div>
-            <div className={styles.column}>
-              {canCreateNotes ? (
-                <div className={styles.surfaceMuted}>
-                  <NoteForm title="Nova nota sobre o candidato" action={createCandidateNote.bind(null, candidate.id)} />
+                ))
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Nenhum currículo enviado ainda.</p>
                 </div>
-              ) : null}
-              <NoteFeed notes={candidate.notes} emptyMessage="Ainda não ha notas internas para este candidato." />
+              )}
             </div>
-          </div>
+          </section>
+
+          <section className={styles.listPanel}>
+            <div className={styles.panelHeader}>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Vagas em curso</h3>
+                  <p className={styles.panelDescription}>Cada aplicação mostra etapa atual, score e resumo executivo.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.list}>
+              {candidate.applications.length ? (
+                candidate.applications.map((application) => (
+                  <Link key={application.id} href={`/applications/${application.id}`} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>{application.job.title}</p>
+                        <p className={styles.rowSubtitle}>{application.currentStage?.name || "Sem etapa"}</p>
+                      </div>
+                      <Badge variant="outline">{formatScore(application.score)}</Badge>
+                    </div>
+                    <p className={styles.rowSubtitle}>
+                      {application.executiveSummary || "A análise de aderência está disponível no detalhe da aplicação."}
+                    </p>
+                  </Link>
+                ))
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Ainda não há aplicações para este candidato.</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Notas internas</h3>
+              <p className={styles.panelDescription}>Contexto compartilhado do time sobre este perfil.</p>
+            </div>
+
+            {canCreateNotes ? <NoteForm title="Nova nota sobre o candidato" action={createCandidateNote.bind(null, candidate.id)} /> : null}
+            <NoteFeed notes={candidate.notes} emptyMessage="Ainda não há notas internas para este candidato." />
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Signal</span>
-            <strong className={styles.spotlightValue}>{candidate.applications.length || 0}</strong>
-            <p className={styles.panelDescription}>Frentes ativas em que este perfil ja esta sendo avaliado.</p>
-          </div>
-
-          <div className={styles.panel}>
+        <aside className={styles.detailColumn}>
+          <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Actions</span>
-              <h2 className={styles.panelTitle}>Operar o perfil</h2>
+              <h3 className={styles.panelTitle}>Ações rápidas</h3>
+              <p className={styles.panelDescription}>Operações principais do perfil sem navegar para outro lugar.</p>
             </div>
-            <div className={styles.actionCluster}>
+
+            <div className={styles.sectionStack}>
               {canManageCandidate ? (
-                <div className={styles.surfaceMuted}>
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Enviar currículo</span>
                   <ResumeUploadForm action={uploadResume.bind(null, candidate.id)} />
                 </div>
               ) : (
-                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem enviar currículos.</div>
+                <p className={styles.emptyState}>Somente recrutadores e administradores podem enviar currículos.</p>
               )}
 
               {canManageApplications && availableJobs.length ? (
-                <div className={styles.surfaceMuted}>
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Aplicar em vaga</span>
                   <ApplyToJobForm action={createApplication.bind(null, candidate.id)} jobs={availableJobs} />
                 </div>
               ) : canManageApplications ? (
-                <div className={styles.surfaceMuted}>Este candidato ja foi vinculado a todas as vagas abertas disponíveis.</div>
+                <p className={styles.emptyState}>Este candidato já foi vinculado a todas as vagas abertas disponíveis.</p>
               ) : (
-                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem criar novas aplicações.</div>
+                <p className={styles.emptyState}>Seu papel atual não pode criar novas aplicações.</p>
               )}
 
               {canManageCandidate ? (
-                <div className={styles.surfaceMuted}>
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Analisar com IA</span>
                   <AnalyzeResumeForm action={analyzeCandidateResume.bind(null, candidate.id)} />
                 </div>
-              ) : (
-                <div className={styles.surfaceMuted}>Somente recrutadores e administradores podem rodar a análise de IA.</div>
-              )}
+              ) : null}
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>AI digest</span>
-              <h2 className={styles.panelTitle}>Leitura estruturada</h2>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura estruturada</h3>
+              <Badge variant="outline">IA</Badge>
             </div>
 
             {parsedProfile ? (
-              <div className={styles.column}>
-                <div className={styles.surfaceMuted}>
-                  <strong className={styles.itemTitle}>Resumo executivo</strong>
-                  <span className={styles.itemDescription}>
-                    {String(parsedProfile.executiveSummary ?? candidate.summary ?? "--")}
-                  </span>
+              <div className={styles.sectionStack}>
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Resumo executivo</span>
+                  <p className={styles.detailText}>{String(parsedProfile.executiveSummary ?? candidate.summary ?? "--")}</p>
                 </div>
-                <div className={styles.surfaceMuted}>
-                  <strong className={styles.itemTitle}>Skills detectadas</strong>
-                  <div className={styles.tagWrap}>
-                    {coreSkills.length ? coreSkills.map((skill) => <span key={skill} className={styles.tagPill}>{skill}</span>) : <span className={styles.itemDescription}>Sem skills estruturadas ainda.</span>}
-                  </div>
-                </div>
-                <div className={styles.surfaceMuted}>
-                  <strong className={styles.itemTitle}>Pontos fortes</strong>
-                  <div className={styles.list}>
-                    {strengths.length ? strengths.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Nenhum ponto forte estruturado ainda.</span>}
-                  </div>
-                </div>
-                <div className={styles.surfaceMuted}>
-                  <strong className={styles.itemTitle}>Gaps observados</strong>
-                  <div className={styles.list}>
-                    {risks.length ? risks.map((item) => <span key={item} className={styles.itemDescription}>{item}</span>) : <span className={styles.itemDescription}>Nenhum gap estruturado ainda.</span>}
-                  </div>
-                </div>
-                <div className={styles.surfaceMuted}>
-                  <strong className={styles.itemTitle}>Perguntas sugeridas</strong>
-                  <div className={styles.list}>
-                    {questions.length ? (
-                      questions.map((question) => (
-                        <div key={question} className={styles.rowBetween}>
-                          <span className={styles.itemDescription}>{question}</span>
-                          <Sparkles className="h-4 w-4 text-muted-foreground" />
-                        </div>
+
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Skills detectadas</span>
+                  <div className="flex flex-wrap gap-2">
+                    {coreSkills.length ? (
+                      coreSkills.map((skill) => (
+                        <Badge key={skill} variant="outline">
+                          {skill}
+                        </Badge>
                       ))
                     ) : (
-                      <span className={styles.itemDescription}>Rode a análise de IA para gerar perguntas guiadas.</span>
+                      <p className={styles.detailText}>Sem skills estruturadas ainda.</p>
                     )}
                   </div>
                 </div>
+
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Pontos fortes</span>
+                  {strengths.length ? (
+                    strengths.map((item) => <p key={item} className={styles.detailText}>{item}</p>)
+                  ) : (
+                    <p className={styles.detailText}>Nenhum destaque estruturado ainda.</p>
+                  )}
+                </div>
+
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Gaps observados</span>
+                  {risks.length ? (
+                    risks.map((item) => <p key={item} className={styles.detailText}>{item}</p>)
+                  ) : (
+                    <p className={styles.detailText}>Nenhum gap estruturado ainda.</p>
+                  )}
+                </div>
+
+                <div className={styles.detailCell}>
+                  <span className={styles.metaLabel}>Perguntas sugeridas</span>
+                  {questions.length ? (
+                    questions.map((question) => (
+                      <div key={question} className={styles.sectionHeader}>
+                        <p className={styles.detailText}>{question}</p>
+                        <Sparkles className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    ))
+                  ) : (
+                    <p className={styles.detailText}>Rode a análise de IA para gerar perguntas guiadas.</p>
+                  )}
+                </div>
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>Rode a análise de IA para gerar resumo, skills e perguntas sugeridas.</div>
+              <p className={styles.emptyState}>Rode a análise de IA para gerar resumo, skills e perguntas sugeridas.</p>
             )}
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

@@ -134,6 +134,7 @@ export default async function CompanyChatPage({
           "O que está em risco no service desk?",
           "Quais políticas sustentam esta decisão?"
         ];
+  const dockPrompts = activeMessages.length ? prompts.slice(0, 3) : prompts;
 
   return (
     <div className={styles.chatApp}>
@@ -179,7 +180,7 @@ export default async function CompanyChatPage({
         <div className={styles.chatTopbar}>
           <div className={styles.chatTopbarCopy}>
             <h2>{activeThread?.title ?? "Nova conversa"}</h2>
-            <span>{activeThread ? `${activeMessages.length} mensagem(ns)` : "Pergunte de forma direta"}</span>
+            <span>{activeThread ? `${activeMessages.length} mensagem(ns) · Enter envia` : "Pergunte de forma direta"}</span>
           </div>
           {activeThread?.scope ? <Badge variant="outline">{formatThreadScope(activeThread.scope)}</Badge> : null}
         </div>
@@ -223,14 +224,6 @@ export default async function CompanyChatPage({
                         data-testid="company-chat-message"
                       >
                         <div className={styles.messageBody}>{message.content}</div>
-
-                        {metadata.agentExecution ? (
-                          <div className={styles.messageInlineMeta}>
-                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.status)}</Badge>
-                            <Badge variant="outline">{formatEnumLabel(metadata.agentExecution.riskLevel)}</Badge>
-                            {metadata.agentExecution.requiresApproval ? <Badge variant="outline">Requer aprovação</Badge> : null}
-                          </div>
-                        ) : null}
 
                         {metadata.agentExecution ? (
                           <details className={styles.messageDetails}>
@@ -320,7 +313,7 @@ export default async function CompanyChatPage({
           <CompanyChatPromptStrip
             action={sendCompanyChatMessage}
             threadId={activeThreadId}
-            prompts={prompts}
+            prompts={dockPrompts}
             className={styles.promptStrip}
             buttonClassName={styles.promptButton}
           />

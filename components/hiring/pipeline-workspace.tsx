@@ -228,6 +228,12 @@ export function PipelineWorkspace({
         return;
       }
 
+      if (event.key === "Escape" && query) {
+        event.preventDefault();
+        setQuery("");
+        return;
+      }
+
       if (!filteredApplications.length) {
         return;
       }
@@ -252,12 +258,18 @@ export function PipelineWorkspace({
       if (event.key === "Enter" && selectedId) {
         event.preventDefault();
         router.push((`/applications/${selectedId}`) as Route);
+        return;
+      }
+
+      if (event.key.toLowerCase() === "o" && selectedId) {
+        event.preventDefault();
+        router.push((`/applications/${selectedId}`) as Route);
       }
     }
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [filteredApplications, router, selectedId]);
+  }, [filteredApplications, query, router, selectedId]);
 
   const selectedApplication =
     filteredApplications.find((application) => application.id === selectedId) ?? filteredApplications[0] ?? null;
@@ -338,7 +350,7 @@ export function PipelineWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam e `Enter` abre a aplicação.</span>
+          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam e `O` ou `Enter` abrem a aplicação.</span>
         </div>
 
         <div className={styles.searchWrap}>

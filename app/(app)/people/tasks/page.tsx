@@ -2,6 +2,7 @@ import {
   addPeopleTaskCommentAction,
   bulkUpdatePeopleTaskStatusAction,
   createPeopleTaskAction,
+  updatePeopleTaskDetailsAction,
   updatePeopleTaskStatusAction
 } from "@/app/(app)/people/actions";
 import { deleteSavedViewAction, saveWorkspaceViewAction } from "@/app/(app)/saved-views/actions";
@@ -33,6 +34,7 @@ export default async function PeopleTasksPage() {
       createPeopleTaskAction={createPeopleTaskAction}
       updatePeopleTaskStatusAction={updatePeopleTaskStatusAction}
       bulkUpdatePeopleTaskStatusAction={bulkUpdatePeopleTaskStatusAction}
+      updatePeopleTaskDetailsAction={updatePeopleTaskDetailsAction}
       addPeopleTaskCommentAction={addPeopleTaskCommentAction}
       savedViews={savedViews}
       saveWorkspaceViewAction={saveWorkspaceViewAction}

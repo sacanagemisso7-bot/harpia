@@ -1,13 +1,20 @@
 import { acknowledgePolicyAction, assignPolicyAction } from "@/app/(app)/people/compliance/actions";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
-import { getPolicyRolloutOverview, listPolicyDocumentsForSelect } from "@/modules/knowledge/queries";
 import { getComplianceSummary } from "@/modules/compliance/queries";
 import { listEmployeesForSelect } from "@/modules/employees/queries";
+import { getPolicyRolloutOverview, listPolicyDocumentsForSelect } from "@/modules/knowledge/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
+
+function formatStatusLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
 
 export default async function CompliancePage() {
   const user = await requirePermission("view_compliance");
@@ -21,193 +28,218 @@ export default async function CompliancePage() {
   const now = Date.now();
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Light compliance"
-        title="Rastreio operacional de obrigatorios"
-        description="Documentos pendentes, trilhas obrigatorias e alertas do time em uma fila simples de operar."
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Compliance</span>
+        <h2 className={styles.title}>Rastreio operacional de obrigatórios</h2>
+        <p className={styles.description}>
+          Documentos pendentes, trilhas obrigatórias e alertas do time em uma fila simples de distribuir e fechar.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Total</span>
-          <strong className={styles.statValue}>{compliance.metrics.total}</strong>
-          <span className={styles.statHint}>Itens monitorados na camada operacional.</span>
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{compliance.metrics.total}</strong>
+          <span>itens monitorados</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Pendentes</span>
-          <strong className={styles.statValue}>{compliance.metrics.pending}</strong>
-          <span className={styles.statHint}>Ainda aguardando conclus?o ou aceite.</span>
+        <div className={styles.statPill}>
+          <strong>{compliance.metrics.pending}</strong>
+          <span>pendentes</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Atrasados</span>
-          <strong className={styles.statValue}>{compliance.metrics.overdue}</strong>
-          <span className={styles.statHint}>Itens com risco imediato de follow-up.</span>
+        <div className={styles.statPill}>
+          <strong>{compliance.metrics.overdue}</strong>
+          <span>atrasados</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Concluidos</span>
-          <strong className={styles.statValue}>{compliance.metrics.completed}</strong>
-          <span className={styles.statHint}>Ja resolvidos pelo time ou pelos colaboradores.</span>
+        <div className={styles.statPill}>
+          <strong>{compliance.metrics.completed}</strong>
+          <span>concluídos</span>
         </div>
-      </section>
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
           {canManageCompliance ? (
-            <div className={styles.panel}>
+            <section className={styles.formPanel}>
               <div className={styles.panelHeader}>
-                <span className={styles.panelEyebrow}>Policy assignment</span>
-                <h2 className={styles.panelTitle}>Distribuir política</h2>
+                <h3 className={styles.panelTitle}>Distribuir política</h3>
                 <p className={styles.panelDescription}>Atribua uma policy, gere o requirement correlato e marque prazo.</p>
               </div>
-              <form action={assignPolicyAction} className={styles.actionCluster}>
-                <select name="documentId" required className={styles.select}>
+
+              <form action={assignPolicyAction} className="grid gap-4">
+                <select name="documentId" required className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
                   <option value="">Selecione uma política</option>
                   {policyDocuments.map((document) => (
                     <option key={document.id} value={document.id}>
                       {document.title}
                       {document.versionLabel ? ` · ${document.versionLabel}` : ""}
-                      {!document.publishedAt ? " · não publicada" : ""}
                     </option>
                   ))}
                 </select>
-                <select name="employeeIds" multiple required className={styles.textarea}>
+
+                <select
+                  name="employeeIds"
+                  multiple
+                  required
+                  className="min-h-40 w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
+                >
                   {employees.map((employee) => (
                     <option key={employee.id} value={employee.id}>
                       {employee.fullName} - {employee.title}
                     </option>
                   ))}
                 </select>
-                <div className={styles.subGrid2}>
-                  <input name="dueAt" type="date" className={styles.field} />
+
+                <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
+                  <input name="dueAt" type="date" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm" />
                   <Button type="submit">Atribuir política</Button>
                 </div>
               </form>
-            </div>
+            </section>
           ) : null}
 
-          <div className={styles.panel}>
+          <section className={styles.listPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Open items</span>
-              <h2 className={styles.panelTitle}>Requirements em aberto</h2>
-              <p className={styles.panelDescription}>Itens obrigatorios por colaborador com prazo e status.</p>
-            </div>
-            {compliance.requirements.length ? (
-              <div className={styles.list}>
-                {compliance.requirements.map((item) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{item.title}</strong>
-                        <span className={styles.itemSubtitle}>
-                          {item.employee.fullName} - {item.type}
-                          {item.dueAt ? ` - vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
-                        </span>
-                      </div>
-                      <Badge variant={item.status === "COMPLETED" ? "success" : item.dueAt && item.dueAt.getTime() < now ? "destructive" : "warning"}>
-                        {item.status}
-                      </Badge>
-                    </div>
-                    {item.description ? <span className={styles.itemDescription}>{item.description}</span> : null}
-                  </div>
-                ))}
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Requirements em aberto</h3>
+                  <p className={styles.panelDescription}>Itens obrigatórios por colaborador com prazo e status.</p>
+                </div>
               </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhum item de compliance pendente no momento.</div>
-            )}
-          </div>
+            </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Acknowledgements</span>
-              <h2 className={styles.panelTitle}>Aceites de política</h2>
-              <p className={styles.panelDescription}>Quem ja confirmou e quem ainda precisa responder.</p>
-            </div>
-            {compliance.policyAcknowledgements.length ? (
-              <div className={styles.list}>
-                {compliance.policyAcknowledgements.map((item) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{item.title}</strong>
-                        <span className={styles.itemSubtitle}>
-                          {item.employee.fullName}
-                          {item.document?.title ? ` - ${item.document.title}` : ""}
-                          {item.document?.versionLabel ? ` · ${item.document.versionLabel}` : ""}
-                        </span>
+            <div className={styles.list}>
+              {compliance.requirements.length ? (
+                compliance.requirements.map((item) => {
+                  const overdue = item.dueAt ? item.dueAt.getTime() < now : false;
+                  const variant =
+                    item.status === "COMPLETED" ? "success" : overdue ? "destructive" : "warning";
+
+                  return (
+                    <div key={item.id} className={styles.row}>
+                      <div className={styles.rowTop}>
+                        <div className={styles.rowLead}>
+                          <p className={styles.rowTitle}>{item.title}</p>
+                          <p className={styles.rowSubtitle}>
+                            {item.employee.fullName} · {formatStatusLabel(item.type)}
+                            {item.dueAt
+                              ? ` · vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}`
+                              : ""}
+                          </p>
+                        </div>
+                        <Badge variant={variant}>{formatStatusLabel(item.status)}</Badge>
                       </div>
-                      <Badge
-                        variant={
-                          item.acknowledgedAt
-                            ? "success"
-                            : item.dueAt && item.dueAt.getTime() < now
-                              ? "destructive"
-                              : "warning"
-                        }
-                      >
-                        {item.acknowledgedAt ? "ACKNOWLEDGED" : item.dueAt && item.dueAt.getTime() < now ? "OVERDUE" : "PENDING"}
-                      </Badge>
+                      {item.description ? <p className={styles.rowSubtitle}>{item.description}</p> : null}
                     </div>
-                    {item.document?.summary ? <span className={styles.itemDescription}>{item.document.summary}</span> : null}
-                    {!item.acknowledgedAt && canManageCompliance ? (
-                      <form action={acknowledgePolicyAction}>
-                        <input type="hidden" name="acknowledgementId" value={item.id} />
-                        <Button type="submit" variant="outline" size="sm">
-                          Registrar aceite
-                        </Button>
-                      </form>
-                    ) : null}
-                  </div>
-                ))}
+                  );
+                })
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Nenhum item de compliance pendente no momento.</p>
+                </div>
+              )}
+            </div>
+          </section>
+
+          <section className={styles.listPanel}>
+            <div className={styles.panelHeader}>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Aceites de política</h3>
+                  <p className={styles.panelDescription}>Quem já confirmou e quem ainda precisa responder.</p>
+                </div>
               </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhum aceite de política pendente no momento.</div>
-            )}
-          </div>
+            </div>
+
+            <div className={styles.list}>
+              {compliance.policyAcknowledgements.length ? (
+                compliance.policyAcknowledgements.map((item) => {
+                  const overdue = item.dueAt ? item.dueAt.getTime() < now : false;
+                  const variant = item.acknowledgedAt ? "success" : overdue ? "destructive" : "warning";
+
+                  return (
+                    <div key={item.id} className={styles.row}>
+                      <div className={styles.rowTop}>
+                        <div className={styles.rowLead}>
+                          <p className={styles.rowTitle}>{item.title}</p>
+                          <p className={styles.rowSubtitle}>
+                            {item.employee.fullName}
+                            {item.document?.title ? ` · ${item.document.title}` : ""}
+                            {item.document?.versionLabel ? ` · ${item.document.versionLabel}` : ""}
+                          </p>
+                        </div>
+                        <Badge variant={variant}>
+                          {item.acknowledgedAt ? "Aceito" : overdue ? "Atrasado" : "Pendente"}
+                        </Badge>
+                      </div>
+                      {item.document?.summary ? <p className={styles.rowSubtitle}>{item.document.summary}</p> : null}
+                      {!item.acknowledgedAt && canManageCompliance ? (
+                        <form action={acknowledgePolicyAction}>
+                          <input type="hidden" name="acknowledgementId" value={item.id} />
+                          <Button type="submit" variant="outline" size="sm">
+                            Registrar aceite
+                          </Button>
+                        </form>
+                      ) : null}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Nenhum aceite de política pendente no momento.</p>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Risk</span>
-            <strong className={styles.spotlightValue}>{compliance.metrics.overdue}</strong>
-            <p className={styles.panelDescription}>Itens atrasados que merecem follow-up imediato.</p>
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Rollouts</span>
-              <h3 className={styles.panelTitle}>Campanhas de policy</h3>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura rápida</h3>
+              <Badge variant={compliance.metrics.overdue ? "destructive" : "outline"}>{compliance.metrics.overdue} em risco</Badge>
             </div>
-            {policyRollouts.length ? (
-              <div className={styles.list}>
-                {policyRollouts.map((rollout) => (
-                  <div key={rollout.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{rollout.title}</strong>
-                        <span className={styles.itemSubtitle}>
-                          {rollout.document.title}
-                          {rollout.document.versionLabel ? ` · ${rollout.document.versionLabel}` : ""}
-                        </span>
-                      </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Prioridade</span>
+                <p className={styles.detailText}>Ataque primeiro itens atrasados e depois tudo que ainda está sem aceite.</p>
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Rollouts de policy</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
+              {policyRollouts.length ? (
+                policyRollouts.map((rollout) => (
+                  <div key={rollout.id} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>{rollout.title}</span>
                       <Badge variant={rollout.status === "COMPLETED" ? "success" : "outline"}>{rollout.status}</Badge>
                     </div>
-                    <span className={styles.itemDescription}>
+                    <p className={styles.detailText}>
+                      {rollout.document.title}
+                      {rollout.document.versionLabel ? ` · ${rollout.document.versionLabel}` : ""}
+                    </p>
+                    <p className={styles.detailText}>
                       {rollout.metrics.acceptanceRate}% de aceite · {rollout.metrics.acknowledged}/{rollout.metrics.assigned} confirmados
-                    </span>
-                    <span className={styles.itemDescription}>
+                    </p>
+                    <p className={styles.detailText}>
                       Pendentes: {rollout.metrics.pending}
                       {rollout.metrics.overdue ? ` · Atrasados: ${rollout.metrics.overdue}` : ""}
-                    </span>
+                    </p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.surfaceMuted}>Nenhum rollout de policy foi iniciado ainda.</div>
-            )}
-          </div>
+                ))
+              ) : (
+                <p className={styles.emptyState}>Nenhum rollout de policy foi iniciado ainda.</p>
+              )}
+            </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

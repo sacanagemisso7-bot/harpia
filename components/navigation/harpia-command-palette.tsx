@@ -11,6 +11,19 @@ import styles from "./harpia-command-palette.module.css";
 
 const COMMAND_RECENT_STORAGE_KEY = "harpia-command-recent";
 
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return (
+    target.tagName === "INPUT" ||
+    target.tagName === "TEXTAREA" ||
+    target.tagName === "SELECT" ||
+    target.isContentEditable
+  );
+}
+
 export type HarpiaCommandItem = {
   id: string;
   label: string;
@@ -54,10 +67,16 @@ export function HarpiaCommandPalette({
     } catch {
       setRecentIds([]);
     }
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     function handleKeydown(event: KeyboardEvent) {
+      if (!event.metaKey && !event.ctrlKey && event.key === "/" && !open && !isEditableTarget(event.target)) {
+        event.preventDefault();
+        setOpen(true);
+        return;
+      }
+
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
         setOpen((current) => !current);
@@ -71,7 +90,7 @@ export function HarpiaCommandPalette({
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     setOpen(false);
@@ -223,6 +242,18 @@ export function HarpiaCommandPalette({
                     return;
                   }
 
+                  if (event.key === "Home") {
+                    event.preventDefault();
+                    setActiveIndex(0);
+                    return;
+                  }
+
+                  if (event.key === "End") {
+                    event.preventDefault();
+                    setActiveIndex(flatItems.length ? flatItems.length - 1 : 0);
+                    return;
+                  }
+
                   if (event.key === "Enter" && flatItems[activeIndex]) {
                     event.preventDefault();
                     handleSelect(flatItems[activeIndex]);
@@ -256,7 +287,7 @@ export function HarpiaCommandPalette({
                             {item.description ? <span className={styles.itemDescription}>{item.description}</span> : null}
                           </span>
 
-                          <span className={styles.itemMeta}>{isCurrent ? "Atual" : "Abrir"}</span>
+                          <span className={styles.itemMeta}>{isCurrent ? "Atual" : item.section ?? "Abrir"}</span>
                         </button>
                       );
                     })}
@@ -271,10 +302,10 @@ export function HarpiaCommandPalette({
             </div>
 
             <div className={styles.footer}>
-              <span>Use o teclado para abrir rápido qualquer área do produto.</span>
+              <span>Ctrl K ou / abrem a navegação rápida de qualquer área do produto.</span>
               <span className={styles.itemMeta}>
                 <CornerDownLeft className="h-3.5 w-3.5" />
-                Setas navegam, Enter abre
+                Setas navegam, Enter abre, Esc fecha
               </span>
             </div>
           </div>

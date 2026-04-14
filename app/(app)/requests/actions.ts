@@ -1,9 +1,13 @@
 "use server";
 
+import { PeopleTaskPriority } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+import { createAuditEvent } from "@/lib/audit/events";
 import { requirePermission } from "@/lib/auth/permissions";
-import { addHrRequestComment, createHrRequest, updateHrRequestStatus } from "@/modules/hr-requests/service";
+import { parseDateInputValue } from "@/lib/dates/parse-date-input";
+import { prisma } from "@/lib/prisma/client";
+import { addHrRequestComment, createHrRequest, getEffectiveSlaStatus, updateHrRequestStatus } from "@/modules/hr-requests/service";
 import { hrRequestCommentSchema, hrRequestFormSchema, hrRequestStatusSchema } from "@/modules/hr-requests/validators";
 
 function revalidateRequestSurface() {
@@ -105,6 +109,66 @@ export async function addHrRequestCommentAction(formData: FormData) {
     actorId: user.id,
     requestId: parsed.data.requestId,
     message: parsed.data.message
+  });
+
+  revalidateRequestSurface();
+}
+
+export async function updateHrRequestDetailsAction(formData: FormData) {
+  const user = await requirePermission("manage_hr_requests");
+  const requestId = String(formData.get("requestId") ?? "");
+  const assigneeUserId = String(formData.get("assigneeUserId") ?? "").trim();
+  const priority = String(formData.get("priority") ?? "");
+  const dueAt = parseDateInputValue(formData.get("dueAt")) ?? null;
+
+  if (!requestId || !Object.values(PeopleTaskPriority).includes(priority as PeopleTaskPriority)) {
+    return;
+  }
+
+  const request = await prisma.hrRequest.findFirst({
+    where: {
+      id: requestId,
+      organizationId: user.organizationId
+    },
+    select: {
+      id: true,
+      title: true,
+      status: true,
+      assigneeUserId: true,
+      priority: true,
+      dueAt: true
+    }
+  });
+
+  if (!request) {
+    return;
+  }
+
+  const updated = await prisma.hrRequest.update({
+    where: { id: request.id },
+    data: {
+      assigneeUserId: assigneeUserId || null,
+      priority: priority as PeopleTaskPriority,
+      dueAt,
+      slaStatus: getEffectiveSlaStatus({
+        dueAt,
+        status: request.status
+      })
+    }
+  });
+
+  await createAuditEvent({
+    organizationId: user.organizationId,
+    actorId: user.id,
+    action: "hr_request.details_updated",
+    entityType: "hr_request",
+    entityId: updated.id,
+    summary: `Contexto da solicitação ${updated.title} atualizado.`,
+    metadata: {
+      assigneeUserId: updated.assigneeUserId,
+      priority: updated.priority,
+      dueAt: updated.dueAt?.toISOString() ?? null
+    }
   });
 
   revalidateRequestSurface();

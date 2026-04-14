@@ -2,14 +2,27 @@ import { PeopleWorkflowKind, PeopleWorkflowStepStatus } from "@prisma/client";
 
 import { startEmployeeWorkflowAction } from "@/app/(app)/employees/actions";
 import { updateWorkflowStepStatusAction } from "@/app/(app)/people/actions";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
 import { listEmployeesForSelect } from "@/modules/employees/queries";
 import { listWorkflowRunsByKind } from "@/modules/people-ops/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
+
+function getStepVariant(status: PeopleWorkflowStepStatus) {
+  if (status === PeopleWorkflowStepStatus.DONE) return "success" as const;
+  if (status === PeopleWorkflowStepStatus.BLOCKED) return "warning" as const;
+  return "outline" as const;
+}
+
+function formatStatusLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
 
 export default async function OffboardingPage() {
   const user = await requirePermission("view_people_command_center");
@@ -22,48 +35,46 @@ export default async function OffboardingPage() {
   const blockedSteps = runs.flatMap((run) => run.steps).filter((step) => step.status === "BLOCKED").length;
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Offboarding"
-        title="Saídas com rastreio operacional"
-        description="Checklist de desligamento, devolucao de acessos e equipamentos e pendencias finais em um único fluxo."
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Offboarding</span>
+        <h2 className={styles.title}>Saídas com rastreio operacional</h2>
+        <p className={styles.description}>
+          Checklist de desligamento, devolução de acessos e equipamentos e pendências finais em um único fluxo.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Ativos</span>
-          <strong className={styles.statValue}>{runs.length}</strong>
-          <span className={styles.statHint}>Planos de saída acompanhados agora.</span>
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{runs.length}</strong>
+          <span>fluxos ativos</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Concluidos</span>
-          <strong className={styles.statValue}>{completedRuns}</strong>
-          <span className={styles.statHint}>Offboardings encerrados sem pendencias.</span>
+        <div className={styles.statPill}>
+          <strong>{completedRuns}</strong>
+          <span>concluídos</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Bloqueios</span>
-          <strong className={styles.statValue}>{blockedSteps}</strong>
-          <span className={styles.statHint}>Etapas travadas que pedem decisão ou follow-up.</span>
+        <div className={styles.statPill}>
+          <strong>{blockedSteps}</strong>
+          <span>bloqueios</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Base</span>
-          <strong className={styles.statValue}>{employees.length}</strong>
-          <span className={styles.statHint}>Colaboradores disponíveis para iniciar fluxo.</span>
+        <div className={styles.statPill}>
+          <strong>{employees.length}</strong>
+          <span>colaboradores disponíveis</span>
         </div>
-      </section>
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
           {canManage ? (
-            <div className={styles.panel}>
+            <section className={styles.formPanel}>
               <div className={styles.panelHeader}>
-                <span className={styles.panelEyebrow}>Start flow</span>
-                <h2 className={styles.panelTitle}>Iniciar offboarding</h2>
+                <h3 className={styles.panelTitle}>Iniciar offboarding</h3>
                 <p className={styles.panelDescription}>Crie um fluxo de saída com etapas operacionais e dono claro.</p>
               </div>
-              <form action={startEmployeeWorkflowAction} className={styles.actionCluster}>
+
+              <form action={startEmployeeWorkflowAction} className="grid gap-4">
                 <input type="hidden" name="kind" value={PeopleWorkflowKind.OFFBOARDING} />
-                <select name="employeeId" required defaultValue="" className={styles.select}>
+                <select name="employeeId" required defaultValue="" className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm">
                   <option value="" disabled>
                     Selecione um colaborador
                   </option>
@@ -73,100 +84,109 @@ export default async function OffboardingPage() {
                     </option>
                   ))}
                 </select>
-                <Button type="submit" variant="destructive">
-                  Gerar offboarding
-                </Button>
+                <div className="flex justify-end">
+                  <Button type="submit" variant="destructive">
+                    Gerar offboarding
+                  </Button>
+                </div>
               </form>
-            </div>
+            </section>
           ) : null}
 
-          <div className={styles.panel}>
+          <section className={styles.listPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Active plans</span>
-              <h2 className={styles.panelTitle}>Planos em andamento</h2>
-              <p className={styles.panelDescription}>Fluxos de saída com status por etapa e histórico do processo.</p>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Planos em andamento</h3>
+                  <p className={styles.panelDescription}>Fluxos de saída com status por etapa e histórico do processo.</p>
+                </div>
+              </div>
             </div>
-            {runs.length ? (
-              <div className={styles.timeline}>
-                {runs.map((run) => (
-                  <div key={run.id} className={styles.timelineItem}>
-                    <span className={styles.timelineDot} />
-                    <div className={styles.timelineBody}>
-                      <div className={styles.itemHeader}>
-                        <div className={styles.itemLead}>
-                          <strong className={styles.itemTitle}>{run.employee.fullName}</strong>
-                          <span className={styles.itemSubtitle}>{run.employee.title}</span>
-                        </div>
-                        <Badge variant={run.status === "COMPLETED" ? "success" : "warning"}>{run.status}</Badge>
+
+            <div className={styles.list}>
+              {runs.length ? (
+                runs.map((run) => (
+                  <div key={run.id} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>{run.employee.fullName}</p>
+                        <p className={styles.rowSubtitle}>{run.employee.title}</p>
                       </div>
-                      <div className={styles.list}>
-                        {run.steps.map((step) => (
-                          <div key={step.id} className={styles.listItem}>
-                            <div className={styles.itemHeader}>
-                              <div className={styles.itemLead}>
-                                <strong className={styles.itemTitle}>{step.title}</strong>
-                                <span className={styles.itemSubtitle}>
-                                  {step.ownerLabel}
-                                  {step.dueAt
-                                    ? ` - vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(step.dueAt)}`
-                                    : ""}
-                                </span>
-                              </div>
-                              {canManage ? (
-                                <form action={updateWorkflowStepStatusAction} className={styles.rowBetween}>
-                                  <input type="hidden" name="stepId" value={step.id} />
-                                  <select name="status" defaultValue={step.status} className={styles.select}>
-                                    {Object.values(PeopleWorkflowStepStatus).map((status) => (
-                                      <option key={status} value={status}>
-                                        {status}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  <Button type="submit" variant="outline" size="sm">
-                                    Atualizar
-                                  </Button>
-                                </form>
-                              ) : (
-                                <Badge variant={step.status === "DONE" ? "success" : step.status === "BLOCKED" ? "warning" : "outline"}>{step.status}</Badge>
-                              )}
+                      <Badge variant={run.status === "COMPLETED" ? "success" : "warning"}>{formatStatusLabel(run.status)}</Badge>
+                    </div>
+
+                    <div className={styles.sectionStack}>
+                      {run.steps.map((step) => (
+                        <div key={step.id} className={styles.detailCell}>
+                          <div className={styles.sectionHeader}>
+                            <div className={styles.rowLead}>
+                              <p className={styles.rowTitle}>{step.title}</p>
+                              <p className={styles.rowSubtitle}>
+                                {step.ownerLabel}
+                                {step.dueAt
+                                  ? ` · vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(step.dueAt)}`
+                                  : ""}
+                              </p>
                             </div>
+                            {canManage ? (
+                              <form action={updateWorkflowStepStatusAction} className="flex flex-wrap items-center gap-2">
+                                <input type="hidden" name="stepId" value={step.id} />
+                                <select
+                                  name="status"
+                                  defaultValue={step.status}
+                                  className="rounded-md border border-border bg-background px-3 py-2 text-sm"
+                                >
+                                  {Object.values(PeopleWorkflowStepStatus).map((status) => (
+                                    <option key={status} value={status}>
+                                      {formatStatusLabel(status)}
+                                    </option>
+                                  ))}
+                                </select>
+                                <Button type="submit" variant="outline" size="sm">
+                                  Atualizar
+                                </Button>
+                              </form>
+                            ) : (
+                              <Badge variant={getStepVariant(step.status)}>{formatStatusLabel(step.status)}</Badge>
+                            )}
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhum offboarding em andamento.</div>
-            )}
-          </div>
+                ))
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Nenhum offboarding em andamento.</p>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Exit flow</span>
-            <strong className={styles.spotlightValue}>{runs.length}</strong>
-            <p className={styles.panelDescription}>Saídas que ainda exigem coordenacao operacional.</p>
-          </div>
-          <div className={styles.panel}>
-            <div className={styles.list}>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Acessos e ativos</strong>
-                <span className={styles.itemDescription}>Use a fila para não perder nenhum handoff sensivel.</span>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura rápida</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Acessos e ativos</span>
+                <p className={styles.detailText}>Use esta fila para não perder nenhum handoff sensível.</p>
               </div>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Prazos visiveis</strong>
-                <span className={styles.itemDescription}>Cada etapa mostra dono e data quando existir urgencia.</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Prazos visíveis</span>
+                <p className={styles.detailText}>Cada etapa mostra dono e data quando existir urgência operacional.</p>
               </div>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Saída sem caos</strong>
-                <span className={styles.itemDescription}>O objetivo e fechar desligamentos com last-mile controlado.</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Saída sem caos</span>
+                <p className={styles.detailText}>O objetivo é fechar desligamentos com o last mile controlado.</p>
               </div>
             </div>
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

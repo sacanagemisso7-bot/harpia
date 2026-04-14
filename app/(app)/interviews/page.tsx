@@ -1,15 +1,21 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CalendarClock, UserRound } from "lucide-react";
 
-import styles from "../workspace-expansion.module.css";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requirePermission } from "@/lib/auth/permissions";
 import { getUpcomingInterviews } from "@/lib/interviews/queries";
 
+import styles from "@/components/operations/ops-workspace.module.css";
+
 function isWithinHours(date: Date, hours: number) {
   return date.getTime() - Date.now() <= hours * 60 * 60 * 1000;
+}
+
+function formatDateRange(startsAt: Date, endsAt: Date) {
+  const date = new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(startsAt);
+  const end = new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" }).format(endsAt);
+  return `${date} · ${end}`;
 }
 
 export default async function InterviewsPage() {
@@ -17,118 +23,192 @@ export default async function InterviewsPage() {
   const interviews = await getUpcomingInterviews(user.organizationId);
 
   const next24h = interviews.filter((interview) => isWithinHours(interview.startsAt, 24)).length;
+  const next72h = interviews.filter((interview) => isWithinHours(interview.startsAt, 72)).length;
   const uniqueJobs = new Set(interviews.map((interview) => interview.application.job.title)).size;
   const uniqueHosts = new Set(interviews.map((interview) => interview.scheduledBy.name)).size;
 
+  const hostLoad = Array.from(
+    interviews.reduce<Map<string, { name: string; count: number }>>((map, interview) => {
+      const key = interview.scheduledBy.email;
+      const current = map.get(key) ?? { name: interview.scheduledBy.name, count: 0 };
+      current.count += 1;
+      map.set(key, current);
+      return map;
+    }, new Map()).values()
+  )
+    .sort((left, right) => right.count - left.count)
+    .slice(0, 4);
+
+  const stats = [
+    { label: "Agendadas", value: interviews.length },
+    { label: "Próximas 24h", value: next24h },
+    { label: "Próximas 72h", value: next72h },
+    { label: "Hosts ativos", value: uniqueHosts }
+  ];
+
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Interviews"
-        title="Agenda de entrevistas"
-        description="Compromissos do pipeline, candidatos e entrevistadores em uma agenda operacional mais clara."
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Interviews</span>
+        <h2 className={styles.title}>Agenda de entrevistas</h2>
+        <p className={styles.description}>
+          Uma agenda operacional clara para o time enxergar o que vem agora, quem conduz e onde a preparação precisa acontecer.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Agendadas</span>
-          <strong className={styles.statValue}>{interviews.length}</strong>
-          <p className={styles.statHint}>Compromissos futuros encontrados</p>
+      <div className={styles.statRow}>
+        {stats.map((stat) => (
+          <div key={stat.label} className={styles.statPill}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+        <div className={styles.statPill}>
+          <strong>{uniqueJobs}</strong>
+          <span>Vagas representadas</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Próximas 24h</span>
-          <strong className={styles.statValue}>{next24h}</strong>
-          <p className={styles.statHint}>Itens que pedem aten??o mais imediata</p>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Vagas</span>
-          <strong className={styles.statValue}>{uniqueJobs}</strong>
-          <p className={styles.statHint}>Requisi??es representadas na agenda</p>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Hosts</span>
-          <strong className={styles.statValue}>{uniqueHosts}</strong>
-          <p className={styles.statHint}>Pessoas marcando entrevistas</p>
-        </div>
-      </section>
+      </div>
 
-      <div className={styles.layout}>
-        <div className={styles.column}>
-          <section className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Agenda</span>
-              <h2 className={styles.panelTitle}>Próximas entrevistas</h2>
-              <p className={styles.panelDescription}>Veja status, vaga, candidato, horario e atalhos diretos para aplicação e entrevista.</p>
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/pipeline">Abrir pipeline</Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/candidates">Ver candidatos</Link>
+            </Button>
+          </div>
+          <span className={styles.shortcutHint}>A ideia aqui é abrir a agenda e agir rápido, sem navegar por várias telas intermediárias.</span>
+        </div>
+      </div>
+
+      <div className={styles.body}>
+        <section className={styles.listPanel}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelHeaderRow}>
+              <div>
+                <h3 className={styles.panelTitle}>Próximas entrevistas</h3>
+                <p className={styles.panelDescription}>Candidato, vaga, horário e atalhos diretos para abrir a entrevista ou a aplicação.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className={styles.list}>
+            {interviews.length ? (
+              interviews.map((interview) => (
+                <div key={interview.id} className={styles.row}>
+                  <div className={styles.rowTop}>
+                    <div className={styles.rowLead}>
+                      <p className={styles.rowTitle}>{interview.title}</p>
+                      <p className={styles.rowSubtitle}>
+                        {interview.application.candidate.fullName} · {interview.application.job.title}
+                      </p>
+                    </div>
+                    <Badge variant="outline">Agendada</Badge>
+                  </div>
+
+                  <div className={styles.rowMeta}>
+                    <span className={styles.metaValue}>{formatDateRange(interview.startsAt, interview.endsAt)}</span>
+                    <span className={styles.metaValue}>{interview.location || "Sem local definido"}</span>
+                  </div>
+
+                  <div className={styles.rowMeta}>
+                    <span className={styles.metaLabel}>Host</span>
+                    <span className={styles.metaValue}>{interview.scheduledBy.name}</span>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={`/applications/${interview.applicationId}`}>Abrir aplicação</Link>
+                    </Button>
+                    <Button asChild size="sm">
+                      <Link href={`/interviews/${interview.id}`}>
+                        Abrir entrevista
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyWrap}>
+                <p className={styles.emptyState}>Nenhuma entrevista agendada ainda.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Próximas 72 horas</h3>
             </div>
 
-            <div className={styles.list}>
-              {interviews.length ? (
-                interviews.map((interview) => (
-                  <div key={interview.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{interview.title}</strong>
-                        <span className={styles.itemSubtitle}>{interview.application.candidate.fullName}</span>
-                      </div>
-                      <div className={styles.actionRow}>
-                        <Badge
-                          variant={interview.status === "COMPLETED" ? "success" : interview.status === "CANCELLED" ? "destructive" : "outline"}
-                        >
-                          {interview.status}
-                        </Badge>
-                        <Badge variant="outline">{interview.application.job.title}</Badge>
-                      </div>
+            <div className={styles.sectionStack}>
+              {interviews.slice(0, 4).length ? (
+                interviews.slice(0, 4).map((interview) => (
+                  <div key={`next-${interview.id}`} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <CalendarClock className="mr-2 inline h-4 w-4" />
+                        {interview.application.candidate.fullName}
+                      </span>
                     </div>
-
-                    <p className={styles.itemDescription}>
-                      {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(interview.startsAt)} •{" "}
-                      {new Intl.DateTimeFormat("pt-BR", { timeStyle: "short" }).format(interview.endsAt)}
-                    </p>
-                    <p className={styles.itemMeta}>
-                      {interview.location || "Sem local definido"} • {interview.scheduledBy.name}
-                    </p>
-
-                    <div className={styles.actionRow}>
-                      <Button asChild variant="outline" size="sm">
-                        <Link href={`/applications/${interview.applicationId}`}>Aplicação</Link>
-                      </Button>
-                      <Button asChild size="sm">
-                        <Link href={`/interviews/${interview.id}`}>
-                          Abrir
-                          <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                      </Button>
-                    </div>
+                    <p className={styles.detailText}>{interview.application.job.title}</p>
+                    <p className={styles.detailText}>{formatDateRange(interview.startsAt, interview.endsAt)}</p>
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyState}>Nenhuma entrevista agendada ainda.</div>
+                <p className={styles.emptyState}>Sem compromissos próximos para destacar.</p>
               )}
             </div>
           </section>
-        </div>
 
-        <aside className={styles.column}>
-          <section className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Proximidade</span>
-              <h2 className={styles.panelTitle}>O que vem primeiro</h2>
-              <p className={styles.panelDescription}>Compromissos mais próximos para o time se preparar antes da agenda apertar.</p>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Hosts com mais agenda</h3>
             </div>
 
-            <div className={styles.list}>
-              {interviews.length ? (
-                interviews.slice(0, 4).map((interview) => (
-                  <div key={interview.id} className={styles.listItem}>
-                    <strong className={styles.itemTitle}>{interview.application.candidate.fullName}</strong>
-                    <p className={styles.itemDescription}>{interview.application.job.title}</p>
-                    <span className={styles.itemMeta}>
-                      {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(interview.startsAt)}
-                    </span>
+            <div className={styles.sectionStack}>
+              {hostLoad.length ? (
+                hostLoad.map((host) => (
+                  <div key={host.name} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <UserRound className="mr-2 inline h-4 w-4" />
+                        {host.name}
+                      </span>
+                      <Badge variant="outline">{host.count}</Badge>
+                    </div>
+                    <p className={styles.detailText}>Entrevista(s) sob coordenação deste host.</p>
                   </div>
                 ))
               ) : (
-                <div className={styles.emptyState}>Sem entrevistas próximas para destacar.</div>
+                <p className={styles.emptyState}>Ainda não há distribuição suficiente para destacar hosts.</p>
               )}
+            </div>
+          </section>
+
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Atalhos úteis</h3>
+              <p className={styles.panelDescription}>Entre na parte certa do fluxo sem voltar para hubs antigos.</p>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <Link href="/pipeline" className={styles.detailCell}>
+                <span className={styles.metaValue}>Pipeline</span>
+                <p className={styles.detailText}>Continue a fila ativa do processo seletivo.</p>
+              </Link>
+              <Link href="/jobs" className={styles.detailCell}>
+                <span className={styles.metaValue}>Vagas</span>
+                <p className={styles.detailText}>Abra a configuração e o contexto das requisições em andamento.</p>
+              </Link>
+              <Link href="/candidates" className={styles.detailCell}>
+                <span className={styles.metaValue}>Candidatos</span>
+                <p className={styles.detailText}>Revise perfis, histórico e origem do volume.</p>
+              </Link>
             </div>
           </section>
         </aside>

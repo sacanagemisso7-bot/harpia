@@ -20,10 +20,11 @@ type DepartmentPlaybookFormProps = {
 
 export function DepartmentPlaybookForm({ action, defaultValues, submitLabel }: DepartmentPlaybookFormProps) {
   return (
-    <form action={action} className="space-y-4">
+    <form action={action} className="grid gap-4">
       {defaultValues?.id ? <input type="hidden" name="playbookId" value={defaultValues.id} /> : null}
+
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
+        <div className="grid gap-2">
           <Label htmlFor={`department-${defaultValues?.id ?? "new"}`}>Departamento</Label>
           <Input
             id={`department-${defaultValues?.id ?? "new"}`}
@@ -32,27 +33,30 @@ export function DepartmentPlaybookForm({ action, defaultValues, submitLabel }: D
             placeholder="Ex.: Product & Engineering"
           />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor={`title-${defaultValues?.id ?? "new"}`}>Titulo do playbook</Label>
+
+        <div className="grid gap-2">
+          <Label htmlFor={`title-${defaultValues?.id ?? "new"}`}>Título do playbook</Label>
           <Input
             id={`title-${defaultValues?.id ?? "new"}`}
             name="title"
             defaultValue={defaultValues?.title}
-            placeholder="Ex.: Contratacao de product engineers"
+            placeholder="Ex.: Contratação de product engineers"
           />
         </div>
       </div>
-      <div className="space-y-2">
+
+      <div className="grid gap-2">
         <Label htmlFor={`screeningGuidance-${defaultValues?.id ?? "new"}`}>Guia de triagem</Label>
         <Textarea
           id={`screeningGuidance-${defaultValues?.id ?? "new"}`}
           name="screeningGuidance"
           className="min-h-24"
           defaultValue={defaultValues?.screeningGuidance}
-          placeholder="O que priorizar na leitura inicial, quais sinais puxam a vaga para cima e o que precisa de validacao cedo."
+          placeholder="O que priorizar na leitura inicial e quais sinais merecem validação cedo."
         />
       </div>
-      <div className="space-y-2">
+
+      <div className="grid gap-2">
         <Label htmlFor={`interviewGuidance-${defaultValues?.id ?? "new"}`}>Guia de entrevista</Label>
         <Textarea
           id={`interviewGuidance-${defaultValues?.id ?? "new"}`}
@@ -62,18 +66,20 @@ export function DepartmentPlaybookForm({ action, defaultValues, submitLabel }: D
           placeholder="Que perguntas, profundidade e foco usar nas entrevistas desse departamento."
         />
       </div>
-      <div className="space-y-2">
+
+      <div className="grid gap-2">
         <Label htmlFor={`decisionGuidance-${defaultValues?.id ?? "new"}`}>Guia de decisão</Label>
         <Textarea
           id={`decisionGuidance-${defaultValues?.id ?? "new"}`}
           name="decisionGuidance"
           className="min-h-24"
           defaultValue={defaultValues?.decisionGuidance}
-          placeholder="Como decidir entre avancar, segurar ou encerrar com base nos sinais desse departamento."
+          placeholder="Como decidir entre avançar, segurar ou encerrar com base nos sinais desse departamento."
         />
       </div>
+
       <div className="grid gap-4 md:grid-cols-2">
-        <div className="space-y-2">
+        <div className="grid gap-2">
           <Label htmlFor={`strongSignals-${defaultValues?.id ?? "new"}`}>Sinais fortes</Label>
           <Textarea
             id={`strongSignals-${defaultValues?.id ?? "new"}`}
@@ -83,7 +89,8 @@ export function DepartmentPlaybookForm({ action, defaultValues, submitLabel }: D
             placeholder="Um sinal por linha"
           />
         </div>
-        <div className="space-y-2">
+
+        <div className="grid gap-2">
           <Label htmlFor={`riskSignals-${defaultValues?.id ?? "new"}`}>Sinais de risco</Label>
           <Textarea
             id={`riskSignals-${defaultValues?.id ?? "new"}`}
@@ -94,9 +101,12 @@ export function DepartmentPlaybookForm({ action, defaultValues, submitLabel }: D
           />
         </div>
       </div>
-      <Button type="submit" variant={defaultValues ? "outline" : "default"}>
-        {submitLabel}
-      </Button>
+
+      <div className="flex justify-end">
+        <Button type="submit" variant={defaultValues ? "outline" : "default"}>
+          {submitLabel}
+        </Button>
+      </div>
     </form>
   );
 }

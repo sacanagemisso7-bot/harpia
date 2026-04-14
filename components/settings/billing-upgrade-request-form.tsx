@@ -25,9 +25,9 @@ export function BillingUpgradeRequestForm({ action }: BillingUpgradeRequestFormP
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="workspace-form">
-      <div className="workspace-form-grid">
-        <div className="space-y-2">
+    <form action={formAction} className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-2">
           <Label htmlFor="targetPlan">Plano desejado</Label>
           <Select id="targetPlan" name="targetPlan" defaultValue={BillingPlan.GROWTH}>
             <option value={BillingPlan.STARTER}>Starter</option>
@@ -35,40 +35,45 @@ export function BillingUpgradeRequestForm({ action }: BillingUpgradeRequestFormP
             <option value={BillingPlan.BUSINESS}>Business</option>
           </Select>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="targetInterval">Cobranca</Label>
+
+        <div className="grid gap-2">
+          <Label htmlFor="targetInterval">Cobrança</Label>
           <Select id="targetInterval" name="targetInterval" defaultValue="monthly">
             <option value="monthly">Mensal</option>
             <option value="annual">Anual</option>
           </Select>
         </div>
-        <div className="space-y-2">
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-2">
           <Label htmlFor="requestedExtraSeats">Seats extras</Label>
           <Input id="requestedExtraSeats" name="requestedExtraSeats" type="number" min={0} defaultValue={0} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="requestedAiAddonUnits">Pacotes IA</Label>
+        <div className="grid gap-2">
+          <Label htmlFor="requestedAiAddonUnits">Pacotes de IA</Label>
           <Input id="requestedAiAddonUnits" name="requestedAiAddonUnits" type="number" min={0} defaultValue={0} />
         </div>
-        <div className="space-y-2 workspace-form-span-full">
-          <Label htmlFor="requestedContractedMrrCents">MRR proposto (centavos, opcional)</Label>
+        <div className="grid gap-2">
+          <Label htmlFor="requestedContractedMrrCents">MRR proposto (centavos)</Label>
           <Input id="requestedContractedMrrCents" name="requestedContractedMrrCents" type="number" min={0} defaultValue={0} />
-        </div>
-        <div className="space-y-2 workspace-form-span-full">
-          <Label htmlFor="note">Contexto do pedido</Label>
-          <Textarea
-            id="note"
-            name="note"
-            className="min-h-28"
-            placeholder="Descreva volume, urgencia comercial, condicoes negociadas ou contexto para aprovação."
-          />
         </div>
       </div>
 
-      <FormMessage message={state.error} />
-      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
+      <div className="grid gap-2">
+        <Label htmlFor="note">Contexto do pedido</Label>
+        <Textarea
+          id="note"
+          name="note"
+          className="min-h-28"
+          placeholder="Descreva volume, urgência comercial, condições negociadas ou contexto para aprovação."
+        />
+      </div>
 
-      <div className="workspace-form-actions">
+      <FormMessage message={state.error} />
+      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
+
+      <div className="flex justify-end">
         <Button type="submit" disabled={pending}>
           {pending ? "Enviando..." : "Solicitar aprovação comercial"}
         </Button>

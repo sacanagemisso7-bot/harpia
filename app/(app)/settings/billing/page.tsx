@@ -2,6 +2,7 @@ import { BillingPlan, BillingStatus } from "@prisma/client";
 import Link from "next/link";
 import { ArrowRight, CreditCard, FileText, Receipt, Sparkles } from "lucide-react";
 
+import styles from "@/components/operations/ops-workspace.module.css";
 import {
   createBillingCheckout,
   createBillingUpgradeRequest,
@@ -10,7 +11,6 @@ import {
   updateBillingCommercialTerms,
   updateBillingProfile
 } from "@/app/(app)/settings/actions";
-import { PageHeader } from "@/components/layout/page-header";
 import { BillingAddonsForm } from "@/components/settings/billing-addons-form";
 import { BillingProfileForm } from "@/components/settings/billing-profile-form";
 import { BillingUpgradeRequestForm } from "@/components/settings/billing-upgrade-request-form";
@@ -21,8 +21,6 @@ import { BILLING_FEATURE_LABELS, getPlanFeatures } from "@/lib/billing/features"
 import { getBillingPageData } from "@/lib/billing/queries";
 import { BILLING_STATUS_LABELS, formatLimitValue, getPlanDefinition, isBillingActive } from "@/lib/billing/plans";
 import { isStripeConfigured, isStripePlanAvailable } from "@/lib/billing/stripe";
-
-import styles from "../../workspace-expansion.module.css";
 
 const checkoutPlans = [BillingPlan.STARTER, BillingPlan.GROWTH, BillingPlan.BUSINESS];
 
@@ -38,7 +36,7 @@ function getBillingNotice(code?: string) {
     case "success":
       return {
         variant: "success" as const,
-        message: "Checkout concluido. A sincronizacao da assinatura deve aparecer aqui em instantes."
+        message: "Checkout concluído. A sincronização da assinatura deve aparecer aqui em instantes."
       };
     case "cancelled":
       return {
@@ -53,12 +51,12 @@ function getBillingNotice(code?: string) {
     case "trial-already-running":
       return {
         variant: "warning" as const,
-        message: "Ja existe um trial ativo para este workspace."
+        message: "Já existe um trial ativo para este workspace."
       };
     case "already-active":
       return {
         variant: "outline" as const,
-        message: "Sua organização ja possui uma assinatura ativa."
+        message: "Sua organização já possui uma assinatura ativa."
       };
     case "portal":
       return {
@@ -76,6 +74,13 @@ function getBillingNotice(code?: string) {
   }
 }
 
+function formatRequestStatus(status: string) {
+  if (status === "APPROVED") return "Aprovado";
+  if (status === "REJECTED") return "Rejeitado";
+  if (status === "PENDING") return "Pendente";
+  return status;
+}
+
 export default async function BillingPage({
   searchParams
 }: {
@@ -83,9 +88,7 @@ export default async function BillingPage({
 }) {
   const user = await requirePermission("manage_workspace");
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const billingNotice = getBillingNotice(
-    typeof resolvedSearchParams?.billing === "string" ? resolvedSearchParams.billing : undefined
-  );
+  const billingNotice = getBillingNotice(typeof resolvedSearchParams?.billing === "string" ? resolvedSearchParams.billing : undefined);
   const billing = await getBillingPageData(user.organizationId);
 
   if (!billing) {
@@ -96,152 +99,145 @@ export default async function BillingPage({
   const billingIsActive = isBillingActive(billing.organization.billingStatus, billing.organization.billingTrialEndsAt);
   const currentFeatures = getPlanFeatures(billing.organization.billingPlan);
 
+  const stats = [
+    { label: "Plano", value: currentPlan.label },
+    { label: "MRR estimado", value: formatMoney(billing.metrics.estimatedMrrCents, "BRL") },
+    { label: "ARR estimado", value: formatMoney(billing.metrics.estimatedArrCents, "BRL") },
+    { label: "Overage IA", value: formatMoney(billing.metrics.aiOverageRevenueCents, "BRL") }
+  ];
+
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Billing"
-        title="Plano, trial e histórico de cobranca"
-        description="Controle assinatura, acompanhe uso do workspace e veja invoices em um lugar mais claro para operar."
-        actions={
-          <>
-            <Button asChild variant="outline">
-              <Link href="/pricing">Ver pricing</Link>
-            </Button>
-            <form action={openBillingPortal}>
-              <Button type="submit" disabled={!billing.organization.stripeCustomerId}>
-                Abrir portal Stripe
-              </Button>
-            </form>
-          </>
-        }
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Billing</span>
+        <h2 className={styles.title}>Plano, trial e cobrança</h2>
+        <p className={styles.description}>Assinatura, uso, invoices e pedidos comerciais em um fluxo mais claro de operar.</p>
+      </div>
 
       {billingNotice ? (
-        <div className={styles.panel}>
-          <div className={styles.rowBetween}>
-            <div className={styles.itemLead}>
-              <strong className={styles.itemTitle}>Atualizacao de billing</strong>
-              <span className={styles.itemDescription}>{billingNotice.message}</span>
-            </div>
-            <Badge variant={billingNotice.variant}>{billingNotice.variant === "success" ? "OK" : "Info"}</Badge>
+        <div className={styles.toolbar}>
+          <div className={styles.toolbarMeta}>
+            <strong className={styles.panelTitle}>Atualização de billing</strong>
+            <span className={styles.shortcutHint}>{billingNotice.message}</span>
           </div>
+          <Badge variant={billingNotice.variant}>{billingNotice.variant === "success" ? "OK" : "Info"}</Badge>
         </div>
       ) : null}
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Plano</span>
-          <strong className={styles.statValue}>{currentPlan.label}</strong>
-          <span className={styles.statHint}>{currentPlan.monthlyPriceLabel}</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>MRR estimado</span>
-          <strong className={styles.statValue}>{formatMoney(billing.metrics.estimatedMrrCents, "BRL")}</strong>
-          <span className={styles.statHint}>Receita mensal projetada do workspace.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>ARR estimado</span>
-          <strong className={styles.statValue}>{formatMoney(billing.metrics.estimatedArrCents, "BRL")}</strong>
-          <span className={styles.statHint}>Receita anual projetada com o estado atual.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Overage IA</span>
-          <strong className={styles.statValue}>{formatMoney(billing.metrics.aiOverageRevenueCents, "BRL")}</strong>
-              <span className={styles.statHint}>{billing.metrics.aiOverageAnalyses} análises acima da franquia.</span>
-        </div>
-      </section>
+      <div className={styles.statRow}>
+        {stats.map((stat) => (
+          <div key={stat.label} className={styles.statPill}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Current subscription</span>
-              <h2 className={styles.panelTitle}>Assinatura atual</h2>
-              <p className={styles.panelDescription}>Visão executiva do plano e do estado da cobranca.</p>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Assinatura atual</h3>
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge variant={billingIsActive ? "success" : "warning"}>{BILLING_STATUS_LABELS[billing.organization.billingStatus]}</Badge>
+                <Badge variant="outline">{currentPlan.label}</Badge>
+              </div>
             </div>
-            <div className={styles.tagWrap}>
-              <Badge variant={billingIsActive ? "success" : "warning"}>{BILLING_STATUS_LABELS[billing.organization.billingStatus]}</Badge>
-              <Badge variant="outline">{currentPlan.label}</Badge>
-              <span className={styles.tagPill}>{currentPlan.monthlyPriceLabel}</span>
-            </div>
-            <div className={styles.surfaceMuted}>
-              <strong className={styles.itemTitle}>{currentPlan.description}</strong>
-              <span className={styles.itemDescription}>
+
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Plano</span>
+              <p className={styles.detailText}>{currentPlan.description}</p>
+              <p className={styles.detailText}>
                 {billing.organization.billingStatus === BillingStatus.TRIALING && billing.organization.billingTrialEndsAt
-                  ? `Trial ativo ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.organization.billingTrialEndsAt)}.`
+                  ? `Trial ativo até ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.organization.billingTrialEndsAt)}.`
                   : billing.organization.billingCurrentPeriodEndsAt
-                    ? `Período atual ate ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.organization.billingCurrentPeriodEndsAt)}.`
-                    : "Ainda não ha uma assinatura ativa ou trial corrente registrado."}
-              </span>
+                    ? `Período atual até ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(
+                        billing.organization.billingCurrentPeriodEndsAt
+                      )}.`
+                    : "Ainda não há assinatura ativa ou trial corrente registrado."}
+              </p>
             </div>
-            <div className={styles.actionCluster}>
+
+            <div className="flex flex-wrap gap-3">
               <form action={startOrganizationTrial}>
                 <Button type="submit" variant="outline">
                   <Sparkles className="mr-2 h-4 w-4" />
                   Iniciar trial
                 </Button>
               </form>
-              <div className={styles.subGrid2}>
-                <form action={createBillingCheckout.bind(null, BillingPlan.GROWTH, "monthly")}>
-                  <Button type="submit" disabled={!isStripePlanAvailable(BillingPlan.GROWTH)} className="w-full">
-                    Upgrade mensal
-                  </Button>
-                </form>
-                <form action={createBillingCheckout.bind(null, BillingPlan.GROWTH, "annual")}>
-                  <Button type="submit" variant="outline" disabled={!isStripePlanAvailable(BillingPlan.GROWTH, "annual")} className="w-full">
-                    Growth anual
-                  </Button>
-                </form>
-              </div>
-            </div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Workspace usage</span>
-              <h2 className={styles.panelTitle}>Uso do workspace</h2>
-            </div>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoTile}>
-                <strong>Vagas ativas</strong>
-                <span>{billing.usage.activeJobs} · limite {formatLimitValue(billing.effectiveLimits.activeJobs)}</span>
-              </div>
-              <div className={styles.infoTile}>
-                <strong>Membros</strong>
-                <span>{billing.usage.teamMembers} · limite {formatLimitValue(billing.effectiveLimits.teamMembers)}</span>
-              </div>
-              <div className={styles.infoTile}>
-                <strong>IA no mes</strong>
-                <span>{billing.usage.monthlyAiAnalyses} · limite {formatLimitValue(billing.effectiveLimits.monthlyAiAnalyses)}</span>
-              </div>
-              <div className={styles.infoTile}>
-                <strong>Candidatos no mes</strong>
-                <span>{billing.usage.monthlyCandidates} · limite {formatLimitValue(billing.effectiveLimits.monthlyCandidates)}</span>
-              </div>
-            </div>
-          </div>
+              <form action={openBillingPortal}>
+                <Button type="submit" disabled={!billing.organization.stripeCustomerId}>
+                  Abrir portal Stripe
+                </Button>
+              </form>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Checkout and upgrades</span>
-              <h2 className={styles.panelTitle}>Planos disponíveis</h2>
+              <Button asChild variant="outline">
+                <Link href="/pricing">Ver pricing</Link>
+              </Button>
             </div>
-            <div className={styles.subGrid3}>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Uso do workspace</h3>
+            </div>
+
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Vagas ativas</span>
+                <span className={styles.metaValue}>
+                  {billing.usage.activeJobs} / {formatLimitValue(billing.effectiveLimits.activeJobs)}
+                </span>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Membros</span>
+                <span className={styles.metaValue}>
+                  {billing.usage.teamMembers} / {formatLimitValue(billing.effectiveLimits.teamMembers)}
+                </span>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>IA no mês</span>
+                <span className={styles.metaValue}>
+                  {billing.usage.monthlyAiAnalyses} / {formatLimitValue(billing.effectiveLimits.monthlyAiAnalyses)}
+                </span>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Candidatos no mês</span>
+                <span className={styles.metaValue}>
+                  {billing.usage.monthlyCandidates} / {formatLimitValue(billing.effectiveLimits.monthlyCandidates)}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.listPanel}>
+            <div className={styles.panelHeader}>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Planos disponíveis</h3>
+                  <p className={styles.panelDescription}>Assine direto quando houver self-serve ou vá para vendas quando necessário.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid gap-4 p-4 xl:grid-cols-3">
               {checkoutPlans.map((plan) => {
                 const definition = getPlanDefinition(plan);
                 const isCurrent = billing.organization.billingPlan === plan;
                 const canSelfServe = isStripePlanAvailable(plan);
 
                 return (
-                  <div key={plan} className={styles.listItem}>
-                    <div className={styles.rowBetween}>
-                      <strong className={styles.itemTitle}>{definition.label}</strong>
+                  <div key={plan} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>{definition.label}</span>
                       {isCurrent ? <Badge variant="success">Atual</Badge> : null}
                     </div>
-                    <span className={styles.itemDescription}>{definition.monthlyPriceLabel}</span>
-                    <span className={styles.itemDescription}>{definition.annualPriceLabel}</span>
-                    <span className={styles.itemDescription}>{definition.description}</span>
-                    <div className={styles.actionCluster}>
+                    <p className={styles.detailText}>{definition.monthlyPriceLabel}</p>
+                    <p className={styles.detailText}>{definition.annualPriceLabel}</p>
+                    <p className={styles.detailText}>{definition.description}</p>
+
+                    <div className="mt-3 grid gap-2">
                       {canSelfServe ? (
                         <>
                           <form action={createBillingCheckout.bind(null, plan, "monthly")}>
@@ -268,251 +264,260 @@ export default async function BillingPage({
                 );
               })}
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
+          <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Commercial layer</span>
-              <h2 className={styles.panelTitle}>Seats e add-ons de IA</h2>
+              <h3 className={styles.panelTitle}>Seats e add-ons de IA</h3>
+              <p className={styles.panelDescription}>Ajuste a camada comercial do workspace sem sair do billing.</p>
             </div>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoTile}>
-                <strong>Seats extras</strong>
-                <span>{billing.organization.billingExtraSeats}</span>
-              </div>
-              <div className={styles.infoTile}>
-                <strong>Pacotes IA</strong>
-                <span>{billing.organization.billingAiAddonUnits}</span>
-              </div>
-              <div className={styles.infoTile}>
-                <strong>MRR contratado</strong>
-                <span>{billing.organization.billingContractedMrrCents ? formatMoney(billing.organization.billingContractedMrrCents, "BRL") : "Automatico"}</span>
-              </div>
-            </div>
-            <div className={styles.surfaceMuted}>
-              <BillingAddonsForm
-                action={updateBillingCommercialTerms}
-                defaultValues={{
-                  billingExtraSeats: billing.organization.billingExtraSeats,
-                  billingAiAddonUnits: billing.organization.billingAiAddonUnits,
-                  billingContractedMrrCents: billing.organization.billingContractedMrrCents ?? 0
-                }}
-              />
-            </div>
-          </div>
 
-          <div className={styles.panel}>
+            <BillingAddonsForm
+              action={updateBillingCommercialTerms}
+              defaultValues={{
+                billingExtraSeats: billing.organization.billingExtraSeats,
+                billingAiAddonUnits: billing.organization.billingAiAddonUnits,
+                billingContractedMrrCents: billing.organization.billingContractedMrrCents ?? 0
+              }}
+            />
+          </section>
+
+          <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Workspace profile</span>
-              <h2 className={styles.panelTitle}>Perfil fiscal e de cobranca</h2>
+              <h3 className={styles.panelTitle}>Perfil fiscal</h3>
+              <p className={styles.panelDescription}>Dados usados para cobrança, fiscalidade e rate de overage.</p>
             </div>
-            <div className={styles.surfaceMuted}>
-              <BillingProfileForm
-                action={updateBillingProfile}
-                defaultValues={{
-                  billingLegalName: billing.organization.billingLegalName ?? billing.organization.name,
-                  billingTaxId: billing.organization.billingTaxId ?? "",
-                  billingBillingEmail: billing.organization.billingBillingEmail ?? "",
-                  billingCountryCode: billing.organization.billingCountryCode ?? "BR",
-                  billingAiOverageRateCents: billing.organization.billingAiOverageRateCents ?? 120
-                }}
-              />
-            </div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Upgrade requests</span>
-              <h2 className={styles.panelTitle}>Pedido de upgrade ou contrato customizado</h2>
-            </div>
-            <div className={styles.surfaceMuted}>
-              <BillingUpgradeRequestForm action={createBillingUpgradeRequest} />
-            </div>
-            {billing.requests.length ? (
-              <div className={styles.list}>
-                {billing.requests.map((request) => (
-                  <div key={request.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>
-                          {request.targetPlan} {request.targetInterval === "annual" ? "anual" : "mensal"}
-                        </strong>
-                        <span className={styles.itemSubtitle}>
-                          Solicitado por {request.requestedBy.name} em{" "}
-                          {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(request.createdAt)}
-                        </span>
-                      </div>
-                      <Badge
-                        variant={
-                          request.status === "APPROVED"
-                            ? "success"
-                            : request.status === "REJECTED"
-                              ? "destructive"
-                              : "warning"
-                        }
-                      >
-                        {request.status}
-                      </Badge>
-                    </div>
-                    <span className={styles.itemDescription}>
-                      Seats extras: {request.requestedExtraSeats} · Pacotes IA: {request.requestedAiAddonUnits}
-                    </span>
-                    {request.note ? <span className={styles.itemDescription}>{request.note}</span> : null}
-                    {request.responseNote ? <span className={styles.itemDescription}>Resposta: {request.responseNote}</span> : null}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhum pedido de upgrade enviado ainda.</div>
-            )}
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Invoices</span>
-              <h2 className={styles.panelTitle}>Histórico de cobranca</h2>
-            </div>
-            {!currentFeatures.includes("invoice_history") ? (
-              <div className={styles.surfaceMuted}>Histórico detalhado de invoices fica disponível a partir do plano Growth.</div>
-            ) : billing.invoices.length ? (
-              <div className={styles.list}>
-                {billing.invoices.map((invoice) => (
-                  <div key={invoice.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{invoice.number || invoice.id}</strong>
-                        <span className={styles.itemSubtitle}>
-                          Criada em {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(invoice.created * 1000))}
-                        </span>
-                      </div>
-                      <div className={styles.tagWrap}>
-                        <Badge variant={invoice.status === "paid" ? "success" : "warning"}>{invoice.status || "unknown"}</Badge>
-                        <span className={styles.tagPill}>{formatMoney(invoice.amount_paid || invoice.amount_due, invoice.currency)}</span>
-                      </div>
-                    </div>
-                    <div className={styles.rowBetween}>
-                      <div className={styles.tagWrap}>
-                        {invoice.hosted_invoice_url ? (
-                          <Button asChild variant="outline" size="sm">
-                            <a href={invoice.hosted_invoice_url} target="_blank" rel="noreferrer">
-                              <FileText className="mr-2 h-4 w-4" />
-                              Abrir fatura
-                            </a>
-                          </Button>
-                        ) : null}
-                        {invoice.invoice_pdf ? (
-                          <Button asChild variant="ghost" size="sm">
-                            <a href={invoice.invoice_pdf} target="_blank" rel="noreferrer">
-                              PDF
-                            </a>
-                          </Button>
-                        ) : null}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.surfaceMuted}>
-                {isStripeConfigured()
-                  ? "Nenhuma invoice encontrada ainda para este workspace."
-                  : "Configure Stripe para exibir invoices e histórico de cobranca aqui."}
-              </div>
-            )}
-
-            {currentFeatures.includes("invoice_history") ? (
-              <div className={styles.actionCluster}>
-                <Button asChild variant="outline">
-                  <Link href="/api/billing/invoices/export">Exportar CSV</Link>
-                </Button>
-              </div>
-            ) : null}
-          </div>
+            <BillingProfileForm
+              action={updateBillingProfile}
+              defaultValues={{
+                billingLegalName: billing.organization.billingLegalName ?? billing.organization.name,
+                billingTaxId: billing.organization.billingTaxId ?? "",
+                billingBillingEmail: billing.organization.billingBillingEmail ?? "",
+                billingCountryCode: billing.organization.billingCountryCode ?? "BR",
+                billingAiOverageRateCents: billing.organization.billingAiOverageRateCents ?? 120
+              }}
+            />
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Billing status</span>
-            <strong className={styles.spotlightValue}>{BILLING_STATUS_LABELS[billing.organization.billingStatus]}</strong>
-            <p className={styles.panelDescription}>Estado atual da cobranca e da assinatura do workspace.</p>
-          </div>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Saúde do billing</h3>
+            </div>
 
-          <div className={styles.panel}>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>Trial iniciado</span>
-                <strong>
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Status</span>
+                <span className={styles.metaValue}>{BILLING_STATUS_LABELS[billing.organization.billingStatus]}</span>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Trial iniciado</span>
+                <span className={styles.metaValue}>
                   {billing.metrics.trialStartedAt
                     ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.metrics.trialStartedAt)
                     : "Não"}
-                </strong>
+                </span>
               </div>
-              <div className={styles.metricRow}>
-                <span>Primeira ativacao</span>
-                <strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Primeira ativação</span>
+                <span className={styles.metaValue}>
                   {billing.metrics.activatedAt
                     ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(billing.metrics.activatedAt)
                     : "Ainda não"}
-                </strong>
+                </span>
               </div>
-              <div className={styles.metricRow}>
-                <span>Dias para converter</span>
-                <strong>{billing.metrics.daysToConvert ?? "-"}</strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Dias para converter</span>
+                <span className={styles.metaValue}>{billing.metrics.daysToConvert ?? "-"}</span>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Stripe</span>
-                <h3 className={styles.panelTitle}>Integracao</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <CreditCard className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Integração Stripe</h3>
             </div>
-            <div className={styles.surfaceMuted}>
-              <span className={styles.itemDescription}>
-                {isStripeConfigured()
-                  ? "Configurado para checkout, portal do cliente e histórico de invoices."
-                  : "Ainda não configurado. O produto continua com trial e pricing, mas sem cobranca automatica."}
-              </span>
-            </div>
-            <div className={styles.surfaceMuted}>
-              <span className={styles.itemDescription}>
-                Customer: {billing.organization.stripeCustomerId ?? "Não criado"}<br />
-                Subscription: {billing.organization.stripeSubscriptionId ?? "Não criada"}
-              </span>
-            </div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Features</span>
-                <h3 className={styles.panelTitle}>Plano atual</h3>
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <div className={styles.sectionHeader}>
+                  <span className={styles.metaValue}>
+                    <CreditCard className="mr-2 inline h-4 w-4" />
+                    Stripe
+                  </span>
+                  <Badge variant={isStripeConfigured() ? "success" : "warning"}>{isStripeConfigured() ? "Ativo" : "Pendente"}</Badge>
+                </div>
+                <p className={styles.detailText}>
+                  {isStripeConfigured()
+                    ? "Configurado para checkout, portal do cliente e histórico de invoices."
+                    : "Ainda não configurado. O produto continua com trial e pricing, mas sem cobrança automática."}
+                </p>
               </div>
-              <span className={styles.iconLead}>
-                <Receipt className="h-4 w-4" />
-              </span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Customer</span>
+                <p className={styles.detailText}>{billing.organization.stripeCustomerId ?? "Não criado"}</p>
+                <span className={styles.metaLabel}>Subscription</span>
+                <p className={styles.detailText}>{billing.organization.stripeSubscriptionId ?? "Não criada"}</p>
+              </div>
             </div>
-            <div className={styles.list}>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Features do plano</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
               {Object.entries(BILLING_FEATURE_LABELS).map(([feature, label]) => {
                 const enabled = currentFeatures.includes(feature as keyof typeof BILLING_FEATURE_LABELS);
 
                 return (
-                  <div key={feature} className={styles.listItem}>
-                    <div className={styles.rowBetween}>
-                      <strong className={styles.itemTitle}>{label}</strong>
+                  <div key={feature} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <Receipt className="mr-2 inline h-4 w-4" />
+                        {label}
+                      </span>
                       <Badge variant={enabled ? "success" : "outline"}>{enabled ? "Ativo" : "Bloqueado"}</Badge>
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
+          </section>
         </aside>
+      </div>
+
+      <section className={styles.listPanel}>
+        <div className={styles.panelHeader}>
+          <div className={styles.panelHeaderRow}>
+            <div>
+              <h3 className={styles.panelTitle}>Pedidos comerciais</h3>
+              <p className={styles.panelDescription}>Abra pedidos customizados e acompanhe o histórico sem trocar de tela.</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 p-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
+          <div className="border border-border/85 bg-card p-4">
+            <BillingUpgradeRequestForm action={createBillingUpgradeRequest} />
+          </div>
+
+          <div className="grid gap-3">
+            {billing.requests.length ? (
+              billing.requests.map((request) => (
+                <div key={request.id} className="border border-border/85 bg-card p-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="grid gap-1">
+                      <strong className="text-sm text-foreground">
+                        {request.targetPlan} · {request.targetInterval === "annual" ? "Anual" : "Mensal"}
+                      </strong>
+                      <span className="text-sm text-muted-foreground">
+                        Solicitado por {request.requestedBy.name} em{" "}
+                        {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(request.createdAt)}
+                      </span>
+                    </div>
+                    <Badge
+                      variant={
+                        request.status === "APPROVED"
+                          ? "success"
+                          : request.status === "REJECTED"
+                            ? "destructive"
+                            : "warning"
+                      }
+                    >
+                      {formatRequestStatus(request.status)}
+                    </Badge>
+                  </div>
+
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    Seats extras: {request.requestedExtraSeats} · Pacotes de IA: {request.requestedAiAddonUnits}
+                  </p>
+                  {request.note ? <p className="mt-2 text-sm text-muted-foreground">{request.note}</p> : null}
+                  {request.responseNote ? <p className="mt-2 text-sm text-muted-foreground">Resposta: {request.responseNote}</p> : null}
+                </div>
+              ))
+            ) : (
+              <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+                Nenhum pedido de upgrade enviado ainda.
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className={styles.listPanel}>
+        <div className={styles.panelHeader}>
+          <div className={styles.panelHeaderRow}>
+            <div>
+              <h3 className={styles.panelTitle}>Invoices</h3>
+              <p className={styles.panelDescription}>Histórico de cobrança e exportação quando o plano permite.</p>
+            </div>
+          </div>
+        </div>
+
+        {!currentFeatures.includes("invoice_history") ? (
+          <div className="p-4">
+            <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+              Histórico detalhado de invoices fica disponível a partir do plano Growth.
+            </div>
+          </div>
+        ) : billing.invoices.length ? (
+          <div className={styles.list}>
+            {billing.invoices.map((invoice) => (
+              <div key={invoice.id} className={styles.row}>
+                <div className={styles.rowTop}>
+                  <div className={styles.rowLead}>
+                    <p className={styles.rowTitle}>{invoice.number || invoice.id}</p>
+                    <p className={styles.rowSubtitle}>
+                      Criada em {new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(new Date(invoice.created * 1000))}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge variant={invoice.status === "paid" ? "success" : "warning"}>{invoice.status || "unknown"}</Badge>
+                    <Badge variant="outline">{formatMoney(invoice.amount_paid || invoice.amount_due, invoice.currency)}</Badge>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {invoice.hosted_invoice_url ? (
+                    <Button asChild variant="outline" size="sm">
+                      <a href={invoice.hosted_invoice_url} target="_blank" rel="noreferrer">
+                        <FileText className="mr-2 h-4 w-4" />
+                        Abrir fatura
+                      </a>
+                    </Button>
+                  ) : null}
+                  {invoice.invoice_pdf ? (
+                    <Button asChild variant="outline" size="sm">
+                      <a href={invoice.invoice_pdf} target="_blank" rel="noreferrer">
+                        PDF
+                      </a>
+                    </Button>
+                  ) : null}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4">
+            <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+              {isStripeConfigured()
+                ? "Nenhuma invoice encontrada ainda para este workspace."
+                : "Configure Stripe para exibir invoices e histórico de cobrança aqui."}
+            </div>
+          </div>
+        )}
+
+        {currentFeatures.includes("invoice_history") ? (
+          <div className="p-4 pt-0">
+            <Button asChild variant="outline">
+              <Link href="/api/billing/invoices/export">Exportar CSV</Link>
+            </Button>
+          </div>
+        ) : null}
       </section>
     </div>
   );

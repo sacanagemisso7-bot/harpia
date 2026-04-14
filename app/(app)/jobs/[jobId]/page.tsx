@@ -3,7 +3,6 @@ import { ArrowRight, CircleGauge, PencilLine, UsersRound, Workflow } from "lucid
 import { notFound } from "next/navigation";
 
 import { ApplicationStageForm } from "@/components/applications/application-stage-form";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { hasPermission } from "@/lib/auth/permissions";
@@ -13,7 +12,7 @@ import { getJobById } from "@/lib/jobs/queries";
 import { getPipelineStages } from "@/lib/pipeline/queries";
 import { formatScore } from "@/lib/utils";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 import { moveApplicationStage } from "../../applications/actions";
 
 function getJobStatusVariant(status: string) {
@@ -47,144 +46,157 @@ export default async function JobDetailPage({
   const mustHaveCriteria = job.criteria.filter((criterion) => criterion.type === "MUST_HAVE").length;
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Job detail"
-        title={job.title}
-        description={job.summary}
-        actions={
-          <>
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Hiring</span>
+        <h2 className={styles.title}>{job.title}</h2>
+        <p className={styles.description}>{job.summary}</p>
+      </div>
+
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{job._count.applications}</strong>
+          <span>candidaturas</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{formatScore(averageScore)}</strong>
+          <span>média de score</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{mustHaveCriteria}</strong>
+          <span>critérios obrigatórios</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{canUseAutomations ? activeAutomations : 0}</strong>
+          <span>automações ativas</span>
+        </div>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
             <Badge variant={getJobStatusVariant(job.status)}>{job.status}</Badge>
             <Badge variant="outline">{job.department}</Badge>
             <Badge variant="outline">{job.location}</Badge>
             {canManageJob ? (
-              <Button asChild variant="outline">
+              <Button asChild variant="outline" size="sm">
                 <Link href={`/jobs/${job.id}/edit`}>
                   <PencilLine className="mr-2 h-4 w-4" />
                   Editar vaga
                 </Link>
               </Button>
             ) : null}
-          </>
-        }
-      />
-
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Candidaturas</span>
-          <strong className={styles.statValue}>{job._count.applications}</strong>
-          <span className={styles.statHint}>Volume total atualmente no pipeline.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Media de score</span>
-          <strong className={styles.statValue}>{formatScore(averageScore)}</strong>
-          <span className={styles.statHint}>Leitura media da aderência dos perfis.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Obrigatorios</span>
-          <strong className={styles.statValue}>{mustHaveCriteria}</strong>
-          <span className={styles.statHint}>Criterios que definem o corte minimo da vaga.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Automações</span>
-          <strong className={styles.statValue}>{canUseAutomations ? activeAutomations : 0}</strong>
-          <span className={styles.statHint}>Regras ativas que movem a aplicação automaticamente.</span>
-        </div>
-      </section>
-
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Job brief</span>
-              <h2 className={styles.panelTitle}>Contexto e regua da vaga</h2>
-            </div>
-            <p className={styles.richText}>{job.description}</p>
-            <div className={styles.tagWrap}>
-              <span className={styles.tagPill}>{job.department}</span>
-              <span className={styles.tagPill}>{job.location}</span>
-              <span className={styles.tagPill}>{job.seniority}</span>
-              <span className={styles.tagPill}>{job.employmentType}</span>
-              <span className={styles.tagPill}>{job.minExperienceYears ?? 0} anos min.</span>
-            </div>
           </div>
+          <span className={styles.shortcutHint}>Briefing, critérios, pipeline e aplicações em uma só visão operacional.</span>
+        </div>
+      </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Criteria</span>
-              <h2 className={styles.panelTitle}>Sinais de aderência</h2>
-              <p className={styles.panelDescription}>Base de score para triagem e para a leitura do time entrevistador.</p>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Contexto da vaga</h3>
             </div>
+
+            <p className={styles.detailText}>{job.description}</p>
+
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline">{job.department}</Badge>
+              <Badge variant="outline">{job.location}</Badge>
+              <Badge variant="outline">{job.seniority}</Badge>
+              <Badge variant="outline">{job.employmentType}</Badge>
+              <Badge variant="outline">{job.minExperienceYears ?? 0} anos mín.</Badge>
+            </div>
+          </section>
+
+          <section className={styles.listPanel}>
+            <div className={styles.panelHeader}>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Critérios da vaga</h3>
+                  <p className={styles.panelDescription}>A base usada para score e leitura de aderência.</p>
+                </div>
+              </div>
+            </div>
+
             <div className={styles.list}>
               {job.criteria.map((criterion) => (
-                <div key={criterion.id} className={styles.listItem}>
-                  <div className={styles.itemHeader}>
-                    <div className={styles.itemLead}>
-                      <strong className={styles.itemTitle}>{criterion.label}</strong>
-                      <span className={styles.itemSubtitle}>
-                        {criterion.type === "MUST_HAVE" ? "Obrigatorio" : "Desejavel"}
-                      </span>
+                <div key={criterion.id} className={styles.row}>
+                  <div className={styles.rowTop}>
+                    <div className={styles.rowLead}>
+                      <p className={styles.rowTitle}>{criterion.label}</p>
+                      <p className={styles.rowSubtitle}>{criterion.type === "MUST_HAVE" ? "Obrigatório" : "Desejável"}</p>
                     </div>
                     <Badge variant={criterion.type === "MUST_HAVE" ? "success" : "outline"}>Peso {criterion.weight}/10</Badge>
                   </div>
-                  <span className={styles.itemDescription}>{criterion.notes || "Sem observacoes adicionais."}</span>
+                  <p className={styles.rowSubtitle}>{criterion.notes || "Sem observações adicionais."}</p>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
+          <section className={styles.listPanel}>
             <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Scorecard</span>
-              <h2 className={styles.panelTitle}>Roteiro de entrevista</h2>
-              <p className={styles.panelDescription}>Itens que padronizam a avaliação da vaga entre entrevistadores.</p>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Scorecard de entrevista</h3>
+                  <p className={styles.panelDescription}>Itens que padronizam a avaliação entre entrevistadores.</p>
+                </div>
+              </div>
             </div>
-            {job.scorecardItems.length ? (
-              <div className={styles.list}>
-                {job.scorecardItems.map((item) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{item.label}</strong>
-                        <span className={styles.itemSubtitle}>{item.category}</span>
+
+            <div className={styles.list}>
+              {job.scorecardItems.length ? (
+                job.scorecardItems.map((item) => (
+                  <div key={item.id} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>{item.label}</p>
+                        <p className={styles.rowSubtitle}>{item.category}</p>
                       </div>
                       <Badge variant="outline">Peso {item.weight}/10</Badge>
                     </div>
-                    <span className={styles.itemDescription}>{item.description || "Sem guia adicional para este eixo."}</span>
-                    <span className={styles.tinyLabel}>{item.isRequired ? "Obrigatorio" : "Complementar"}</span>
+                    <p className={styles.rowSubtitle}>{item.description || "Sem guia adicional para este eixo."}</p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhum item de scorecard configurado para esta vaga.</div>
-            )}
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Candidates</span>
-              <h2 className={styles.panelTitle}>Fila priorizada</h2>
-              <p className={styles.panelDescription}>Aplicações ordenadas por score com próxima ação operavel.</p>
+                ))
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Nenhum item de scorecard configurado para esta vaga.</p>
+                </div>
+              )}
             </div>
-            {job.applications.length ? (
-              <div className={styles.list}>
-                {job.applications.map((application, index) => (
-                  <div key={application.id} className={styles.listItem}>
-                    <div className={styles.rowBetween}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>
+          </section>
+
+          <section className={styles.listPanel}>
+            <div className={styles.panelHeader}>
+              <div className={styles.panelHeaderRow}>
+                <div>
+                  <h3 className={styles.panelTitle}>Fila priorizada</h3>
+                  <p className={styles.panelDescription}>Aplicações ordenadas por score com próxima ação operável.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.list}>
+              {job.applications.length ? (
+                job.applications.map((application, index) => (
+                  <div key={application.id} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>
                           #{index + 1} {application.candidate.fullName}
-                        </strong>
-                        <span className={styles.itemSubtitle}>
-                          {application.candidate.currentTitle || "Sem cargo atual"} - {application.currentStage?.name || "Sem etapa"}
-                        </span>
+                        </p>
+                        <p className={styles.rowSubtitle}>
+                          {application.candidate.currentTitle || "Sem cargo atual"} ·{" "}
+                          {application.currentStage?.name || "Sem etapa"}
+                        </p>
                       </div>
                       <Badge variant="outline">{formatScore(application.score)}</Badge>
                     </div>
-                    <span className={styles.itemDescription}>
+                    <p className={styles.rowSubtitle}>
                       {application.executiveSummary || "Score gerado, mas sem resumo executivo adicional."}
-                    </span>
-                    <div className={styles.subGrid2}>
+                    </p>
+                    <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto]">
                       {canManageApplications ? (
                         <ApplicationStageForm
                           compact
@@ -193,7 +205,7 @@ export default async function JobDetailPage({
                           action={moveApplicationStage.bind(null, application.id)}
                         />
                       ) : (
-                        <div className={styles.surfaceMuted}>Sem permissao para mover a etapa desta candidatura.</div>
+                        <p className={styles.detailText}>Seu papel não pode mover esta candidatura no pipeline.</p>
                       )}
                       <Button asChild variant="outline" size="sm">
                         <Link href={`/applications/${application.id}`}>
@@ -203,112 +215,96 @@ export default async function JobDetailPage({
                       </Button>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.emptyState}>Nenhuma candidatura vinculada ainda. Abra a vaga para comecar a triar.</div>
-            )}
-          </div>
+                ))
+              ) : (
+                <div className={styles.emptyWrap}>
+                  <p className={styles.emptyState}>Nenhuma candidatura vinculada ainda.</p>
+                </div>
+              )}
+            </div>
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Hiring pulse</span>
-            <strong className={styles.spotlightValue}>{formatScore(averageScore)}</strong>
-            <p className={styles.panelDescription}>Media atual do fit score nesta vaga.</p>
-          </div>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura rápida</h3>
+              <Badge variant="success">{formatScore(averageScore)}</Badge>
+            </div>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Operational summary</span>
-                <h3 className={styles.panelTitle}>Leitura r?pida</h3>
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <UsersRound className="mr-2 inline h-4 w-4" />
+                  Pulso da vaga
+                </span>
+                <p className={styles.detailText}>Média atual do fit score entre as candidaturas em aberto.</p>
               </div>
-              <span className={styles.iconLead}>
-                <UsersRound className="h-4 w-4" />
-              </span>
-            </div>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>Senioridade</span>
-                <strong>{job.seniority}</strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>Senioridade</span>
+                <p className={styles.detailText}>{job.seniority}</p>
               </div>
-              <div className={styles.metricRow}>
-                <span>Experiência minima</span>
-                <strong>{job.minExperienceYears ?? 0} anos</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>Scorecard</span>
-                <strong>{job.scorecardItems.length}</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>Status</span>
-                <strong>{job.status}</strong>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>Experiência mínima</span>
+                <p className={styles.detailText}>{job.minExperienceYears ?? 0} anos</p>
               </div>
             </div>
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Automations</span>
-                <h3 className={styles.panelTitle}>Regras ativas</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <Workflow className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Automações</h3>
+              <Badge variant={canUseAutomations ? "outline" : "warning"}>
+                {canUseAutomations ? "Disponível" : "Growth"}
+              </Badge>
             </div>
-            {canUseAutomations && job.automationRules.length ? (
-              <div className={styles.list}>
-                {job.automationRules.map((rule) => (
-                  <div key={rule.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{rule.trigger}</strong>
-                        <span className={styles.itemSubtitle}>Destino {rule.targetStage.name}</span>
-                      </div>
+
+            <div className={styles.sectionStack}>
+              {canUseAutomations && job.automationRules.length ? (
+                job.automationRules.map((rule) => (
+                  <div key={rule.id} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <Workflow className="mr-2 inline h-4 w-4" />
+                        {rule.trigger}
+                      </span>
                       <Badge variant={rule.enabled ? "success" : "outline"}>{rule.enabled ? "Ativa" : "Pausada"}</Badge>
                     </div>
-                    <span className={styles.itemDescription}>{rule.notes || "Sem observacoes adicionais."}</span>
+                    <p className={styles.detailText}>Destino: {rule.targetStage.name}</p>
+                    <p className={styles.detailText}>{rule.notes || "Sem observações adicionais."}</p>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className={styles.surfaceMuted}>
-                {canUseAutomations
-                  ? "Nenhuma automacao configurada para esta vaga."
-                  : "Automações por vaga fazem parte do plano Growth."}
-              </div>
-            )}
-          </div>
+                ))
+              ) : (
+                <p className={styles.emptyState}>
+                  {canUseAutomations
+                    ? "Nenhuma automação configurada para esta vaga."
+                    : "Automações por vaga fazem parte do plano Growth."}
+                </p>
+              )}
+            </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Navigation</span>
-                <h3 className={styles.panelTitle}>Atalhos</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <CircleGauge className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Atalhos</h3>
             </div>
-            <div className={styles.linkList}>
-              <Link href="/jobs" className={styles.linkItem}>
-                <strong>Todas as vagas</strong>
-                <span>Volte para a fila completa e ajuste filtros.</span>
+
+            <div className={styles.sectionStack}>
+              <Link href="/jobs" className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <CircleGauge className="mr-2 inline h-4 w-4" />
+                  Todas as vagas
+                </span>
+                <p className={styles.detailText}>Volte para a fila completa e ajuste filtros.</p>
               </Link>
-              <Link href="/pipeline" className={styles.linkItem}>
-                <strong>Pipeline</strong>
-                <span>Abra a visão por etapa e acompanhe gargalos.</span>
-              </Link>
-              <Link href="/hiring" className={styles.linkItem}>
-                <strong>Hiring workspace</strong>
-                <span>Resumo operacional da frente de recrutamento.</span>
+              <Link href="/pipeline" className={styles.detailCell}>
+                <span className={styles.metaValue}>Pipeline</span>
+                <p className={styles.detailText}>Abra a visão por etapa e acompanhe gargalos.</p>
               </Link>
             </div>
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

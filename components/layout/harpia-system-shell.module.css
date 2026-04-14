@@ -124,9 +124,10 @@
 }
 
 .navLink {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
   min-height: 3.15rem;
   padding: 0.7rem 0.8rem;
@@ -134,6 +135,21 @@
   border-radius: 0.5rem;
   color: hsl(var(--muted-foreground));
   text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.navLink::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 0.65rem;
+  bottom: 0.65rem;
+  width: 2px;
+  border-radius: 999px;
+  background: transparent;
 }
 
 .navLink:hover {
@@ -145,6 +161,10 @@
   border-color: hsl(var(--border));
   background: hsl(var(--secondary));
   color: hsl(var(--foreground));
+}
+
+.navLinkActive::before {
+  background: hsl(var(--foreground) / 0.85);
 }
 
 .navIconWrap {
@@ -182,6 +202,7 @@
 }
 
 .navDescription {
+  display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -275,12 +296,17 @@
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 12;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   padding: 0 0 1rem;
   border-bottom: 1px solid hsl(var(--border) / 0.85);
+  background: hsl(var(--background) / 0.9);
+  backdrop-filter: blur(16px);
 }
 
 .topbarIntro {
@@ -411,7 +437,6 @@
 }
 
 .shellCollapsed .navGroupLabel,
-.shellCollapsed .navDescription,
 .shellCollapsed .navCopy {
   display: none;
 }

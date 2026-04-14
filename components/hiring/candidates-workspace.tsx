@@ -192,6 +192,12 @@ export function CandidatesWorkspace({
         return;
       }
 
+      if (event.key === "Escape" && query) {
+        event.preventDefault();
+        setQuery("");
+        return;
+      }
+
       if (!filteredCandidates.length) {
         return;
       }
@@ -216,12 +222,24 @@ export function CandidatesWorkspace({
       if (event.key === "Enter" && selectedId) {
         event.preventDefault();
         router.push((`/candidates/${selectedId}`) as Route);
+        return;
+      }
+
+      if (event.key.toLowerCase() === "o" && selectedId) {
+        event.preventDefault();
+        router.push((`/candidates/${selectedId}`) as Route);
+        return;
+      }
+
+      if (event.key.toLowerCase() === "n" && canManageCandidates) {
+        event.preventDefault();
+        router.push("/candidates/new" as Route);
       }
     }
 
     window.addEventListener("keydown", handleKeydown);
     return () => window.removeEventListener("keydown", handleKeydown);
-  }, [filteredCandidates, router, selectedId]);
+  }, [canManageCandidates, filteredCandidates, query, router, selectedId]);
 
   const selectedCandidate =
     filteredCandidates.find((candidate) => candidate.id === selectedId) ?? filteredCandidates[0] ?? null;
@@ -287,7 +305,7 @@ export function CandidatesWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam e `Enter` abre o perfil.</span>
+          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `O` ou `Enter` abrem e `N` cria novo perfil.</span>
         </div>
 
         <div className={styles.searchWrap}>

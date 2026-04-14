@@ -27,14 +27,15 @@ export function BillingAddonsForm({ action, defaultValues }: BillingAddonsFormPr
   const [state, formAction, pending] = useActionState(action, initialState);
 
   return (
-    <form action={formAction} className="workspace-form">
-      <div className="workspace-form-grid workspace-form-grid-3">
-        <div className="space-y-2">
+    <form action={formAction} className="grid gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-2">
           <Label htmlFor="billingExtraSeats">Seats extras</Label>
           <Input id="billingExtraSeats" name="billingExtraSeats" type="number" min={0} defaultValue={defaultValues.billingExtraSeats} />
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="billingAiAddonUnits">Pacotes IA</Label>
+
+        <div className="grid gap-2">
+          <Label htmlFor="billingAiAddonUnits">Pacotes de IA</Label>
           <Input
             id="billingAiAddonUnits"
             name="billingAiAddonUnits"
@@ -43,7 +44,8 @@ export function BillingAddonsForm({ action, defaultValues }: BillingAddonsFormPr
             defaultValue={defaultValues.billingAiAddonUnits}
           />
         </div>
-        <div className="space-y-2">
+
+        <div className="grid gap-2">
           <Label htmlFor="billingContractedMrrCents">MRR contratado (centavos)</Label>
           <Input
             id="billingContractedMrrCents"
@@ -56,9 +58,9 @@ export function BillingAddonsForm({ action, defaultValues }: BillingAddonsFormPr
       </div>
 
       <FormMessage message={state.error} />
-      {state.success ? <p className="workspace-form-success">{state.success}</p> : null}
+      {state.success ? <p className="text-sm text-emerald-700">{state.success}</p> : null}
 
-      <div className="workspace-form-actions">
+      <div className="flex justify-end">
         <Button type="submit" disabled={pending}>
           {pending ? "Salvando..." : "Salvar termos comerciais"}
         </Button>

@@ -1,11 +1,12 @@
+import Link from "next/link";
+
 import { acknowledgePolicyAction } from "@/app/(app)/people/compliance/actions";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import { getSelfServicePolicyWorkspace } from "@/modules/compliance/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 
 export default async function MyPoliciesPage() {
   const user = await requireCurrentUser();
@@ -15,137 +16,154 @@ export default async function MyPoliciesPage() {
   });
   const now = Date.now();
 
-  return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="My policies"
-        title="Aceites e políticas internas"
-        description="Resolva rapidamente políticas pendentes, acompanhe o que ja foi confirmado e reduza atrito operacional com o RH."
-      />
-
-      {!workspace ? (
-        <div className={styles.panel}>
-          <div className={styles.surfaceMuted}>
-            Seu usuário ainda não esta vinculado a um perfil de colaborador nesta organização.
-          </div>
+  if (!workspace) {
+    return (
+      <div className={styles.workspace}>
+        <div className={styles.header}>
+          <span className={styles.eyebrow}>Políticas</span>
+          <h2 className={styles.title}>Self-service indisponível</h2>
+          <p className={styles.description}>
+            Seu acesso ainda não está vinculado a um perfil de colaborador nesta organização.
+          </p>
         </div>
-      ) : (
-        <>
-          <section className={styles.statsGrid}>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Colaborador</span>
-              <strong className={styles.statValue}>{workspace.employee.fullName}</strong>
-              <span className={styles.statHint}>{workspace.employee.title} em {workspace.employee.department}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Políticas</span>
+        <h2 className={styles.title}>Aceites e políticas internas</h2>
+        <p className={styles.description}>
+          Resolva o que está pendente, acompanhe o histórico e evite idas e voltas com o RH para checar o seu status.
+        </p>
+      </div>
+
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{workspace.pendingAcknowledgements.length}</strong>
+          <span>pendentes</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{workspace.pendingPolicyRequirements.length}</strong>
+          <span>requisitos ligados</span>
+        </div>
+        <div className={styles.statPill}>
+          <strong>{workspace.acknowledged.length}</strong>
+          <span>aceites concluídos</span>
+        </div>
+      </div>
+
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
+            <Button asChild size="sm">
+              <Link href="/me">Voltar para minha área</Link>
+            </Button>
+          </div>
+          <span className={styles.shortcutHint}>Priorize tudo que estiver atrasado ou sem confirmação.</span>
+        </div>
+      </div>
+
+      <div className={styles.body}>
+        <section className={styles.listPanel}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelHeaderRow}>
+              <div>
+                <h3 className={styles.panelTitle}>Pendências de aceite</h3>
+                <p className={styles.panelDescription}>Tudo que ainda precisa da sua confirmação.</p>
+              </div>
             </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Pendentes</span>
-              <strong className={styles.statValue}>{workspace.pendingAcknowledgements.length}</strong>
-              <span className={styles.statHint}>Políticas que ainda precisam da sua confirmacao.</span>
+          </div>
+
+          <div className={styles.list}>
+            {workspace.pendingAcknowledgements.length ? (
+              workspace.pendingAcknowledgements.map((item) => {
+                const overdue = item.dueAt ? item.dueAt.getTime() < now : false;
+
+                return (
+                  <div key={item.id} className={styles.row}>
+                    <div className={styles.rowTop}>
+                      <div className={styles.rowLead}>
+                        <p className={styles.rowTitle}>{item.document?.title ?? item.title}</p>
+                        <p className={styles.rowSubtitle}>
+                          {item.document?.versionLabel ? `${item.document.versionLabel} · ` : ""}
+                          {item.dueAt
+                            ? `vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}`
+                            : "sem prazo definido"}
+                        </p>
+                      </div>
+                      <Badge variant={overdue ? "destructive" : "warning"}>{overdue ? "Atrasado" : "Pendente"}</Badge>
+                    </div>
+                    {item.document?.summary ? <p className={styles.rowSubtitle}>{item.document.summary}</p> : null}
+                    <form action={acknowledgePolicyAction}>
+                      <input type="hidden" name="acknowledgementId" value={item.id} />
+                      <Button type="submit" size="sm">
+                        Confirmar aceite
+                      </Button>
+                    </form>
+                  </div>
+                );
+              })
+            ) : (
+              <div className={styles.emptyWrap}>
+                <p className={styles.emptyState}>Nenhuma política pendente para você no momento.</p>
+              </div>
+            )}
+          </div>
+        </section>
+
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Histórico</h3>
             </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Requisitos ligados</span>
-              <strong className={styles.statValue}>{workspace.pendingPolicyRequirements.length}</strong>
-              <span className={styles.statHint}>Itens de compliance associados a essas policies.</span>
-            </div>
-            <div className={styles.statCard}>
-              <span className={styles.statLabel}>Histórico</span>
-              <strong className={styles.statValue}>{workspace.acknowledged.length}</strong>
-              <span className={styles.statHint}>Aceites ja registrados para o seu perfil.</span>
+
+            <div className={styles.sectionStack}>
+              {workspace.acknowledged.length ? (
+                workspace.acknowledged.map((item) => (
+                  <div key={item.id} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>{item.document?.title ?? item.title}</span>
+                      <Badge variant="success">Aceito</Badge>
+                    </div>
+                    <p className={styles.detailText}>
+                      {item.document?.versionLabel ? `${item.document.versionLabel} · ` : ""}
+                      {item.acknowledgedAt
+                        ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(item.acknowledgedAt)
+                        : "data indisponível"}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className={styles.emptyState}>Seu histórico de aceites aparecerá aqui conforme for avançando.</p>
+              )}
             </div>
           </section>
 
-          <section className={styles.detailLayout}>
-            <div className={styles.column}>
-              <div className={styles.panel}>
-                <div className={styles.panelHeader}>
-                  <span className={styles.panelEyebrow}>Pending acknowledgements</span>
-                  <h2 className={styles.panelTitle}>Pendencias de aceite</h2>
-                  <p className={styles.panelDescription}>Políticas que ainda precisam da sua confirmacao.</p>
-                </div>
-                {workspace.pendingAcknowledgements.length ? (
-                  <div className={styles.list}>
-                    {workspace.pendingAcknowledgements.map((item) => (
-                      <div key={item.id} className={styles.listItem}>
-                        <div className={styles.itemHeader}>
-                          <div className={styles.itemLead}>
-                            <strong className={styles.itemTitle}>{item.document?.title ?? item.title}</strong>
-                            <span className={styles.itemSubtitle}>
-                              {item.document?.versionLabel ? `${item.document.versionLabel} · ` : ""}
-                              {item.title}
-                              {item.dueAt ? ` · vence em ${new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(item.dueAt)}` : ""}
-                            </span>
-                          </div>
-                          <Badge variant={item.dueAt && item.dueAt.getTime() < now ? "destructive" : "warning"}>
-                            {item.dueAt && item.dueAt.getTime() < now ? "OVERDUE" : "PENDING"}
-                          </Badge>
-                        </div>
-                        {item.document?.summary ? <span className={styles.itemDescription}>{item.document.summary}</span> : null}
-                        <form action={acknowledgePolicyAction}>
-                          <input type="hidden" name="acknowledgementId" value={item.id} />
-                          <Button type="submit">Confirmar aceite</Button>
-                        </form>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className={styles.emptyState}>Nenhuma política pendente para você no momento.</div>
-                )}
-              </div>
-
-              <div className={styles.panel}>
-                <div className={styles.panelHeader}>
-                  <span className={styles.panelEyebrow}>History</span>
-                  <h2 className={styles.panelTitle}>Histórico recente</h2>
-                  <p className={styles.panelDescription}>Políticas ja confirmadas e contexto de compliance ligado a elas.</p>
-                </div>
-                {workspace.acknowledged.length ? (
-                  <div className={styles.list}>
-                    {workspace.acknowledged.map((item) => (
-                      <div key={item.id} className={styles.listItem}>
-                        <div className={styles.itemHeader}>
-                          <div className={styles.itemLead}>
-                            <strong className={styles.itemTitle}>{item.document?.title ?? item.title}</strong>
-                            <span className={styles.itemSubtitle}>
-                              {item.document?.versionLabel ? `${item.document.versionLabel} · ` : ""}
-                              Confirmado em{" "}
-                              {item.acknowledgedAt
-                                ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium", timeStyle: "short" }).format(item.acknowledgedAt)
-                                : "data indisponível"}
-                            </span>
-                          </div>
-                          <Badge variant="success">ACKNOWLEDGED</Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className={styles.emptyState}>Seus aceites aparecem aqui conforme forem sendo registrados.</div>
-                )}
-              </div>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura rápida</h3>
             </div>
 
-            <aside className={styles.stickyAside}>
-              <div className={styles.spotlight}>
-                <span className={styles.panelEyebrow}>Self service</span>
-                <strong className={styles.spotlightValue}>{workspace.pendingAcknowledgements.length ? "Action" : "Clear"}</strong>
-                <p className={styles.panelDescription}>Uma leitura r?pida para saber se ainda existe algo esperando você.</p>
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Situação</span>
+                <p className={styles.detailText}>
+                  {workspace.pendingAcknowledgements.length
+                    ? "Ainda existe algo esperando sua ação."
+                    : "Não há pendências abertas agora."}
+                </p>
               </div>
-              <div className={styles.panel}>
-                <div className={styles.list}>
-                  <div className={styles.listItem}>
-                    <strong className={styles.itemTitle}>Confirme assim que ler</strong>
-                    <span className={styles.itemDescription}>Reduz follow-up manual do RH e limpa a fila mais rapido.</span>
-                  </div>
-                  <div className={styles.listItem}>
-                    <strong className={styles.itemTitle}>Observe a versao</strong>
-                    <span className={styles.itemDescription}>Quando houver nova policy, o histórico deixa claro o que mudou.</span>
-                  </div>
-                </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Boas práticas</span>
+                <p className={styles.detailText}>Confirme logo após a leitura para manter a fila limpa e rastreável.</p>
               </div>
-            </aside>
+            </div>
           </section>
-        </>
-      )}
+        </aside>
+      </div>
     </div>
   );
 }

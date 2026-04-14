@@ -2,18 +2,22 @@ import { EmployeeCheckInType, EmployeeStatus, PeopleWorkflowKind } from "@prisma
 import { ClipboardCheck, ShieldCheck, UserRoundCog, Workflow } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import { createEmployeeCheckInAction, startEmployeeWorkflowAction } from "@/app/(app)/employees/actions";
+import {
+  createEmployeeCheckInAction,
+  startEmployeeWorkflowAction,
+  updateEmployeeContextAction,
+  updateEmployeeStatusAction
+} from "@/app/(app)/employees/actions";
 import { acknowledgePolicyAction } from "@/app/(app)/people/compliance/actions";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
-import { getEmployeeProfile } from "@/modules/employees/queries";
+import { getEmployeeProfile, listEmployeesForSelect } from "@/modules/employees/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 
 function getStatusVariant(status: EmployeeStatus) {
   if (status === EmployeeStatus.ACTIVE) {
@@ -27,6 +31,23 @@ function getStatusVariant(status: EmployeeStatus) {
   return "outline" as const;
 }
 
+function formatTokenLabel(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatDateInput(date: Date | null) {
+  if (!date) {
+    return "";
+  }
+
+  const normalized = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return normalized.toISOString().slice(0, 10);
+}
+
 export default async function EmployeeProfilePage({
   params
 }: {
@@ -34,7 +55,10 @@ export default async function EmployeeProfilePage({
 }) {
   const user = await requirePermission("view_employees");
   const { employeeId } = await params;
-  const employee = await getEmployeeProfile(user.organizationId, employeeId);
+  const [employee, managerOptions] = await Promise.all([
+    getEmployeeProfile(user.organizationId, employeeId),
+    listEmployeesForSelect(user.organizationId)
+  ]);
 
   if (!employee) {
     notFound();
@@ -43,307 +67,385 @@ export default async function EmployeeProfilePage({
   const canManageWorkflows = hasPermission(user.role, "manage_people_workflows");
   const canManageCheckins = hasPermission(user.role, "manage_checkins");
   const canManageCompliance = hasPermission(user.role, "manage_compliance");
+  const canManageEmployees = hasPermission(user.role, "manage_employees");
   const openComplianceCount =
     employee.complianceRequirements.filter((item) => item.status === "PENDING").length +
     employee.policyAcknowledgements.filter((item) => !item.acknowledgedAt).length;
   const now = Date.now();
 
+  const stats = [
+    { label: "Gestor", value: employee.manager?.fullName ?? "--" },
+    { label: "Requests", value: employee.requestedHrRequests.length },
+    { label: "Tasks", value: employee.relatedTasks.length },
+    { label: "Compliance", value: openComplianceCount }
+  ];
+
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Employee profile"
-        title={employee.fullName}
-        description={`${employee.title} em ${employee.department}. Perfil operacional com histórico, tasks, requests e compliance.`}
-        actions={<Badge variant={getStatusVariant(employee.status)}>{employee.status}</Badge>}
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Employee</span>
+        <h2 className={styles.title}>{employee.fullName}</h2>
+        <p className={styles.description}>
+          {employee.title} · {employee.department}
+          {employee.location ? ` · ${employee.location}` : ""}
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Gestor</span>
-          <strong className={styles.statValue}>{employee.manager?.fullName ?? "--"}</strong>
-          <span className={styles.statHint}>Owner humano principal desta pessoa.</span>
+      <div className={styles.statRow}>
+        {stats.map((stat) => (
+          <div key={stat.label} className={styles.statPill}>
+            <strong>{stat.value}</strong>
+            <span>{stat.label}</span>
+          </div>
+        ))}
+        <div className={styles.statPill}>
+          <strong>{formatTokenLabel(employee.status)}</strong>
+          <span>Status</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Requests</span>
-          <strong className={styles.statValue}>{employee.requestedHrRequests.length}</strong>
-          <span className={styles.statHint}>Demandas abertas ou historicas ligadas ao colaborador.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Tasks</span>
-          <strong className={styles.statValue}>{employee.relatedTasks.length}</strong>
-          <span className={styles.statHint}>Carga operacional associada ao perfil.</span>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Compliance</span>
-          <strong className={styles.statValue}>{openComplianceCount}</strong>
-          <span className={styles.statHint}>Itens que ainda exigem conclus?o ou aceite.</span>
-        </div>
-      </section>
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Core data</span>
-              <h2 className={styles.panelTitle}>Fonte de verdade operacional</h2>
+      <div className={styles.body}>
+        <div className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Fonte de verdade operacional</h3>
+              <Badge variant={getStatusVariant(employee.status)}>{formatTokenLabel(employee.status)}</Badge>
             </div>
-            <div className={styles.infoGrid}>
-              <div className={styles.infoTile}>
-                <strong>Cargo</strong>
-                <span>{employee.title}</span>
+
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Cargo</span>
+                <span className={styles.metaValue}>{employee.title}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Time</strong>
-                <span>{employee.department}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Time</span>
+                <span className={styles.metaValue}>{employee.department}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Localização</strong>
-                <span>{employee.location || "Não informada"}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Localização</span>
+                <span className={styles.metaValue}>{employee.location || "Não informada"}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Tipo de contratacao</strong>
-                <span>{employee.employmentType || "Não informado"}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Tipo de contratação</span>
+                <span className={styles.metaValue}>{employee.employmentType || "Não informado"}</span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Entrada</strong>
-                <span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Entrada</span>
+                <span className={styles.metaValue}>
                   {employee.startDate
                     ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(employee.startDate)
                     : "Não informada"}
                 </span>
               </div>
-              <div className={styles.infoTile}>
-                <strong>Email</strong>
-                <span>{employee.workEmail || "Não informado"}</span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>E-mail</span>
+                <span className={styles.metaValue}>{employee.workEmail || "Não informado"}</span>
               </div>
             </div>
-            <div className={styles.surfaceMuted}>{employee.notes || "Sem notas iniciais registradas para este colaborador."}</div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Workflow history</span>
-              <h2 className={styles.panelTitle}>Fluxos e progresso</h2>
+            <div className={styles.detailCell}>
+              <span className={styles.metaLabel}>Notas iniciais</span>
+              <p className={styles.detailText}>{employee.notes || "Sem notas iniciais registradas para este colaborador."}</p>
             </div>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Fluxos e progresso</h3>
+            </div>
+
             {employee.workflowRuns.length ? (
-              <div className={styles.timeline}>
+              <div className={styles.commentList}>
                 {employee.workflowRuns.map((run) => (
-                  <div key={run.id} className={styles.timelineItem}>
-                    <span className={styles.timelineDot} />
-                    <div className={styles.timelineBody}>
-                      <div className={styles.itemHeader}>
-                        <div className={styles.itemLead}>
-                          <strong className={styles.itemTitle}>{run.title}</strong>
-                          <span className={styles.itemSubtitle}>{run.kind}</span>
+                  <div key={run.id} className={styles.commentItem}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.commentAuthor}>{run.title}</span>
+                      <Badge variant={run.status === "COMPLETED" ? "success" : "outline"}>{formatTokenLabel(run.status)}</Badge>
+                    </div>
+                    <p className={styles.commentBody}>{formatTokenLabel(run.kind)}</p>
+                    <div className={styles.detailGrid}>
+                      {run.steps.map((step) => (
+                        <div key={step.id} className={styles.detailCell}>
+                          <span className={styles.metaLabel}>{step.ownerLabel}</span>
+                          <span className={styles.metaValue}>{step.title}</span>
+                          <p className={styles.detailText}>{formatTokenLabel(step.status)}</p>
                         </div>
-                        <Badge variant={run.status === "COMPLETED" ? "success" : "outline"}>{run.status}</Badge>
-                      </div>
-                      <div className={styles.list}>
-                        {run.steps.map((step) => (
-                          <div key={step.id} className={styles.listItem}>
-                            <div className={styles.itemHeader}>
-                              <div className={styles.itemLead}>
-                                <strong className={styles.itemTitle}>{step.title}</strong>
-                                <span className={styles.itemSubtitle}>{step.ownerLabel}</span>
-                              </div>
-                              <Badge variant={step.status === "DONE" ? "success" : step.status === "BLOCKED" ? "warning" : "outline"}>
-                                {step.status}
-                              </Badge>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
+                      ))}
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Nenhum fluxo operacional registrado para este colaborador ainda.</div>
+              <p className={styles.emptyState}>Nenhum fluxo operacional registrado para este colaborador ainda.</p>
             )}
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Load</span>
-              <h2 className={styles.panelTitle}>Requests e tasks</h2>
-              <p className={styles.panelDescription}>Visão resumida da carga operacional ligada a esta pessoa.</p>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Carga operacional</h3>
             </div>
-            <div className={styles.subGrid2}>
-              <div className={styles.column}>
-                <span className={styles.panelEyebrow}>Requests</span>
+
+            <div className={styles.detailGrid}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Requests</span>
                 {employee.requestedHrRequests.length ? (
-                  <div className={styles.list}>
-                    {employee.requestedHrRequests.map((request) => (
-                      <div key={request.id} className={styles.listItem}>
-                        <strong className={styles.itemTitle}>{request.title}</strong>
-                        <span className={styles.itemDescription}>{request.status}</span>
-                      </div>
-                    ))}
-                  </div>
+                  employee.requestedHrRequests.map((request) => (
+                    <p key={request.id} className={styles.detailText}>
+                      {request.title} · {formatTokenLabel(request.status)}
+                    </p>
+                  ))
                 ) : (
-                  <div className={styles.surfaceMuted}>Sem solicitações para este colaborador.</div>
+                  <p className={styles.detailText}>Sem solicitações ligadas a este colaborador.</p>
                 )}
               </div>
-              <div className={styles.column}>
-                <span className={styles.panelEyebrow}>Tasks</span>
-                {employee.relatedTasks.length ? (
-                  <div className={styles.list}>
-                    {employee.relatedTasks.map((task) => (
-                      <div key={task.id} className={styles.listItem}>
-                        <strong className={styles.itemTitle}>{task.title}</strong>
-                        <span className={styles.itemDescription}>{task.status}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className={styles.surfaceMuted}>Sem tarefas vinculadas agora.</div>
-                )}
-              </div>
-            </div>
-          </div>
 
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Check-ins</span>
-              <h2 className={styles.panelTitle}>Acompanhamento humano</h2>
+              <div className={styles.detailCell}>
+                <span className={styles.metaLabel}>Tasks</span>
+                {employee.relatedTasks.length ? (
+                  employee.relatedTasks.map((task) => (
+                    <p key={task.id} className={styles.detailText}>
+                      {task.title} · {formatTokenLabel(task.status)}
+                    </p>
+                  ))
+                ) : (
+                  <p className={styles.detailText}>Sem tarefas vinculadas neste momento.</p>
+                )}
+              </div>
             </div>
+          </section>
+
+          <section className={styles.formPanel}>
+            <div className={styles.panelHeader}>
+              <h3 className={styles.panelTitle}>Acompanhamento humano</h3>
+              <p className={styles.panelDescription}>Registros rápidos, follow-ups e contexto qualitativo do time.</p>
+            </div>
+
             {employee.checkIns.length ? (
-              <div className={styles.list}>
+              <div className={styles.commentList}>
                 {employee.checkIns.map((entry) => (
-                  <div key={entry.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{entry.title}</strong>
-                        <span className={styles.itemSubtitle}>{entry.author.name}</span>
-                      </div>
-                      <Badge variant="outline">{entry.type}</Badge>
+                  <div key={entry.id} className={styles.commentItem}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.commentAuthor}>{entry.title}</span>
+                      <Badge variant="outline">{formatTokenLabel(entry.type)}</Badge>
                     </div>
-                    {entry.summary ? <span className={styles.itemDescription}>{entry.summary}</span> : null}
+                    <p className={styles.commentBody}>{entry.author.name}</p>
+                    {entry.summary ? <p className={styles.commentBody}>{entry.summary}</p> : null}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.emptyState}>Nenhum registro de acompanhamento ainda.</div>
+              <p className={styles.emptyState}>Nenhum registro de acompanhamento ainda.</p>
             )}
-          </div>
+          </section>
         </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Status</span>
-            <strong className={styles.spotlightValue}>{employee.status}</strong>
-            <p className={styles.panelDescription}>Leitura atual da situacao desta pessoa dentro da operação.</p>
-          </div>
+        <aside className={styles.detailColumn}>
+          {canManageEmployees ? (
+            <section className={styles.formPanel}>
+              <div className={styles.panelHeader}>
+                <h3 className={styles.panelTitle}>Status do vínculo</h3>
+                <p className={styles.panelDescription}>Altere o estado do colaborador sem abrir um fluxo separado.</p>
+              </div>
+
+              <div className={styles.quickActions}>
+                {Object.values(EmployeeStatus).map((status) => (
+                  <form key={status} action={updateEmployeeStatusAction}>
+                    <input type="hidden" name="employeeId" value={employee.id} />
+                    <input type="hidden" name="status" value={status} />
+                    <Button
+                      type="submit"
+                      size="sm"
+                      variant={status === employee.status ? "default" : "outline"}
+                      className={styles.quickActionButton}
+                      disabled={status === employee.status}
+                    >
+                      {formatTokenLabel(status)}
+                    </Button>
+                  </form>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {canManageEmployees ? (
+            <section className={styles.formPanel}>
+              <div className={styles.panelHeader}>
+                <h3 className={styles.panelTitle}>Contexto rápido</h3>
+                <p className={styles.panelDescription}>Edite os dados mais usados sem sair do perfil.</p>
+              </div>
+
+              <form action={updateEmployeeContextAction} className={styles.formGrid}>
+                <input type="hidden" name="employeeId" value={employee.id} />
+
+                <div className={styles.formGrid2}>
+                  <Input name="title" defaultValue={employee.title} placeholder="Cargo" className={styles.fieldCompact} />
+                  <Input name="department" defaultValue={employee.department} placeholder="Time" className={styles.fieldCompact} />
+                </div>
+
+                <div className={styles.formGrid2}>
+                  <Select name="managerEmployeeId" defaultValue={employee.manager?.id ?? ""} className={styles.selectCompact}>
+                    <option value="">Sem gestor definido</option>
+                    {managerOptions
+                      .filter((option) => option.id !== employee.id)
+                      .map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.fullName} - {option.title}
+                        </option>
+                      ))}
+                  </Select>
+                  <Input
+                    name="employmentType"
+                    defaultValue={employee.employmentType ?? ""}
+                    placeholder="Tipo de contratação"
+                    className={styles.fieldCompact}
+                  />
+                </div>
+
+                <div className={styles.formGrid2}>
+                  <Input name="location" defaultValue={employee.location ?? ""} placeholder="Localização" className={styles.fieldCompact} />
+                  <Input
+                    name="workEmail"
+                    type="email"
+                    defaultValue={employee.workEmail ?? ""}
+                    placeholder="E-mail de trabalho"
+                    className={styles.fieldCompact}
+                  />
+                </div>
+
+                <Input
+                  name="startDate"
+                  type="date"
+                  defaultValue={formatDateInput(employee.startDate)}
+                  className={styles.fieldCompact}
+                />
+
+                <div className="flex justify-end">
+                  <Button type="submit" variant="outline">
+                    Salvar contexto
+                  </Button>
+                </div>
+              </form>
+            </section>
+          ) : null}
 
           {canManageWorkflows ? (
-            <div className={styles.panel}>
-              <div className={styles.itemHeader}>
-                <div className={styles.itemLead}>
-                  <span className={styles.panelEyebrow}>Workflow actions</span>
-                  <h3 className={styles.panelTitle}>Fluxos operacionais</h3>
-                </div>
-                <span className={styles.iconLead}>
-                  <Workflow className="h-4 w-4" />
-                </span>
+            <section className={styles.formPanel}>
+              <div className={styles.panelHeader}>
+                <h3 className={styles.panelTitle}>Fluxos operacionais</h3>
+                <p className={styles.panelDescription}>Inicie onboarding ou offboarding sem sair do perfil.</p>
               </div>
-              <div className={styles.actionCluster}>
+
+              <div className={styles.sectionStack}>
                 <form action={startEmployeeWorkflowAction}>
                   <input type="hidden" name="employeeId" value={employee.id} />
                   <input type="hidden" name="kind" value={PeopleWorkflowKind.ONBOARDING} />
                   <Button type="submit" variant="outline" className="w-full">
+                    <Workflow className="mr-2 h-4 w-4" />
                     Iniciar onboarding
                   </Button>
                 </form>
+
                 <form action={startEmployeeWorkflowAction}>
                   <input type="hidden" name="employeeId" value={employee.id} />
                   <input type="hidden" name="kind" value={PeopleWorkflowKind.OFFBOARDING} />
                   <Button type="submit" variant="destructive" className="w-full">
+                    <Workflow className="mr-2 h-4 w-4" />
                     Iniciar offboarding
                   </Button>
                 </form>
               </div>
-            </div>
+            </section>
           ) : null}
 
           {canManageCheckins ? (
-            <div className={styles.panel}>
-              <div className={styles.itemHeader}>
-                <div className={styles.itemLead}>
-                  <span className={styles.panelEyebrow}>Record entry</span>
-                  <h3 className={styles.panelTitle}>Novo registro</h3>
-                </div>
-                <span className={styles.iconLead}>
-                  <ClipboardCheck className="h-4 w-4" />
-                </span>
+            <section className={styles.formPanel}>
+              <div className={styles.panelHeader}>
+                <h3 className={styles.panelTitle}>Novo registro</h3>
+                <p className={styles.panelDescription}>Check-ins, alertas e follow-ups no mesmo fluxo.</p>
               </div>
-              <form action={createEmployeeCheckInAction} className={styles.actionCluster}>
+
+              <form action={createEmployeeCheckInAction} className="grid gap-4">
                 <input type="hidden" name="employeeId" value={employee.id} />
-                <Select name="type" defaultValue={EmployeeCheckInType.CHECK_IN}>
-                  {Object.values(EmployeeCheckInType).map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </Select>
-                <Input name="title" required placeholder="Titulo do registro" />
-                <Input name="followUpAt" type="date" />
-                <Textarea name="summary" placeholder="Resumo do acompanhamento" className="min-h-28" />
-                <Button type="submit">Salvar registro</Button>
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-2">
+                    <span className="text-xs text-muted-foreground">Tipo</span>
+                    <Select name="type" defaultValue={EmployeeCheckInType.CHECK_IN}>
+                      {Object.values(EmployeeCheckInType).map((type) => (
+                        <option key={type} value={type}>
+                          {formatTokenLabel(type)}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="grid gap-2">
+                    <span className="text-xs text-muted-foreground">Follow-up</span>
+                    <Input name="followUpAt" type="date" />
+                  </div>
+                </div>
+
+                <div className="grid gap-2">
+                  <Input name="title" required placeholder="Título curto do registro" />
+                </div>
+
+                <details className="rounded-[0.45rem] border border-border/80 bg-background px-3 py-3">
+                  <summary className="cursor-pointer list-none text-sm font-medium text-foreground">
+                    Adicionar resumo opcional
+                  </summary>
+                  <div className="mt-3 grid gap-2">
+                    <Textarea name="summary" placeholder="Resumo do acompanhamento" className="min-h-24" />
+                  </div>
+                </details>
+
+                <div className="flex justify-end">
+                  <Button type="submit">
+                    <ClipboardCheck className="mr-2 h-4 w-4" />
+                    Salvar registro
+                  </Button>
+                </div>
               </form>
-            </div>
+            </section>
           ) : null}
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Compliance</span>
-                <h3 className={styles.panelTitle}>Itens obrigatorios</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <ShieldCheck className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Compliance</h3>
             </div>
+
             {employee.complianceRequirements.length ? (
-              <div className={styles.list}>
+              <div className={styles.sectionStack}>
                 {employee.complianceRequirements.map((item) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{item.title}</strong>
-                        <span className={styles.itemSubtitle}>{item.type}</span>
-                      </div>
-                      <Badge variant={item.status === "COMPLETED" ? "success" : "warning"}>{item.status}</Badge>
+                  <div key={item.id} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <ShieldCheck className="mr-2 inline h-4 w-4" />
+                        {item.title}
+                      </span>
+                      <Badge variant={item.status === "COMPLETED" ? "success" : "warning"}>{formatTokenLabel(item.status)}</Badge>
                     </div>
+                    <p className={styles.detailText}>{formatTokenLabel(item.type)}</p>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>Nenhum item de compliance em aberto.</div>
+              <p className={styles.emptyState}>Nenhum item de compliance em aberto.</p>
             )}
-          </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Policies</span>
-                <h3 className={styles.panelTitle}>Aceites pendentes</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <UserRoundCog className="h-4 w-4" />
-              </span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Aceites de política</h3>
             </div>
+
             {employee.policyAcknowledgements.length ? (
-              <div className={styles.list}>
+              <div className={styles.sectionStack}>
                 {employee.policyAcknowledgements.map((item) => (
-                  <div key={item.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{item.title}</strong>
-                        <span className={styles.itemSubtitle}>
-                          {item.document?.title ?? "Política interna"}
-                          {item.document?.versionLabel ? ` - ${item.document.versionLabel}` : ""}
-                        </span>
-                      </div>
+                  <div key={item.id} className={styles.detailCell}>
+                    <div className={styles.sectionHeader}>
+                      <span className={styles.metaValue}>
+                        <UserRoundCog className="mr-2 inline h-4 w-4" />
+                        {item.title}
+                      </span>
                       <Badge
                         variant={
                           item.acknowledgedAt
@@ -353,10 +455,15 @@ export default async function EmployeeProfilePage({
                               : "warning"
                         }
                       >
-                        {item.acknowledgedAt ? "ACKNOWLEDGED" : item.dueAt && item.dueAt.getTime() < now ? "OVERDUE" : "PENDING"}
+                        {item.acknowledgedAt ? "Aceito" : item.dueAt && item.dueAt.getTime() < now ? "Atrasado" : "Pendente"}
                       </Badge>
                     </div>
-                    {item.document?.summary ? <span className={styles.itemDescription}>{item.document.summary}</span> : null}
+                    <p className={styles.detailText}>
+                      {item.document?.title ?? "Política interna"}
+                      {item.document?.versionLabel ? ` · ${item.document.versionLabel}` : ""}
+                    </p>
+                    {item.document?.summary ? <p className={styles.detailText}>{item.document.summary}</p> : null}
+
                     {!item.acknowledgedAt && canManageCompliance ? (
                       <form action={acknowledgePolicyAction}>
                         <input type="hidden" name="acknowledgementId" value={item.id} />
@@ -369,11 +476,11 @@ export default async function EmployeeProfilePage({
                 ))}
               </div>
             ) : (
-              <div className={styles.surfaceMuted}>Nenhum aceite de política pendente para este colaborador.</div>
+              <p className={styles.emptyState}>Nenhum aceite pendente para este colaborador.</p>
             )}
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

@@ -1,13 +1,13 @@
-import { Orbit, Sparkles, Workflow } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Orbit, Workflow } from "lucide-react";
 
 import { JobForm } from "@/components/jobs/job-form";
-import { PageHeader } from "@/components/layout/page-header";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { requirePermission } from "@/lib/auth/permissions";
 import { hasPlanFeature } from "@/lib/billing/features";
 import { getPipelineStages } from "@/lib/pipeline/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 import { createJob } from "../actions";
 
 export default async function NewJobPage() {
@@ -16,138 +16,107 @@ export default async function NewJobPage() {
   const canUseAutomations = hasPlanFeature(user.organizationBillingPlan, "job_automations");
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Hiring setup"
-        title="Nova vaga"
-        description="Abra a vaga com critério claro, scorecard consistente e pipeline pronto para operar."
-        actions={
-          <>
-            <Badge variant="outline">{user.organizationBillingPlan}</Badge>
-            <Badge variant={canUseAutomations ? "success" : "outline"}>
-              {canUseAutomations ? "Automações liberadas" : "Automações em Growth"}
-            </Badge>
-          </>
-        }
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Hiring</span>
+        <h2 className={styles.title}>Nova vaga</h2>
+        <p className={styles.description}>
+          Abra a vaga com critérios claros, scorecard consistente e pipeline pronto para triagem sem espalhar a
+          configuração em várias etapas.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Pipeline</span>
-          <strong className={styles.statValue}>{stages.length}</strong>
-          <span className={styles.statHint}>Etapas prontas para receber a vaga.</span>
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{stages.length}</strong>
+          <span>etapas disponíveis</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Automacao</span>
-          <strong className={styles.statValue}>{canUseAutomations ? "ON" : "OFF"}</strong>
-          <span className={styles.statHint}>Regras por vaga entram quando o plano permitir.</span>
+        <div className={styles.statPill}>
+          <strong>{canUseAutomations ? "Ativas" : "Growth"}</strong>
+          <span>automações por vaga</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Scorecard</span>
-          <strong className={styles.statValue}>5+</strong>
-          <span className={styles.statHint}>Sugestão de eixos para entrevista estruturada.</span>
+        <div className={styles.statPill}>
+          <strong>{user.organizationBillingPlan}</strong>
+          <span>plano atual da organização</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Launch mode</span>
-          <strong className={styles.statValue}>Live</strong>
-          <span className={styles.statHint}>Publicou, a operação ja pode triar e entrevistar.</span>
-        </div>
-      </section>
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Setup</span>
-              <h2 className={styles.panelTitle}>Estruture a vaga uma vez e opere com menos retrabalho.</h2>
-              <p className={styles.panelDescription}>
-                Defina o sinal de aderência, o roteiro de entrevista e as automações que movem o pipeline.
-              </p>
-            </div>
-
-            <JobForm action={createJob} stages={stages} canUseAutomations={canUseAutomations} submitLabel="Criar vaga" />
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarMeta}>
+          <div className={styles.tabs}>
+            <Button asChild size="sm">
+              <Link href="/jobs">
+                Voltar para vagas
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/pipeline">Abrir pipeline</Link>
+            </Button>
           </div>
+          <span className={styles.shortcutHint}>Uma boa configuração aqui economiza retrabalho na triagem e na entrevista.</span>
         </div>
+      </div>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Playbook</span>
-                <h3 className={styles.panelTitle}>O que fica pronto ao publicar</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <Orbit className="h-4 w-4" />
-              </span>
-            </div>
-            <div className={styles.list}>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Criterios para score</strong>
-                <span className={styles.itemDescription}>Base para triagem, ranking e análise automatica.</span>
-              </div>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Scorecard por eixo</strong>
-                <span className={styles.itemDescription}>Entrevistadores avaliam a mesma vaga com a mesma regua.</span>
-              </div>
-              <div className={styles.listItem}>
-                <strong className={styles.itemTitle}>Pipeline padronizado</strong>
-                <span className={styles.itemDescription}>A candidatura entra organizada desde o primeiro dia.</span>
-              </div>
-            </div>
+      <div className={styles.body}>
+        <section className={styles.formPanel}>
+          <div className={styles.panelHeader}>
+            <h3 className={styles.panelTitle}>Configuração da vaga</h3>
+            <p className={styles.panelDescription}>
+              Defina o briefing, os critérios, o scorecard e as regras do pipeline.
+            </p>
           </div>
 
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Pipeline</span>
-                <h3 className={styles.panelTitle}>Etapas disponíveis</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <Workflow className="h-4 w-4" />
-              </span>
+          <JobForm action={createJob} stages={stages} canUseAutomations={canUseAutomations} submitLabel="Criar vaga" />
+        </section>
+
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>O que já sai pronto</h3>
             </div>
-            <div className={styles.workflowList}>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <Orbit className="mr-2 inline h-4 w-4" />
+                  Critérios para score
+                </span>
+                <p className={styles.detailText}>A triagem e a IA passam a usar a mesma régua de aderência.</p>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <Workflow className="mr-2 inline h-4 w-4" />
+                  Etapas do pipeline
+                </span>
+                <p className={styles.detailText}>A vaga entra no funil pronta para operar sem ajustes posteriores.</p>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>Scorecard consistente</span>
+                <p className={styles.detailText}>Entrevistadores avaliam a vaga com a mesma linguagem e critérios.</p>
+              </div>
+            </div>
+          </section>
+
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Etapas disponíveis</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
               {stages.map((stage, index) => (
-                <div key={stage.id} className={styles.workflowItem}>
-                  <div className={styles.rowBetween}>
-                    <strong className={styles.itemTitle}>{stage.name}</strong>
-                    <span className={styles.tinyLabel}>#{index + 1}</span>
+                <div key={stage.id} className={styles.detailCell}>
+                  <div className={styles.sectionHeader}>
+                    <span className={styles.metaValue}>{stage.name}</span>
+                    <span className={styles.metaLabel}>#{index + 1}</span>
                   </div>
-                  <div className={styles.progressTrack}>
-                    <div className={styles.progressFill} style={{ width: `${((index + 1) / stages.length) * 100}%` }} />
-                  </div>
+                  <p className={styles.detailText}>A vaga poderá usar esta etapa assim que for publicada.</p>
                 </div>
               ))}
             </div>
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Assistencia</span>
-                <h3 className={styles.panelTitle}>Melhor resultado</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <Sparkles className="h-4 w-4" />
-              </span>
-            </div>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>Resumo da vaga</span>
-                <strong>curto</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>Criterios obrigatorios</span>
-                <strong>3-5</strong>
-              </div>
-              <div className={styles.metricRow}>
-                <span>Itens de scorecard</span>
-                <strong>4-6</strong>
-              </div>
-            </div>
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }

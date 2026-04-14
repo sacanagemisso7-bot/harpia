@@ -2,6 +2,7 @@ import {
   addHrRequestCommentAction,
   bulkUpdateHrRequestStatusAction,
   createHrRequestAction,
+  updateHrRequestDetailsAction,
   updateHrRequestStatusAction
 } from "@/app/(app)/requests/actions";
 import { deleteSavedViewAction, saveWorkspaceViewAction } from "@/app/(app)/saved-views/actions";
@@ -33,6 +34,7 @@ export default async function RequestsPage() {
       createHrRequestAction={createHrRequestAction}
       updateHrRequestStatusAction={updateHrRequestStatusAction}
       bulkUpdateHrRequestStatusAction={bulkUpdateHrRequestStatusAction}
+      updateHrRequestDetailsAction={updateHrRequestDetailsAction}
       addHrRequestCommentAction={addHrRequestCommentAction}
       savedViews={savedViews}
       saveWorkspaceViewAction={saveWorkspaceViewAction}

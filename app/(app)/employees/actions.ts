@@ -1,14 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { PeopleWorkflowKind } from "@prisma/client";
+import { EmployeeStatus, PeopleWorkflowKind } from "@prisma/client";
 
+import { createAuditEvent } from "@/lib/audit/events";
 import { requirePermission } from "@/lib/auth/permissions";
+import { parseDateInputValue } from "@/lib/dates/parse-date-input";
+import { prisma } from "@/lib/prisma/client";
 import { createEmployeeCheckIn } from "@/modules/checkins/service";
 import { employeeCheckInSchema } from "@/modules/checkins/validators";
 import { createEmployee, updateEmployeeStatus } from "@/modules/employees/service";
 import { employeeFormSchema } from "@/modules/employees/validators";
-import { EmployeeStatus } from "@prisma/client";
 import { createWorkflowRunFromTemplate } from "@/modules/people-ops/service";
 
 function revalidateEmployeeSurface(employeeId?: string) {
@@ -73,6 +75,75 @@ export async function updateEmployeeStatusAction(formData: FormData) {
   });
 
   revalidateEmployeeSurface(employeeId);
+}
+
+export async function updateEmployeeContextAction(formData: FormData) {
+  const user = await requirePermission("manage_employees");
+  const employeeId = String(formData.get("employeeId") ?? "");
+
+  if (!employeeId) {
+    return;
+  }
+
+  const employee = await prisma.employee.findFirst({
+    where: {
+      id: employeeId,
+      organizationId: user.organizationId
+    },
+    select: {
+      id: true,
+      fullName: true
+    }
+  });
+
+  if (!employee) {
+    return;
+  }
+
+  const managerEmployeeIdValue = String(formData.get("managerEmployeeId") ?? "").trim();
+  const title = String(formData.get("title") ?? "").trim();
+  const department = String(formData.get("department") ?? "").trim();
+  const location = String(formData.get("location") ?? "").trim();
+  const employmentType = String(formData.get("employmentType") ?? "").trim();
+  const workEmail = String(formData.get("workEmail") ?? "").trim();
+  const startDate = parseDateInputValue(formData.get("startDate")) ?? null;
+
+  if (!title || !department) {
+    return;
+  }
+
+  const updated = await prisma.employee.update({
+    where: { id: employee.id },
+    data: {
+      managerEmployeeId: managerEmployeeIdValue && managerEmployeeIdValue !== employee.id ? managerEmployeeIdValue : null,
+      title,
+      department,
+      location: location || null,
+      employmentType: employmentType || null,
+      workEmail: workEmail || null,
+      startDate
+    }
+  });
+
+  await createAuditEvent({
+    organizationId: user.organizationId,
+    actorId: user.id,
+    action: "employee.context_updated",
+    entityType: "employee",
+    entityId: updated.id,
+    summary: `Contexto de ${updated.fullName} atualizado.`,
+    metadata: {
+      managerEmployeeId: updated.managerEmployeeId,
+      title: updated.title,
+      department: updated.department,
+      location: updated.location,
+      employmentType: updated.employmentType,
+      workEmail: updated.workEmail,
+      startDate: updated.startDate?.toISOString() ?? null
+    }
+  });
+
+  revalidateEmployeeSurface(employee.id);
 }
 
 export async function bulkUpdateEmployeeStatusAction(formData: FormData) {

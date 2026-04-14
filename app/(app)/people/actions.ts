@@ -1,8 +1,12 @@
 "use server";
 
+import { PeopleTaskPriority } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
+import { createAuditEvent } from "@/lib/audit/events";
 import { requirePermission } from "@/lib/auth/permissions";
+import { parseDateInputValue } from "@/lib/dates/parse-date-input";
+import { prisma } from "@/lib/prisma/client";
 import { createPeopleTask, updatePeopleTaskStatus, addPeopleTaskComment } from "@/modules/people-tasks/service";
 import { peopleTaskCommentSchema, peopleTaskFormSchema, peopleTaskStatusSchema } from "@/modules/people-tasks/validators";
 import { updateWorkflowStepStatus } from "@/modules/people-ops/service";
@@ -112,6 +116,58 @@ export async function addPeopleTaskCommentAction(formData: FormData) {
     actorId: user.id,
     taskId: parsed.data.taskId,
     message: parsed.data.message
+  });
+
+  revalidatePeopleSurface();
+}
+
+export async function updatePeopleTaskDetailsAction(formData: FormData) {
+  const user = await requirePermission("manage_people_tasks");
+  const taskId = String(formData.get("taskId") ?? "");
+  const assigneeUserId = String(formData.get("assigneeUserId") ?? "").trim();
+  const priority = String(formData.get("priority") ?? "");
+  const dueAt = parseDateInputValue(formData.get("dueAt")) ?? null;
+
+  if (!taskId || !Object.values(PeopleTaskPriority).includes(priority as PeopleTaskPriority)) {
+    return;
+  }
+
+  const task = await prisma.peopleTask.findFirst({
+    where: {
+      id: taskId,
+      organizationId: user.organizationId
+    },
+    select: {
+      id: true,
+      title: true
+    }
+  });
+
+  if (!task) {
+    return;
+  }
+
+  const updated = await prisma.peopleTask.update({
+    where: { id: task.id },
+    data: {
+      assigneeUserId: assigneeUserId || null,
+      priority: priority as PeopleTaskPriority,
+      dueAt
+    }
+  });
+
+  await createAuditEvent({
+    organizationId: user.organizationId,
+    actorId: user.id,
+    action: "people_task.details_updated",
+    entityType: "people_task",
+    entityId: updated.id,
+    summary: `Contexto da tarefa ${updated.title} atualizado.`,
+    metadata: {
+      assigneeUserId: updated.assigneeUserId,
+      priority: updated.priority,
+      dueAt: updated.dueAt?.toISOString() ?? null
+    }
   });
 
   revalidatePeopleSurface();

@@ -267,6 +267,10 @@ export async function moveApplicationStage(
   };
 }
 
+export async function moveApplicationStageQuick(applicationId: string, formData: FormData) {
+  await moveApplicationStage(applicationId, {}, formData);
+}
+
 export async function sendApplicationEmail(
   applicationId: string,
   _previousState: SendTemplateEmailState,

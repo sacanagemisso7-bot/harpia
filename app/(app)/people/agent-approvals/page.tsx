@@ -3,12 +3,11 @@ import { CheckCircle2, Clock3, ShieldAlert, Sparkles } from "lucide-react";
 
 import { reviewAgentApprovalAction } from "@/app/(app)/people/agent-approvals/actions";
 import { AgentApprovalReviewForm } from "@/components/ai-agent/agent-approval-review-form";
-import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
 import { requirePermission } from "@/lib/auth/permissions";
 import { listAgentApprovalRequests, listRecentAgentRuns } from "@/modules/ai-agent/queries";
 
-import styles from "../../workspace-expansion.module.css";
+import styles from "@/components/operations/ops-workspace.module.css";
 
 function formatDateTime(value: Date | null | undefined) {
   if (!value) {
@@ -39,169 +38,168 @@ export default async function AgentApprovalsPage() {
   ]);
 
   return (
-    <div className={styles.page}>
-      <PageHeader
-        eyebrow="Agent approvals"
-        title="Trust layer do agente corporativo"
-        description="Aprovações humanas para ações assistidas de maior risco dentro do workspace."
-      />
+    <div className={styles.workspace}>
+      <div className={styles.header}>
+        <span className={styles.eyebrow}>Agente</span>
+        <h2 className={styles.title}>Aprovações do agente</h2>
+        <p className={styles.description}>
+          Ações sensíveis passam por revisão humana antes de executar, com rastreio claro de risco, contexto e
+          histórico recente.
+        </p>
+      </div>
 
-      <section className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Pendencias</span>
-          <strong className={styles.statValue}>{pendingApprovals.length}</strong>
-          <span className={styles.statHint}>Ações aguardando decisão humana antes de executar.</span>
+      <div className={styles.statRow}>
+        <div className={styles.statPill}>
+          <strong>{pendingApprovals.length}</strong>
+          <span>pendentes agora</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Runs recentes</span>
-          <strong className={styles.statValue}>{recentRuns.length}</strong>
-          <span className={styles.statHint}>Histórico curto para revisar uso e confian?a.</span>
+        <div className={styles.statPill}>
+          <strong>{recentRuns.length}</strong>
+          <span>runs recentes</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Objetivo</span>
-          <strong className={styles.statValue}>Controle</strong>
-          <span className={styles.statHint}>Ações sensiveis não passam sem checkpoint humano.</span>
+        <div className={styles.statPill}>
+          <strong>Guarded</strong>
+          <span>execução protegida</span>
         </div>
-        <div className={styles.statCard}>
-          <span className={styles.statLabel}>Modo</span>
-          <strong className={styles.statValue}>Guarded</strong>
-          <span className={styles.statHint}>Uso assistido com rastreio e revisão.</span>
-        </div>
-      </section>
+      </div>
 
-      <section className={styles.detailLayout}>
-        <div className={styles.column}>
-          <div className={styles.panel}>
-            <div className={styles.panelHeader}>
-              <span className={styles.panelEyebrow}>Approval queue</span>
-              <h2 className={styles.panelTitle}>Fila pendente</h2>
-              <p className={styles.panelDescription}>Pedidos montados pelo agente que dependem de um decisor antes de seguir.</p>
-            </div>
-            {pendingApprovals.length ? (
-              <div className={styles.list}>
-                {pendingApprovals.map((approval) => (
-                  <article key={approval.id} className={styles.listItem}>
-                    <div className={styles.itemHeader}>
-                      <div className={styles.itemLead}>
-                        <strong className={styles.itemTitle}>{approval.title}</strong>
-                        <span className={styles.itemSubtitle}>
-                          {formatDateTime(approval.createdAt)} · {approval.expiresAt ? `expira ${formatDateTime(approval.expiresAt)}` : "sem expiracao"}
-                        </span>
-                      </div>
-                      <div className={styles.tagWrap}>
-                        <Badge variant="outline">{formatEnumLabel(approval.riskLevel)}</Badge>
-                        <Badge variant="outline">{formatEnumLabel(approval.status)}</Badge>
-                      </div>
-                    </div>
-                    <span className={styles.itemDescription}>{approval.summary}</span>
-                    <div className={styles.subGrid2}>
-                      <div className={styles.surfaceMuted}>
-                        <strong className={styles.itemTitle}>Solicitado por</strong>
-                        <span className={styles.itemDescription}>
-                          {approval.requestedByUser?.name ?? approval.agentRun.startedByUser?.name ?? "Usuário do workspace"}
-                        </span>
-                        <span className={styles.itemDescription}>
-                          {approval.requestedByUser?.email ?? approval.agentRun.startedByUser?.email ?? "Sem email disponível"}
-                        </span>
-                      </div>
-                      <div className={styles.surfaceMuted}>
-                        <strong className={styles.itemTitle}>Contexto</strong>
-                        <span className={styles.itemDescription}>
-                          {approval.agentRun.chatThread?.title ?? approval.agentRun.goal ?? "Execucao sem thread vinculada"}
-                        </span>
-                        <span className={styles.itemDescription}>
-                          {approval.agentRun.chatThread ? "Originado no company chat" : "Originado fora do chat"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className={styles.surfaceMuted}>
-                      <AgentApprovalReviewForm action={reviewAgentApprovalAction} approvalRequestId={approval.id} />
-                    </div>
-                  </article>
-                ))}
+      <div className={styles.body}>
+        <section className={styles.listPanel}>
+          <div className={styles.panelHeader}>
+            <div className={styles.panelHeaderRow}>
+              <div>
+                <h3 className={styles.panelTitle}>Fila pendente</h3>
+                <p className={styles.panelDescription}>O que o agente pediu para executar e ainda aguarda decisão.</p>
               </div>
+            </div>
+          </div>
+
+          <div className={styles.list}>
+            {pendingApprovals.length ? (
+              pendingApprovals.map((approval) => (
+                <div key={approval.id} className={styles.row}>
+                  <div className={styles.rowTop}>
+                    <div className={styles.rowLead}>
+                      <p className={styles.rowTitle}>{approval.title}</p>
+                      <p className={styles.rowSubtitle}>
+                        {formatDateTime(approval.createdAt)} ·{" "}
+                        {approval.expiresAt ? `expira ${formatDateTime(approval.expiresAt)}` : "sem expiração"}
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge variant="outline">{formatEnumLabel(approval.riskLevel)}</Badge>
+                      <Badge variant="warning">{formatEnumLabel(approval.status)}</Badge>
+                    </div>
+                  </div>
+                  <p className={styles.rowSubtitle}>{approval.summary}</p>
+                  <div className={styles.detailGrid}>
+                    <div className={styles.detailCell}>
+                      <span className={styles.metaLabel}>Solicitado por</span>
+                      <span className={styles.metaValue}>
+                        {approval.requestedByUser?.name ?? approval.agentRun.startedByUser?.name ?? "Usuário do workspace"}
+                      </span>
+                      <p className={styles.detailText}>
+                        {approval.requestedByUser?.email ?? approval.agentRun.startedByUser?.email ?? "Sem e-mail disponível"}
+                      </p>
+                    </div>
+                    <div className={styles.detailCell}>
+                      <span className={styles.metaLabel}>Contexto</span>
+                      <span className={styles.metaValue}>
+                        {approval.agentRun.chatThread?.title ?? approval.agentRun.goal ?? "Execução sem thread vinculada"}
+                      </span>
+                      <p className={styles.detailText}>
+                        {approval.agentRun.chatThread ? "Originado no Company Chat" : "Originado fora do chat"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className={styles.detailCell}>
+                    <AgentApprovalReviewForm action={reviewAgentApprovalAction} approvalRequestId={approval.id} compact />
+                  </div>
+                </div>
+              ))
             ) : (
-              <div className={styles.emptyState}>Nenhuma aprovação pendente no momento.</div>
+              <div className={styles.emptyWrap}>
+                <p className={styles.emptyState}>Nenhuma aprovação pendente no momento.</p>
+              </div>
             )}
           </div>
-        </div>
+        </section>
 
-        <aside className={styles.stickyAside}>
-          <div className={styles.spotlight}>
-            <span className={styles.panelEyebrow}>Queue</span>
-            <strong className={styles.spotlightValue}>{pendingApprovals.length}</strong>
-            <p className={styles.panelDescription}>Checkpoint humano aguardando decisão agora.</p>
-          </div>
-
-          <div className={styles.panel}>
-            <div className={styles.itemHeader}>
-              <div className={styles.itemLead}>
-                <span className={styles.panelEyebrow}>Recent runs</span>
-                <h3 className={styles.panelTitle}>Execucoes recentes</h3>
-              </div>
-              <span className={styles.iconLead}>
-                <Sparkles className="h-4 w-4" />
-              </span>
+        <aside className={styles.detailColumn}>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Runs recentes</h3>
+              <Badge variant="outline">Histórico</Badge>
             </div>
-            {recentRuns.length ? (
-              <div className={styles.list}>
-                {recentRuns.map((run) => {
+
+            <div className={styles.sectionStack}>
+              {recentRuns.length ? (
+                recentRuns.map((run) => {
                   const latestApproval = run.approvals[0];
                   const latestExecution = run.executions[0];
 
                   return (
-                    <article key={run.id} className={styles.listItem}>
-                      <div className={styles.itemHeader}>
-                        <div className={styles.itemLead}>
-                          <strong className={styles.itemTitle}>{run.summary ?? run.goal}</strong>
-                          <span className={styles.itemSubtitle}>
-                            {run.startedByUser?.name ?? "Agente"} · {formatDateTime(run.createdAt)}
-                          </span>
-                        </div>
+                    <div key={run.id} className={styles.detailCell}>
+                      <div className={styles.sectionHeader}>
+                        <span className={styles.metaValue}>{run.summary ?? run.goal}</span>
                         <Badge variant="outline">{formatEnumLabel(run.status)}</Badge>
                       </div>
-                      <div className={styles.tagWrap}>
-                        <span className={styles.tagPill}>{formatEnumLabel(run.riskLevel)}</span>
-                        <span className={styles.tagPill}>{run.requiresApproval ? "Com aprovação" : "Execucao direta"}</span>
-                        {latestApproval ? <span className={styles.tagPill}>{formatEnumLabel(latestApproval.status)}</span> : null}
-                        {latestExecution ? <span className={styles.tagPill}>{formatEnumLabel(latestExecution.status)}</span> : null}
+                      <p className={styles.detailText}>
+                        {run.startedByUser?.name ?? "Agente"} · {formatDateTime(run.createdAt)}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge variant="outline">{formatEnumLabel(run.riskLevel)}</Badge>
+                        <Badge variant="outline">{run.requiresApproval ? "Com aprovação" : "Execução direta"}</Badge>
+                        {latestApproval ? <Badge variant="outline">{formatEnumLabel(latestApproval.status)}</Badge> : null}
+                        {latestExecution ? <Badge variant="outline">{formatEnumLabel(latestExecution.status)}</Badge> : null}
                       </div>
-                      {run.error ? <span className={styles.itemDescription}>{run.error}</span> : null}
+                      {run.error ? <p className={styles.detailText}>{run.error}</p> : null}
                       {run.status === "SUCCEEDED" ? (
-                        <div className={styles.rowBetween}>
-                          <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                          <span className={styles.itemDescription}>Execucao concluida com sucesso.</span>
-                        </div>
+                        <p className={styles.detailText}>
+                          <CheckCircle2 className="mr-2 inline h-4 w-4 text-emerald-500" />
+                          Execução concluída com sucesso.
+                        </p>
                       ) : null}
-                    </article>
+                    </div>
                   );
-                })}
-              </div>
-            ) : (
-              <div className={styles.surfaceMuted}>O histórico recente do agente ainda não tem runs suficientes para exibir aqui.</div>
-            )}
-          </div>
+                })
+              ) : (
+                <p className={styles.emptyState}>Ainda não há runs suficientes para mostrar histórico.</p>
+              )}
+            </div>
+          </section>
 
-          <div className={styles.panel}>
-            <div className={styles.metricStack}>
-              <div className={styles.metricRow}>
-                <span>
+          <section className={styles.detailPanel}>
+            <div className={styles.sectionHeader}>
+              <h3 className={styles.panelTitle}>Leitura rápida</h3>
+            </div>
+
+            <div className={styles.sectionStack}>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
                   <Clock3 className="mr-2 inline h-4 w-4" />
                   Pendentes
                 </span>
-                <strong>{pendingApprovals.length}</strong>
+                <p className={styles.detailText}>{pendingApprovals.length} aguardando decisão agora.</p>
               </div>
-              <div className={styles.metricRow}>
-                <span>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
                   <ShieldAlert className="mr-2 inline h-4 w-4" />
                   Guardrail
                 </span>
-                <strong>On</strong>
+                <p className={styles.detailText}>Toda ação sensível continua protegida por checkpoint humano.</p>
+              </div>
+              <div className={styles.detailCell}>
+                <span className={styles.metaValue}>
+                  <Sparkles className="mr-2 inline h-4 w-4" />
+                  Objetivo
+                </span>
+                <p className={styles.detailText}>Acelerar o uso do agente sem abrir mão de controle e auditabilidade.</p>
               </div>
             </div>
-          </div>
+          </section>
         </aside>
-      </section>
+      </div>
     </div>
   );
 }
