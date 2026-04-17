@@ -7,7 +7,7 @@ import { AgentApprovalReviewForm } from "@/components/ai-agent/agent-approval-re
 import { CompanyChatComposer } from "@/components/chat/company-chat-composer";
 import { CompanyChatPromptStrip } from "@/components/chat/company-chat-prompt-strip";
 import { CompanyChatProposalForm } from "@/components/chat/company-chat-proposal-form";
-import { CompanyChatScrollArea } from "@/components/chat/company-chat-scroll-area";
+import { CompanyChatShell } from "@/components/chat/company-chat-shell";
 import { Badge } from "@/components/ui/badge";
 import { hasPermission } from "@/lib/auth/permission-matrix";
 import { requirePermission } from "@/lib/auth/permissions";
@@ -16,6 +16,7 @@ import { getCompanyChatWorkspace } from "@/modules/company-chat/queries";
 import type { CompanyChatActionProposal, CompanyChatAgentExecution, CompanyChatCitation } from "@/types/company-chat";
 
 import styles from "./company-chat-page.module.css";
+import { CompanyChatLiveConversation } from "./company-chat-live-conversation";
 
 function formatEnumLabel(value: string) {
   return value
@@ -34,6 +35,10 @@ function formatMessageTime(value: Date) {
     hour: "2-digit",
     minute: "2-digit"
   }).format(value);
+}
+
+function formatMessageCount(value: number) {
+  return `${value} ${value === 1 ? "mensagem" : "mensagens"}`;
 }
 
 function parseMessageMetadata(metadata: unknown) {
@@ -134,65 +139,84 @@ export default async function CompanyChatPage({
           "O que está em risco no service desk?",
           "Quais políticas sustentam esta decisão?"
         ];
-  const dockPrompts = activeMessages.length ? prompts.slice(0, 3) : prompts;
 
   return (
-    <div className={styles.chatApp}>
-      <aside className={styles.threadRail}>
-        <div className={styles.railHeader}>
-          <div>
-            <p className={styles.railEyebrow}>Company Chat</p>
-            <h1 className={styles.railTitle}>Conversas</h1>
+    <CompanyChatShell
+      hasActiveThread={Boolean(activeThreadId)}
+      className={styles.chatApp}
+      overlayClassName={styles.chatOverlay}
+      railPanelClassName={styles.threadRailPanel}
+      railClassName={styles.threadRail}
+      mainClassName={styles.chatMain}
+      topbarClassName={styles.chatTopbar}
+      railToggleClassName={styles.railToggleButton}
+      bodyClassName={styles.chatBody}
+      composerClassName={styles.composerDock}
+      rail={
+        <>
+          <div className={styles.railHeader}>
+            <div>
+              <p className={styles.railEyebrow}>Company Chat</p>
+              <h1 className={styles.railTitle}>Conversas</h1>
+            </div>
+
+            <Link href="/chat" className={styles.newThreadButton}>
+              <Plus className="h-4 w-4" />
+              Nova
+            </Link>
           </div>
 
-          <Link href="/chat" className={styles.newThreadButton}>
-            <Plus className="h-4 w-4" />
-            Nova
-          </Link>
-        </div>
+          <div className={styles.threadList}>
+            {workspace.threads.length ? (
+              workspace.threads.map((thread) => {
+                const preview = thread.messages.at(-1)?.content ?? "Sem mensagens ainda.";
 
-        <div className={styles.threadList}>
-          {workspace.threads.length ? (
-            workspace.threads.map((thread) => {
-              const preview = thread.messages.at(-1)?.content ?? "Sem mensagens ainda.";
-
-              return (
-                <Link
-                  key={thread.id}
-                  href={`/chat?threadId=${thread.id}`}
-                  className={cn(styles.threadItem, activeThreadId === thread.id && styles.threadItemActive)}
-                >
-                  <div className={styles.threadItemTop}>
-                    <strong>{thread.title}</strong>
-                    <Badge variant="outline">{formatThreadScope(thread.scope)}</Badge>
-                  </div>
-                  <p>{preview}</p>
-                </Link>
-              );
-            })
-          ) : (
-            <div className={styles.emptyRailState}>Sua primeira pergunta já abre a conversa.</div>
-          )}
-        </div>
-      </aside>
-
-      <section className={styles.chatMain}>
-        <div className={styles.chatTopbar}>
+                return (
+                  <Link
+                    key={thread.id}
+                    href={`/chat?threadId=${thread.id}`}
+                    className={cn(styles.threadItem, activeThreadId === thread.id && styles.threadItemActive)}
+                  >
+                    <div className={styles.threadItemTop}>
+                      <strong>{thread.title}</strong>
+                      <Badge variant="outline">{formatThreadScope(thread.scope)}</Badge>
+                    </div>
+                    <p>{preview}</p>
+                  </Link>
+                );
+              })
+            ) : (
+              <div className={styles.emptyRailState}>Sua primeira pergunta já abre a conversa.</div>
+            )}
+          </div>
+        </>
+      }
+      header={
+        <>
           <div className={styles.chatTopbarCopy}>
             <h2>{activeThread?.title ?? "Nova conversa"}</h2>
-            <span>{activeThread ? `${activeMessages.length} mensagem(ns) · Enter envia` : "Pergunte de forma direta"}</span>
+            <span>{activeThread ? `${formatMessageCount(messageCount)} · Enter envia` : "Pergunte de forma direta"}</span>
           </div>
-          {activeThread?.scope ? <Badge variant="outline">{formatThreadScope(activeThread.scope)}</Badge> : null}
-        </div>
 
-        <CompanyChatScrollArea className={styles.messageRiver} threadId={activeThreadId} messageCount={messageCount}>
-          {activeMessages.length ? (
-            <div className={styles.messageStack}>
+          <div className={styles.chatTopbarMeta}>
+            {activeThread?.scope ? <Badge variant="outline">{formatThreadScope(activeThread.scope)}</Badge> : null}
+          </div>
+        </>
+      }
+      body={
+        <CompanyChatLiveConversation
+          threadId={activeThreadId}
+          messageCount={messageCount}
+          hasMessages={activeMessages.length > 0}
+          messageStack={
+            <>
               {activeMessages.map((message) => {
                 const metadata = parseMessageMetadata(message.metadata);
                 const isAssistant = message.role === "ASSISTANT";
                 const isUser = message.role === "USER";
                 const roleLabel = isAssistant ? "Harpia" : isUser ? "Você" : "Sistema";
+                const showActionProposals = Boolean(activeThreadId && metadata.actionProposals.length > 0);
+                const hasContext = Boolean(metadata.agentExecution || metadata.citations.length || showActionProposals);
 
                 return (
                   <div
@@ -225,63 +249,63 @@ export default async function CompanyChatPage({
                       >
                         <div className={styles.messageBody}>{message.content}</div>
 
-                        {metadata.agentExecution ? (
+                        {hasContext ? (
                           <details className={styles.messageDetails}>
                             <summary>
-                              <span>Execução</span>
+                              <span>Contexto da resposta</span>
                               <ChevronDown className="h-4 w-4" />
                             </summary>
+
                             <div className={styles.detailsBody}>
-                              <p className={styles.messageSupportingText}>{metadata.agentExecution.summary}</p>
-                              {metadata.agentExecution.status === "WAITING_APPROVAL" &&
-                              canReviewApprovals &&
-                              metadata.agentExecution.approvalRequestId ? (
-                                <AgentApprovalReviewForm
-                                  action={reviewAgentApprovalAction}
-                                  approvalRequestId={metadata.agentExecution.approvalRequestId}
-                                  compact
-                                />
+                              {metadata.agentExecution ? (
+                                <section className={styles.detailSection}>
+                                  <strong className={styles.detailsLabel}>Execução</strong>
+                                  <p className={styles.messageSupportingText}>{metadata.agentExecution.summary}</p>
+                                  {metadata.agentExecution.status === "WAITING_APPROVAL" &&
+                                  canReviewApprovals &&
+                                  metadata.agentExecution.approvalRequestId ? (
+                                    <AgentApprovalReviewForm
+                                      action={reviewAgentApprovalAction}
+                                      approvalRequestId={metadata.agentExecution.approvalRequestId}
+                                      compact
+                                    />
+                                  ) : null}
+                                </section>
                               ) : null}
-                            </div>
-                          </details>
-                        ) : null}
 
-                        {metadata.citations.length ? (
-                          <details className={styles.messageDetails}>
-                            <summary>
-                              <span>Fontes ({metadata.citations.length})</span>
-                              <ChevronDown className="h-4 w-4" />
-                            </summary>
-                            <div className={styles.detailsBody}>
-                              <div className={styles.citationList}>
-                                {metadata.citations.map((citation) => (
-                                  <a key={`${message.id}-${citation.id}`} href={citation.href ?? "/knowledge"} className={styles.citationLink}>
-                                    <strong>{citation.title}</strong>
-                                    <span>{citation.excerpt}</span>
-                                  </a>
-                                ))}
-                              </div>
-                            </div>
-                          </details>
-                        ) : null}
+                              {metadata.citations.length ? (
+                                <section className={styles.detailSection}>
+                                  <strong className={styles.detailsLabel}>Fontes</strong>
+                                  <div className={styles.citationList}>
+                                    {metadata.citations.map((citation) => (
+                                      <a
+                                        key={`${message.id}-${citation.id}`}
+                                        href={citation.href ?? "/knowledge"}
+                                        className={styles.citationLink}
+                                      >
+                                        <strong>{citation.title}</strong>
+                                        <span>{citation.excerpt}</span>
+                                      </a>
+                                    ))}
+                                  </div>
+                                </section>
+                              ) : null}
 
-                        {metadata.actionProposals.length > 0 && activeThreadId ? (
-                          <details className={styles.messageDetails}>
-                            <summary>
-                              <span>Ações sugeridas ({metadata.actionProposals.length})</span>
-                              <ChevronDown className="h-4 w-4" />
-                            </summary>
-                            <div className={styles.detailsBody}>
-                              <div className={styles.proposalList}>
-                                {metadata.actionProposals.map((proposal, index) => (
-                                  <CompanyChatProposalForm
-                                    key={`${message.id}-${proposal.type}-${index}`}
-                                    action={applyCompanyChatAction}
-                                    threadId={activeThreadId}
-                                    proposal={proposal}
-                                  />
-                                ))}
-                              </div>
+                              {showActionProposals ? (
+                                <section className={styles.detailSection}>
+                                  <strong className={styles.detailsLabel}>Ações sugeridas</strong>
+                                  <div className={styles.proposalList}>
+                                    {metadata.actionProposals.map((proposal, index) => (
+                                      <CompanyChatProposalForm
+                                        key={`${message.id}-${proposal.type}-${index}`}
+                                        action={applyCompanyChatAction}
+                                        threadId={activeThreadId!}
+                                        proposal={proposal}
+                                      />
+                                    ))}
+                                  </div>
+                                </section>
+                              ) : null}
                             </div>
                           </details>
                         ) : null}
@@ -290,8 +314,9 @@ export default async function CompanyChatPage({
                   </div>
                 );
               })}
-            </div>
-          ) : (
+            </>
+          }
+          emptyState={
             <div className={styles.emptyConversation}>
               <div className={styles.emptyConversationCopy}>
                 <p className={styles.railEyebrow}>Pronto para começar</p>
@@ -306,21 +331,10 @@ export default async function CompanyChatPage({
                 buttonClassName={styles.promptButton}
               />
             </div>
-          )}
-        </CompanyChatScrollArea>
-
-        <div className={styles.composerDock}>
-          <CompanyChatPromptStrip
-            action={sendCompanyChatMessage}
-            threadId={activeThreadId}
-            prompts={dockPrompts}
-            className={styles.promptStrip}
-            buttonClassName={styles.promptButton}
-          />
-
-          <CompanyChatComposer action={sendCompanyChatMessage} threadId={activeThreadId} />
-        </div>
-      </section>
-    </div>
+          }
+        />
+      }
+      composer={<CompanyChatComposer action={sendCompanyChatMessage} threadId={activeThreadId} />}
+    />
   );
 }

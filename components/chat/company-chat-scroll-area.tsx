@@ -11,6 +11,31 @@ type CompanyChatScrollAreaProps = {
 
 export function CompanyChatScrollArea({ children, className, threadId, messageCount }: CompanyChatScrollAreaProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const shouldStickToBottomRef = useRef(true);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    function handleScroll() {
+      const currentContainer = containerRef.current;
+
+      if (!currentContainer) {
+        return;
+      }
+
+      const distanceFromBottom =
+        currentContainer.scrollHeight - currentContainer.scrollTop - currentContainer.clientHeight;
+      shouldStickToBottomRef.current = distanceFromBottom < 120;
+    }
+
+    handleScroll();
+    container.addEventListener("scroll", handleScroll, { passive: true });
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -27,6 +52,30 @@ export function CompanyChatScrollArea({ children, className, threadId, messageCo
     });
 
     return () => window.cancelAnimationFrame(frame);
+  }, [threadId, messageCount]);
+
+  useEffect(() => {
+    const container = containerRef.current;
+
+    if (!container || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const observer = new ResizeObserver(() => {
+      if (!shouldStickToBottomRef.current) {
+        return;
+      }
+
+      container.scrollTo({
+        top: container.scrollHeight,
+        behavior: "smooth"
+      });
+    });
+
+    observer.observe(container);
+    Array.from(container.children).forEach((child) => observer.observe(child));
+
+    return () => observer.disconnect();
   }, [threadId, messageCount]);
 
   return (

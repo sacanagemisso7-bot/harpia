@@ -19,9 +19,9 @@ const signalReadout = [
 ] as const;
 
 const criterionRows = [
-  ["triagem", "sem ruido"],
-  ["comparacao", "com contexto"],
-  ["ação", "sem friccao"]
+  ["triagem", "sem ruído"],
+  ["comparação", "com contexto"],
+  ["ação", "sem fricção"]
 ] as const;
 
 const finaleSignals = [
@@ -87,13 +87,13 @@ export function HarpiaLanding() {
           <div className={styles.canvasVeil} />
 
           <m.div className={styles.heroCluster} style={{ opacity: introOpacity, x: introX, y: introY }}>
-            <p className={styles.heroEyebrow}>Harpia / Observation field</p>
-            <h1 className={styles.heroTitle}>Veja alem do currículo</h1>
-            <p className={styles.heroSubline}>Precisao para decidir melhor</p>
+            <p className={styles.heroEyebrow}>Harpia / Campo de observação</p>
+            <h1 className={styles.heroTitle}>Veja além do currículo</h1>
+            <p className={styles.heroSubline}>Precisão para decidir melhor</p>
           </m.div>
 
           <m.div className={styles.ctaDock} style={{ opacity: ctaOpacity, x: ctaX, y: ctaY }}>
-            <span className={styles.ctaLabel}>Access layer</span>
+            <span className={styles.ctaLabel}>Camada de acesso</span>
             <Button asChild size="lg" className={styles.heroButton}>
               <Link href={brandPaths.demo}>
                 Solicitar acesso
@@ -104,7 +104,7 @@ export function HarpiaLanding() {
 
           <m.aside className={styles.dataPanel} style={{ opacity: dataOpacity, x: dataX, y: dataY }}>
             <div className={styles.panelKicker}>
-              <span>signal readout</span>
+              <span>leitura de sinais</span>
               <HarpiaMark className="w-4" />
             </div>
             <div className={styles.metricGrid}>
@@ -122,13 +122,13 @@ export function HarpiaLanding() {
             <span className={styles.nodeBeaconPulse} />
             <span className={styles.nodeBeaconCore} />
             <div className={styles.nodeBeaconLabel}>
-              <span>node 08</span>
+              <span>nó 08</span>
               shortlist
             </div>
           </m.div>
 
           <m.div className={styles.microLabel} style={{ opacity: labelOpacity, x: labelX }}>
-            Menos ruido. Mais acerto.
+            Menos ruído. Mais acerto.
           </m.div>
 
           <m.aside
@@ -136,7 +136,7 @@ export function HarpiaLanding() {
             className={styles.analysisPlane}
             style={{ opacity: analysisOpacity, x: analysisX, y: analysisY, rotate: analysisRotate }}
           >
-            <p className={styles.planeEyebrow}>analysis drift</p>
+            <p className={styles.planeEyebrow}>deslocamento da análise</p>
             <div className={styles.planeWord}>critério</div>
             <div className={styles.planeRows}>
               {criterionRows.map(([title, copy]) => (
@@ -153,9 +153,9 @@ export function HarpiaLanding() {
             className={styles.radarNote}
             style={{ opacity: radarOpacity, x: radarX, y: radarY }}
           >
-            <p className={styles.radarLabel}>highlighted node</p>
+            <p className={styles.radarLabel}>nó destacado</p>
             <strong className={styles.radarName}>Ana Costa</strong>
-            <p className={styles.radarMeta}>shortlist em evidencia</p>
+            <p className={styles.radarMeta}>shortlist em evidência</p>
           </m.aside>
 
           <m.div className={styles.oversizedWord} style={{ opacity: massOpacity, x: massX, y: massY }}>
@@ -163,7 +163,7 @@ export function HarpiaLanding() {
           </m.div>
 
           <m.div className={styles.diagonalLabel} style={{ opacity: diagonalOpacity, x: diagonalX, rotate: diagonalRotate }}>
-            Decision system in motion
+            Sistema de decisão em movimento
           </m.div>
 
           <m.aside
@@ -171,7 +171,7 @@ export function HarpiaLanding() {
             className={styles.finalPlane}
             style={{ opacity: finalOpacity, x: finalX, y: finalY }}
           >
-            <p className={styles.planeEyebrow}>decision surface</p>
+            <p className={styles.planeEyebrow}>superfície de decisão</p>
             <h2 className={styles.finalTitle}>Não mostra dados. Mostra critério.</h2>
             <div className={styles.finalSignals}>
               {finaleSignals.map((signal) => {

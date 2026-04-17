@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { COMPANY_CHAT_SUBMISSION_EVENT, type CompanyChatSubmissionEventDetail } from "@/components/chat/company-chat-events";
 
 import type { CompanyChatComposerState } from "./company-chat-composer";
 
@@ -53,9 +54,32 @@ export function CompanyChatPromptStrip({
       formData.set("threadId", threadId);
     }
 
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent<CompanyChatSubmissionEventDetail>(COMPANY_CHAT_SUBMISSION_EVENT, {
+          detail: {
+            phase: "start",
+            threadId: threadId ?? null,
+            message: prompt
+          }
+        })
+      );
+    }
+
     startTransition(async () => {
       const nextState = await action(initialState, formData);
       setState(nextState);
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent<CompanyChatSubmissionEventDetail>(COMPANY_CHAT_SUBMISSION_EVENT, {
+            detail: {
+              phase: "finish",
+              threadId: nextState.threadId ?? threadId ?? null
+            }
+          })
+        );
+      }
     });
   }
 

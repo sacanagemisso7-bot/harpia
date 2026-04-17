@@ -7,6 +7,7 @@ import { ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { Textarea } from "@/components/ui/textarea";
+import { COMPANY_CHAT_SUBMISSION_EVENT, type CompanyChatSubmissionEventDetail } from "@/components/chat/company-chat-events";
 
 export type CompanyChatComposerState = {
   error?: string;
@@ -37,7 +38,7 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
     }
 
     textarea.style.height = "0px";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 240)}px`;
+    textarea.style.height = `${Math.min(textarea.scrollHeight, 220)}px`;
   }, [draft]);
 
   useEffect(() => {
@@ -59,15 +60,40 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
   }, [state.submissionId, state.success]);
 
   function submit(formData: FormData) {
+    const message = String(formData.get("message") ?? "").trim();
+
+    if (typeof window !== "undefined" && message) {
+      window.dispatchEvent(
+        new CustomEvent<CompanyChatSubmissionEventDetail>(COMPANY_CHAT_SUBMISSION_EVENT, {
+          detail: {
+            phase: "start",
+            threadId: threadId ?? null,
+            message
+          }
+        })
+      );
+    }
+
     startTransition(async () => {
       const nextState = await action(initialState, formData);
       setState(nextState);
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent<CompanyChatSubmissionEventDetail>(COMPANY_CHAT_SUBMISSION_EVENT, {
+            detail: {
+              phase: "finish",
+              threadId: nextState.threadId ?? threadId ?? null
+            }
+          })
+        );
+      }
     });
   }
 
   return (
     <form
-      className="space-y-3 rounded-[0.5rem] border border-border/90 bg-background px-3 py-3"
+      className="grid gap-3 border border-border/80 bg-background/95 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
       onSubmit={(event) => {
         event.preventDefault();
         submit(new FormData(event.currentTarget));
@@ -86,19 +112,18 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
             event.currentTarget.form?.requestSubmit();
           }
         }}
-        className="min-h-[72px] max-h-[240px] resize-none border-0 bg-transparent px-0 py-0 text-[0.95rem] leading-7 shadow-none focus-visible:ring-0"
-        placeholder="Pergunte algo sobre a operação, pessoas, tarefas ou políticas..."
+        className="min-h-[68px] max-h-[220px] resize-none border-0 bg-transparent px-0 py-0 text-[0.95rem] leading-7 shadow-none focus-visible:ring-0"
+        placeholder="Pergunte sobre pessoas, tarefas, políticas ou decisões do workspace..."
       />
 
       <FormMessage message={state.error} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/80 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3">
         <p className="text-xs text-muted-foreground">
-          Enter envia. Shift + Enter quebra a linha.
-          {pending ? " Harpia está respondendo..." : ""}
+          {pending ? "Harpia está respondendo..." : "Enter envia · Shift + Enter quebra a linha"}
         </p>
 
-        <Button type="submit" disabled={pending || !draft.trim()}>
+        <Button type="submit" disabled={pending || !draft.trim()} className="min-w-[8.5rem]">
           {pending ? "Respondendo..." : "Enviar"}
           {!pending ? <ArrowUp className="ml-2 h-4 w-4" /> : null}
         </Button>

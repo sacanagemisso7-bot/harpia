@@ -252,13 +252,23 @@ const navItems: NavItem[] = [
 ];
 
 const sectionLabels: Record<NavSection, string> = {
-  workspace: "Geral",
-  people: "People ops",
-  admin: "Administração",
-  self: "Minha área"
+  workspace: "Operação",
+  people: "Pessoas",
+  admin: "Admin",
+  self: "Você"
 };
 
 const sectionOrder: NavSection[] = ["workspace", "people", "admin", "self"];
+
+const compactHeaderMatchers = [
+  (pathname: string) => pathname.startsWith("/chat"),
+  (pathname: string) => pathname.startsWith("/employees"),
+  (pathname: string) => pathname.startsWith("/requests"),
+  (pathname: string) => pathname.startsWith("/people/tasks"),
+  (pathname: string) => pathname.startsWith("/pipeline"),
+  (pathname: string) => pathname.startsWith("/candidates"),
+  (pathname: string) => pathname.startsWith("/jobs")
+];
 
 const routeMeta = [
   {
@@ -431,6 +441,7 @@ export function HarpiaSystemShellClient({
 
   const currentCopy = resolveRouteCopy(pathname, activeItem?.label ?? "Workspace");
   const currentRoleLabel = getRoleLabel(user.role);
+  const isCompactHeaderRoute = compactHeaderMatchers.some((matcher) => matcher(pathname));
   const commandItems: HarpiaCommandItem[] = [
     ...(hasPermission(user.role, "view_hr_requests")
       ? [
@@ -529,6 +540,8 @@ export function HarpiaSystemShellClient({
             </button>
           </div>
 
+          {!sidebarCollapsed ? <p className={styles.sidebarHelper}>Ctrl + K para buscar · [ para recolher</p> : null}
+
           <nav className={styles.navGroups} aria-label="Navegação principal">
             {groupedNav.map((group) => (
               <div key={group.section} className={styles.navGroup}>
@@ -618,11 +631,11 @@ export function HarpiaSystemShellClient({
       </aside>
 
       <div className={styles.main}>
-        <header className={styles.topbar}>
+        <header className={cn(styles.topbar, isCompactHeaderRoute && styles.topbarCompact)}>
           <div className={styles.topbarIntro}>
             <span className={styles.topbarEyebrow}>{user.organizationName}</span>
             <h1 className={styles.topbarTitle}>{currentCopy.title}</h1>
-            <p className={styles.topbarSubtitle}>{currentCopy.description}</p>
+            {!isCompactHeaderRoute ? <p className={styles.topbarSubtitle}>{currentCopy.description}</p> : null}
           </div>
 
           <div className={styles.topbarMeta}>

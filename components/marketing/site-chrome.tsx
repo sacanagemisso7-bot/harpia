@@ -36,7 +36,7 @@ export function SiteChrome({ children }: SiteChromeProps) {
                 Controle
               </Link>
               <Link href={brandPaths.pricing} className="site-nav-link">
-                Pricing
+                Planos
               </Link>
             </nav>
 
@@ -66,13 +66,13 @@ export function SiteChrome({ children }: SiteChromeProps) {
 
           <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground">
             <Link href={brandPaths.pricing} className="hover:text-foreground">
-              Pricing
+              Planos
             </Link>
             <Link href={brandPaths.demo} className="hover:text-foreground">
               Agendar demo
             </Link>
             <Link href={brandPaths.careersDemo} className="hover:text-foreground">
-              Careers demo
+              Carreiras demo
             </Link>
             <Link href={brandPaths.executiveDeck} className="hover:text-foreground">
               PDF executivo

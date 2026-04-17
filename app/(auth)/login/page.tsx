@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </div>
         <div className="max-w-xl space-y-6">
           <h1 className="font-display text-6xl font-semibold leading-tight">
-            Contrate com mais clareza e opere RH com menos ruido.
+              Contrate com mais clareza e opere RH com menos ruído.
           </h1>
           <p className="text-lg text-muted-foreground">
             {brand.description}
