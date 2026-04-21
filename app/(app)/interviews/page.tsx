@@ -43,13 +43,13 @@ export default async function InterviewsPage() {
     { label: "Agendadas", value: interviews.length },
     { label: "Próximas 24h", value: next24h },
     { label: "Próximas 72h", value: next72h },
-    { label: "Hosts ativos", value: uniqueHosts }
+    { label: "Responsáveis", value: uniqueHosts }
   ];
 
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Interviews</span>
+        <span className={styles.eyebrow}>Entrevistas</span>
         <h2 className={styles.title}>Agenda de entrevistas</h2>
         <p className={styles.description}>
           Uma agenda operacional clara para o time enxergar o que vem agora, quem conduz e onde a preparação precisa acontecer.
@@ -83,6 +83,18 @@ export default async function InterviewsPage() {
         </div>
       </div>
 
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Veja o próximo horário
+        </span>
+        <span>
+          <strong>2.</strong> Abra a aplicação
+        </span>
+        <span>
+          <strong>3.</strong> Registre o feedback
+        </span>
+      </div>
+
       <div className={styles.body}>
         <section className={styles.listPanel}>
           <div className={styles.panelHeader}>
@@ -114,7 +126,7 @@ export default async function InterviewsPage() {
                   </div>
 
                   <div className={styles.rowMeta}>
-                    <span className={styles.metaLabel}>Host</span>
+                    <span className={styles.metaLabel}>Responsável</span>
                     <span className={styles.metaValue}>{interview.scheduledBy.name}</span>
                   </div>
 
@@ -133,7 +145,10 @@ export default async function InterviewsPage() {
               ))
             ) : (
               <div className={styles.emptyWrap}>
-                <p className={styles.emptyState}>Nenhuma entrevista agendada ainda.</p>
+                <div className={styles.sectionStack}>
+                  <p className={styles.emptyTitle}>Nenhuma entrevista agendada.</p>
+                  <p className={styles.emptyState}>Quando uma entrevista for marcada, ela aparece aqui com horário, candidato e atalhos.</p>
+                </div>
               </div>
             )}
           </div>
@@ -167,7 +182,7 @@ export default async function InterviewsPage() {
 
           <section className={styles.detailPanel}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.panelTitle}>Hosts com mais agenda</h3>
+              <h3 className={styles.panelTitle}>Agenda por responsável</h3>
             </div>
 
             <div className={styles.sectionStack}>

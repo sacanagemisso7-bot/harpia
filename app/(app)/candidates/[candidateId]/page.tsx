@@ -90,15 +90,15 @@ export default async function CandidateDetailPage({
       <div className={styles.statRow}>
         <div className={styles.statPill}>
           <strong>{candidate.resumes.length}</strong>
-          <span>currículo(s)</span>
+          <span>currículos</span>
         </div>
         <div className={styles.statPill}>
           <strong>{candidate.applications.length}</strong>
-          <span>aplicação(ões)</span>
+          <span>candidaturas</span>
         </div>
         <div className={styles.statPill}>
           <strong>{coreSkills.length}</strong>
-          <span>skills detectadas</span>
+          <span>competências</span>
         </div>
         <div className={styles.statPill}>
           <strong>{availableJobs.length}</strong>
@@ -115,6 +115,18 @@ export default async function CandidateDetailPage({
           </div>
           <span className={styles.shortcutHint}>O perfil, o currículo e a análise ficam no mesmo lugar para reduzir troca de contexto.</span>
         </div>
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Confira perfil
+        </span>
+        <span>
+          <strong>2.</strong> Analise currículo
+        </span>
+        <span>
+          <strong>3.</strong> Vincule a uma vaga
+        </span>
       </div>
 
       <div className={styles.body}>

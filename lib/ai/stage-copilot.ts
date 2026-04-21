@@ -94,7 +94,7 @@ function heuristicCopilotDecision(input: StageCopilotInput): StageCopilotDecisio
       ].filter(Boolean),
       nextActions: [
         "Mover para a proxima etapa coerente com o plano da vaga.",
-        "Validar referencias ou sinais finais de execucao.",
+        "Validar referências ou sinais finais de execução.",
         "Preparar comunicacao de continuidade com prazo definido."
       ]
     };

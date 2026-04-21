@@ -83,7 +83,7 @@ export default async function SettingsPage() {
       meta: isGoogleCalendarSyncConfigured() ? env.GOOGLE_CALENDAR_ID : "Não configurado"
     },
     {
-      title: "Storage",
+      title: "Arquivos",
       description: "Persistência de currículos em disco local ou bucket S3-compatible.",
       icon: Database,
       ready: storageDriver === "local" ? true : isS3Configured(),
@@ -97,8 +97,8 @@ export default async function SettingsPage() {
       meta: isStripeConfigured() ? "Checkout configurável" : "Não configurado"
     },
     {
-      title: "Observability",
-      description: "Forwarding opcional de eventos operacionais para provedor externo.",
+      title: "Observabilidade",
+      description: "Envio opcional de eventos operacionais para provedor externo.",
       icon: Activity,
       ready: isObservabilityConfigured(),
       meta: isObservabilityConfigured() ? env.OBSERVABILITY_SERVICE_NAME : "Não configurado"
@@ -121,9 +121,9 @@ export default async function SettingsPage() {
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Settings</span>
+        <span className={styles.eyebrow}>Configurações</span>
         <h2 className={styles.title}>Configurações da organização</h2>
-        <p className={styles.description}>Billing, equipe, integrações e governança do workspace em um fluxo mais direto.</p>
+        <p className={styles.description}>Plano, equipe, integrações e governança em um fluxo direto.</p>
       </div>
 
       <div className={styles.statRow}>
@@ -135,11 +135,23 @@ export default async function SettingsPage() {
         ))}
       </div>
 
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Confira plano e limites
+        </span>
+        <span>
+          <strong>2.</strong> Convide a equipe
+        </span>
+        <span>
+          <strong>3.</strong> Revise integrações
+        </span>
+      </div>
+
       <div className={styles.body}>
         <div className={styles.detailColumn}>
           <section className={styles.detailPanel}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.panelTitle}>Billing rápido</h3>
+              <h3 className={styles.panelTitle}>Plano e uso</h3>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={billingIsActive ? "success" : "warning"}>{BILLING_STATUS_LABELS[organization.billingStatus]}</Badge>
                 <Badge variant="outline">{planDefinition.label}</Badge>
@@ -200,7 +212,7 @@ export default async function SettingsPage() {
               </form>
 
               <Button asChild variant="outline">
-                <Link href="/settings/billing">Billing detalhado</Link>
+                <Link href="/settings/billing">Plano detalhado</Link>
               </Button>
             </div>
           </section>
@@ -208,7 +220,7 @@ export default async function SettingsPage() {
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Dados da organização</h3>
-              <p className={styles.panelDescription}>Nome, slug e faixa de tamanho usados no tenant.</p>
+              <p className={styles.panelDescription}>Nome, endereço interno e tamanho da empresa.</p>
             </div>
 
             <OrganizationSettingsForm
@@ -225,7 +237,7 @@ export default async function SettingsPage() {
         <aside className={styles.detailColumn}>
           <section className={styles.detailPanel}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.panelTitle}>Readiness do ambiente</h3>
+              <h3 className={styles.panelTitle}>Conexões do ambiente</h3>
             </div>
 
             <div className={styles.sectionStack}>
@@ -290,11 +302,11 @@ export default async function SettingsPage() {
         <div className="grid gap-4 p-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <div className="grid gap-4">
             {assignableRoles.length ? (
-              <div className="border border-border/85 bg-card p-4">
+              <div className="border border-border/65 bg-transparent p-4">
                 <TeamInviteForm action={inviteTeamMember} assignableRoles={assignableRoles} />
               </div>
             ) : (
-              <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+              <div className="border border-dashed border-border/65 bg-transparent p-4 text-sm text-muted-foreground">
                 Seu papel atual não pode convidar novos membros.
               </div>
             )}
@@ -302,7 +314,7 @@ export default async function SettingsPage() {
             <div className="grid gap-3">
               {pendingInvites.length ? (
                 pendingInvites.map((invite) => (
-                  <div key={invite.id} className="border border-border/85 bg-card p-4">
+                  <div key={invite.id} className="border border-border/65 bg-transparent p-4">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="grid gap-1">
                         <strong className="text-sm text-foreground">{invite.email}</strong>
@@ -323,7 +335,7 @@ export default async function SettingsPage() {
                   </div>
                 ))
               ) : (
-                <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+                <div className="border border-dashed border-border/65 bg-transparent p-4 text-sm text-muted-foreground">
                   Nenhum convite pendente no momento.
                 </div>
               )}
@@ -339,7 +351,7 @@ export default async function SettingsPage() {
               }));
 
               return (
-                <div key={member.id} className="border border-border/85 bg-card p-4">
+                <div key={member.id} className="border border-border/65 bg-transparent p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="grid gap-1">
                       <strong className="text-sm text-foreground">{member.name}</strong>
@@ -377,14 +389,14 @@ export default async function SettingsPage() {
         </div>
 
         <div className="grid gap-4 p-4 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-          <div className="border border-border/85 bg-card p-4">
+          <div className="border border-border/65 bg-transparent p-4">
             <DepartmentPlaybookForm action={upsertDepartmentPlaybook} submitLabel="Salvar playbook" />
           </div>
 
           <div className="grid gap-4">
             {playbooks.length ? (
               playbooks.map((playbook) => (
-                <div key={playbook.id} className="grid gap-4 border border-border/85 bg-card p-4">
+                <div key={playbook.id} className="grid gap-4 border border-border/65 bg-transparent p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="grid gap-1">
                       <strong className="text-sm text-foreground">{playbook.title}</strong>
@@ -418,7 +430,7 @@ export default async function SettingsPage() {
                 </div>
               ))
             ) : (
-              <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+              <div className="border border-dashed border-border/65 bg-transparent p-4 text-sm text-muted-foreground">
                 Nenhum playbook cadastrado ainda.
               </div>
             )}

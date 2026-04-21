@@ -157,7 +157,7 @@ export default async function CompanyChatPage({
         <>
           <div className={styles.railHeader}>
             <div>
-              <p className={styles.railEyebrow}>Company Chat</p>
+              <p className={styles.railEyebrow}>Chat da empresa</p>
               <h1 className={styles.railTitle}>Conversas</h1>
             </div>
 

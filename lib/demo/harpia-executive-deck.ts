@@ -49,7 +49,7 @@ export const harpiaExecutiveDeck = {
       detail: "Harpia cruza score, fit, sinais de entrevista e risco de atraso para acelerar a decisao certa."
     },
     {
-      title: "Operacao de RH sem fila invisivel",
+      title: "Operação de RH sem fila invisível",
       detail: "Requests, tasks e eventos aparecem com ownership e prazo antes do problema virar escalacao."
     },
     {

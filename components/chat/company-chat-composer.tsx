@@ -93,7 +93,7 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
 
   return (
     <form
-      className="grid gap-3 border border-border/80 bg-background/95 px-4 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
+      className="grid gap-3 border border-border/70 bg-background/95 px-4 py-3"
       onSubmit={(event) => {
         event.preventDefault();
         submit(new FormData(event.currentTarget));
@@ -112,13 +112,13 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
             event.currentTarget.form?.requestSubmit();
           }
         }}
-        className="min-h-[68px] max-h-[220px] resize-none border-0 bg-transparent px-0 py-0 text-[0.95rem] leading-7 shadow-none focus-visible:ring-0"
+        className="min-h-[62px] max-h-[220px] resize-none border-0 bg-transparent px-0 py-0 text-[0.95rem] leading-7 shadow-none focus-visible:ring-0"
         placeholder="Pergunte sobre pessoas, tarefas, políticas ou decisões do workspace..."
       />
 
       <FormMessage message={state.error} />
 
-      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/55 pt-3">
         <p className="text-xs text-muted-foreground">
           {pending ? "Harpia está respondendo..." : "Enter envia · Shift + Enter quebra a linha"}
         </p>

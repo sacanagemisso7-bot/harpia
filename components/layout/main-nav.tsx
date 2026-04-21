@@ -27,28 +27,28 @@ type NavigationItem =
     };
 
 const navigation: NavigationItem[] = [
-  { href: "/me/policies" as Route, label: "My Policies", icon: ShieldCheck, section: "self", roles: ["EMPLOYEE"] },
-  { href: "/dashboard" as Route, label: "Home", icon: LayoutGrid, section: "command", requiredPermission: "view_people_command_center" },
-  { href: "/people/command-center" as Route, label: "Command Center", icon: Layers3, section: "command", requiredPermission: "view_people_command_center" },
-  { href: "/chat" as Route, label: "Company Chat", icon: MessageSquareMore, section: "command", requiredPermission: "view_chat" },
-  { href: "/employees" as Route, label: "Employees", icon: UserRoundSearch, section: "people", requiredPermission: "view_employees" },
-  { href: "/requests" as Route, label: "Service Desk", icon: BellRing, section: "people", requiredPermission: "view_hr_requests" },
-  { href: "/people/tasks" as Route, label: "People Tasks", icon: ClipboardList, section: "people", requiredPermission: "view_people_tasks" },
+  { href: "/me/policies" as Route, label: "Minhas políticas", icon: ShieldCheck, section: "self", roles: ["EMPLOYEE"] },
+  { href: "/dashboard" as Route, label: "Início", icon: LayoutGrid, section: "command", requiredPermission: "view_people_command_center" },
+  { href: "/people/command-center" as Route, label: "Central", icon: Layers3, section: "command", requiredPermission: "view_people_command_center" },
+  { href: "/chat" as Route, label: "Chat da empresa", icon: MessageSquareMore, section: "command", requiredPermission: "view_chat" },
+  { href: "/employees" as Route, label: "Colaboradores", icon: UserRoundSearch, section: "people", requiredPermission: "view_employees" },
+  { href: "/requests" as Route, label: "Solicitações", icon: BellRing, section: "people", requiredPermission: "view_hr_requests" },
+  { href: "/people/tasks" as Route, label: "Tarefas", icon: ClipboardList, section: "people", requiredPermission: "view_people_tasks" },
   { href: "/people/onboarding" as Route, label: "Onboarding", icon: UsersRound, section: "people", requiredPermission: "view_people_command_center" },
   { href: "/people/offboarding" as Route, label: "Offboarding", icon: UsersRound, section: "people", requiredPermission: "view_people_command_center" },
-  { href: "/people/calendar" as Route, label: "Calendar", icon: CalendarClock, section: "people", requiredPermission: "view_people_calendar" },
+  { href: "/people/calendar" as Route, label: "Calendário", icon: CalendarClock, section: "people", requiredPermission: "view_people_calendar" },
   { href: "/people/compliance" as Route, label: "Compliance", icon: ShieldCheck, section: "people", requiredPermission: "view_compliance" },
-  { href: "/knowledge" as Route, label: "Knowledge", icon: BookOpenText, section: "people", requiredPermission: "manage_knowledge" },
-  { href: "/people/agent-approvals" as Route, label: "Agent Approvals", icon: ShieldCheck, section: "people", requiredPermission: "review_agent_approvals" },
-  { href: "/hiring" as Route, label: "Hiring", icon: BriefcaseBusiness, section: "admin" },
-  { href: "/analytics" as Route, label: "Analytics", icon: BarChart3, section: "admin", requiredPermission: "view_analytics" },
-  { href: "/settings/billing" as Route, label: "Billing", icon: CreditCard, section: "admin", requiredPermission: "manage_workspace" },
-  { href: "/settings" as Route, label: "Settings", icon: Settings, section: "admin", requiredPermission: "manage_workspace" }
+  { href: "/knowledge" as Route, label: "Conhecimento", icon: BookOpenText, section: "people", requiredPermission: "manage_knowledge" },
+  { href: "/people/agent-approvals" as Route, label: "Aprovações", icon: ShieldCheck, section: "people", requiredPermission: "review_agent_approvals" },
+  { href: "/hiring" as Route, label: "Contratação", icon: BriefcaseBusiness, section: "admin" },
+  { href: "/analytics" as Route, label: "Análises", icon: BarChart3, section: "admin", requiredPermission: "view_analytics" },
+  { href: "/settings/billing" as Route, label: "Plano e uso", icon: CreditCard, section: "admin", requiredPermission: "manage_workspace" },
+  { href: "/settings" as Route, label: "Configurações", icon: Settings, section: "admin", requiredPermission: "manage_workspace" }
 ];
 
 const navigationSections = [
-  { id: "self", label: "Personal", code: "01" },
-  { id: "command", label: "Command", code: "02" },
+  { id: "self", label: "Pessoal", code: "01" },
+  { id: "command", label: "Central", code: "02" },
   { id: "people", label: "People Ops", code: "03" },
   { id: "admin", label: "Admin", code: "04" }
 ] as const;
@@ -65,7 +65,7 @@ export function MainNav({ role, canViewRevenueOps = false }: MainNavProps) {
       ? true
       : (!item.roles || item.roles.includes(role)) && (!item.requiredPermission || hasPermission(role, item.requiredPermission))
   );
-  const revenueOpsItem: NavigationItem = { href: "/ops/revenue" as Route, label: "Revenue Ops", icon: TrendingUp, section: "admin" };
+  const revenueOpsItem: NavigationItem = { href: "/ops/revenue" as Route, label: "Receita", icon: TrendingUp, section: "admin" };
   const completeNavigation: NavigationItem[] = canViewRevenueOps ? [...visibleNavigation, revenueOpsItem] : visibleNavigation;
   const groupedNavigation = navigationSections
     .map((section) => ({
@@ -87,12 +87,12 @@ export function MainNav({ role, canViewRevenueOps = false }: MainNavProps) {
           </div>
           <div className={styles.navCurrentEyebrow}>
             <span className={styles.navCurrentCode}>{activeSection.code}</span>
-            <span className={styles.navCurrentState}>active surface</span>
+            <span className={styles.navCurrentState}>ativo</span>
           </div>
           <p className={styles.navCurrentTitle}>{activeItem.label}</p>
           <div className={styles.navCurrentMeta}>
             <span className={styles.navCurrentPill}>{activeSection.label}</span>
-            <span className={styles.navCurrentPill}>{pathname === "/dashboard" ? "overview" : "live route"}</span>
+            <span className={styles.navCurrentPill}>{pathname === "/dashboard" ? "resumo" : "rota ativa"}</span>
           </div>
           <div className={styles.navCurrentTrail} />
         </div>
@@ -126,9 +126,9 @@ export function MainNav({ role, canViewRevenueOps = false }: MainNavProps) {
                     </span>
                   </span>
                   {item.disabled ? (
-                    <span className="nav-section-label tracking-[0.2em]">Soon</span>
+                    <span className="nav-section-label tracking-[0.2em]">Em breve</span>
                   ) : (
-                    <span className={styles.navTrail}>{isActive ? "live" : "ready"}</span>
+                    <span className={styles.navTrail}>{isActive ? "ativo" : "pronto"}</span>
                   )}
                 </>
               );

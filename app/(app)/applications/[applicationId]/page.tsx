@@ -150,7 +150,7 @@ export default async function ApplicationDetailPage({
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Application</span>
+        <span className={styles.eyebrow}>Candidatura</span>
         <h2 className={styles.title}>{application.candidate.fullName}</h2>
         <p className={styles.description}>
           {application.job.title} · {application.job.department}
@@ -165,6 +165,18 @@ export default async function ApplicationDetailPage({
             <span>{stat.label}</span>
           </div>
         ))}
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Leia o resumo
+        </span>
+        <span>
+          <strong>2.</strong> Confira sinais e riscos
+        </span>
+        <span>
+          <strong>3.</strong> Mova ou resolva com IA
+        </span>
       </div>
 
       <div className={styles.body}>

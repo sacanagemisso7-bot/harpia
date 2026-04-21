@@ -48,7 +48,7 @@ export default async function JobDetailPage({
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Hiring</span>
+        <span className={styles.eyebrow}>Contratação</span>
         <h2 className={styles.title}>{job.title}</h2>
         <p className={styles.description}>{job.summary}</p>
       </div>
@@ -89,6 +89,18 @@ export default async function JobDetailPage({
           </div>
           <span className={styles.shortcutHint}>Briefing, critérios, pipeline e aplicações em uma só visão operacional.</span>
         </div>
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Revise critérios
+        </span>
+        <span>
+          <strong>2.</strong> Veja candidatos priorizados
+        </span>
+        <span>
+          <strong>3.</strong> Mova a fila
+        </span>
       </div>
 
       <div className={styles.body}>

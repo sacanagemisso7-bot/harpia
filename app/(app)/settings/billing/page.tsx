@@ -67,7 +67,7 @@ function getBillingNotice(code?: string) {
     case "candidate-limit":
       return {
         variant: "warning" as const,
-        message: "Seu plano atual atingiu um limite operacional. Abra o billing para fazer upgrade."
+        message: "Seu plano atual atingiu um limite operacional. Abra Plano e uso para fazer upgrade."
       };
     default:
       return null;
@@ -109,15 +109,15 @@ export default async function BillingPage({
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Billing</span>
+        <span className={styles.eyebrow}>Plano e uso</span>
         <h2 className={styles.title}>Plano, trial e cobrança</h2>
-        <p className={styles.description}>Assinatura, uso, invoices e pedidos comerciais em um fluxo mais claro de operar.</p>
+        <p className={styles.description}>Assinatura, uso, faturas e pedidos comerciais em um fluxo claro.</p>
       </div>
 
       {billingNotice ? (
         <div className={styles.toolbar}>
           <div className={styles.toolbarMeta}>
-            <strong className={styles.panelTitle}>Atualização de billing</strong>
+            <strong className={styles.panelTitle}>Atualização do plano</strong>
             <span className={styles.shortcutHint}>{billingNotice.message}</span>
           </div>
           <Badge variant={billingNotice.variant}>{billingNotice.variant === "success" ? "OK" : "Info"}</Badge>
@@ -131,6 +131,18 @@ export default async function BillingPage({
             <span>{stat.label}</span>
           </div>
         ))}
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Confira limites
+        </span>
+        <span>
+          <strong>2.</strong> Ajuste plano ou add-ons
+        </span>
+        <span>
+          <strong>3.</strong> Revise faturas
+        </span>
       </div>
 
       <div className={styles.body}>
@@ -173,7 +185,7 @@ export default async function BillingPage({
               </form>
 
               <Button asChild variant="outline">
-                <Link href="/pricing">Ver pricing</Link>
+                <Link href="/pricing">Ver preços</Link>
               </Button>
             </div>
           </section>
@@ -268,8 +280,8 @@ export default async function BillingPage({
 
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
-              <h3 className={styles.panelTitle}>Seats e add-ons de IA</h3>
-              <p className={styles.panelDescription}>Ajuste a camada comercial do workspace sem sair do billing.</p>
+              <h3 className={styles.panelTitle}>Membros extras e IA</h3>
+              <p className={styles.panelDescription}>Ajuste a camada comercial sem sair desta tela.</p>
             </div>
 
             <BillingAddonsForm
@@ -285,7 +297,7 @@ export default async function BillingPage({
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Perfil fiscal</h3>
-              <p className={styles.panelDescription}>Dados usados para cobrança, fiscalidade e rate de overage.</p>
+              <p className={styles.panelDescription}>Dados usados para cobrança, fiscalidade e uso adicional.</p>
             </div>
 
             <BillingProfileForm
@@ -304,7 +316,7 @@ export default async function BillingPage({
         <aside className={styles.detailColumn}>
           <section className={styles.detailPanel}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.panelTitle}>Saúde do billing</h3>
+              <h3 className={styles.panelTitle}>Saúde da assinatura</h3>
             </div>
 
             <div className={styles.detailGrid}>
@@ -366,7 +378,7 @@ export default async function BillingPage({
 
           <section className={styles.detailPanel}>
             <div className={styles.sectionHeader}>
-              <h3 className={styles.panelTitle}>Features do plano</h3>
+              <h3 className={styles.panelTitle}>Recursos do plano</h3>
             </div>
 
             <div className={styles.sectionStack}>
@@ -401,14 +413,14 @@ export default async function BillingPage({
         </div>
 
         <div className="grid gap-4 p-4 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
-          <div className="border border-border/85 bg-card p-4">
+          <div className="border border-border/65 bg-transparent p-4">
             <BillingUpgradeRequestForm action={createBillingUpgradeRequest} />
           </div>
 
           <div className="grid gap-3">
             {billing.requests.length ? (
               billing.requests.map((request) => (
-                <div key={request.id} className="border border-border/85 bg-card p-4">
+                <div key={request.id} className="border border-border/65 bg-transparent p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="grid gap-1">
                       <strong className="text-sm text-foreground">
@@ -433,14 +445,14 @@ export default async function BillingPage({
                   </div>
 
                   <p className="mt-3 text-sm text-muted-foreground">
-                    Seats extras: {request.requestedExtraSeats} · Pacotes de IA: {request.requestedAiAddonUnits}
+                    Membros extras: {request.requestedExtraSeats} · Pacotes de IA: {request.requestedAiAddonUnits}
                   </p>
                   {request.note ? <p className="mt-2 text-sm text-muted-foreground">{request.note}</p> : null}
                   {request.responseNote ? <p className="mt-2 text-sm text-muted-foreground">Resposta: {request.responseNote}</p> : null}
                 </div>
               ))
             ) : (
-              <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+              <div className="border border-dashed border-border/65 bg-transparent p-4 text-sm text-muted-foreground">
                 Nenhum pedido de upgrade enviado ainda.
               </div>
             )}
@@ -452,7 +464,7 @@ export default async function BillingPage({
         <div className={styles.panelHeader}>
           <div className={styles.panelHeaderRow}>
             <div>
-              <h3 className={styles.panelTitle}>Invoices</h3>
+              <h3 className={styles.panelTitle}>Faturas</h3>
               <p className={styles.panelDescription}>Histórico de cobrança e exportação quando o plano permite.</p>
             </div>
           </div>
@@ -460,8 +472,8 @@ export default async function BillingPage({
 
         {!currentFeatures.includes("invoice_history") ? (
           <div className="p-4">
-            <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
-              Histórico detalhado de invoices fica disponível a partir do plano Growth.
+            <div className="border border-dashed border-border/65 bg-transparent p-4 text-sm text-muted-foreground">
+              Histórico detalhado de faturas fica disponível a partir do plano Growth.
             </div>
           </div>
         ) : billing.invoices.length ? (
@@ -503,10 +515,10 @@ export default async function BillingPage({
           </div>
         ) : (
           <div className="p-4">
-            <div className="border border-dashed border-border/85 bg-card p-4 text-sm text-muted-foreground">
+            <div className="border border-dashed border-border/65 bg-transparent p-4 text-sm text-muted-foreground">
               {isStripeConfigured()
-                ? "Nenhuma invoice encontrada ainda para este workspace."
-                : "Configure Stripe para exibir invoices e histórico de cobrança aqui."}
+                ? "Nenhuma fatura encontrada ainda."
+                : "Configure Stripe para exibir faturas e histórico de cobrança aqui."}
             </div>
           </div>
         )}

@@ -22,7 +22,7 @@ export default async function AnalyticsPage() {
     return (
       <div className={styles.workspace}>
         <div className={styles.header}>
-          <span className={styles.eyebrow}>Analytics</span>
+          <span className={styles.eyebrow}>Análises</span>
           <h2 className={styles.title}>Analytics avançado faz parte do Growth</h2>
           <p className={styles.description}>
             O plano atual cobre operação diária. Leitura profunda de volume, score, SLA e produtividade fica liberada a
@@ -50,7 +50,7 @@ export default async function AnalyticsPage() {
             <div className={styles.tabs}>
               <Button asChild size="sm">
                 <Link href="/settings/billing">
-                  Abrir billing
+                  Abrir plano
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -60,6 +60,18 @@ export default async function AnalyticsPage() {
             </div>
             <span className={styles.shortcutHint}>Libere sinais mais profundos sem perder a leitura operacional do dia a dia.</span>
           </div>
+        </div>
+
+        <div className={styles.workflowGuide}>
+          <span>
+            <strong>1.</strong> Veja o que falta
+          </span>
+          <span>
+            <strong>2.</strong> Compare com o plano atual
+          </span>
+          <span>
+            <strong>3.</strong> Libere quando fizer sentido
+          </span>
         </div>
 
         <div className={styles.body}>
@@ -143,8 +155,8 @@ export default async function AnalyticsPage() {
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Analytics</span>
-        <h2 className={styles.title}>Leitura operacional do hiring</h2>
+        <span className={styles.eyebrow}>Análises</span>
+        <h2 className={styles.title}>Leitura operacional da contratação</h2>
         <p className={styles.description}>
           Volume, score, velocidade e carga do funil em uma visão mais simples de ler e muito mais útil para decidir.
         </p>
@@ -172,8 +184,20 @@ export default async function AnalyticsPage() {
               <Link href="/candidates">Ver candidatos</Link>
             </Button>
           </div>
-          <span className={styles.shortcutHint}>Sem cards decorativos: só os sinais que ajudam o time a priorizar mais rápido.</span>
+          <span className={styles.shortcutHint}>Sinais simples para decidir onde agir primeiro.</span>
         </div>
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Leia os gargalos
+        </span>
+        <span>
+          <strong>2.</strong> Abra a origem
+        </span>
+        <span>
+          <strong>3.</strong> Aja no pipeline
+        </span>
       </div>
 
       <div className={styles.body}>
@@ -195,7 +219,7 @@ export default async function AnalyticsPage() {
                     <div className={styles.rowLead}>
                       <p className={styles.rowTitle}>{source.source}</p>
                       <p className={styles.rowSubtitle}>
-                        {source.candidates} candidato(s) · {source.applications} aplicação(ões)
+                        {source.candidates} candidatos · {source.applications} aplicações
                       </p>
                     </div>
                     <Badge variant="outline">{formatScore(source.averageScore)}</Badge>

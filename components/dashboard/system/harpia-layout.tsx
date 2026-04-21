@@ -3,16 +3,10 @@
 import type { Route } from "next";
 import { useMemo, useState } from "react";
 
-import { ThemeToggle } from "@/components/theme/theme-toggle";
-import { HarpiaCommandPalette, type HarpiaCommandItem } from "@/components/navigation/harpia-command-palette";
-import { hasPermission } from "@/lib/auth/permission-matrix";
-
 import type { DashboardData, DashboardFocusItem, DashboardViewer } from "./dashboard-model";
-import { sidebarItems } from "./dashboard-model";
 import { HarpiaContextPanel } from "./harpia-context-panel";
 import { HarpiaModuleDeck } from "./harpia-module-deck";
 import { HarpiaOverviewBoard } from "./harpia-overview-board";
-import { HarpiaSidebar } from "./harpia-sidebar";
 import { HarpiaSurface } from "./harpia-surface";
 import styles from "./harpia-dashboard-system.module.css";
 
@@ -137,23 +131,6 @@ export function HarpiaLayout({
   data: DashboardData;
   viewer: DashboardViewer;
 }) {
-  const navItems = useMemo(
-    () => sidebarItems.filter((item) => !item.permission || hasPermission(viewer.role, item.permission)),
-    [viewer.role]
-  );
-
-  const commandItems: HarpiaCommandItem[] = useMemo(
-    () =>
-      navItems.map((item) => ({
-        id: item.id,
-        label: item.label,
-        href: item.href,
-        section: "Dashboard",
-        keywords: [item.icon, item.label]
-      })),
-    [navItems]
-  );
-
   const { priorityItems, hiringItems, operationsItems } = useMemo(() => buildFocusItems(data), [data]);
   const allFocusItems = [...priorityItems, ...hiringItems, ...operationsItems];
   const [selectedItemId, setSelectedItemId] = useState<string | null>(priorityItems[0]?.id ?? hiringItems[0]?.id ?? null);
@@ -183,35 +160,18 @@ export function HarpiaLayout({
     }
   ];
 
-  function handleReset() {
-    setSelectedItemId(null);
-  }
-
   function handleSelectItem(item: DashboardFocusItem) {
     setSelectedItemId(item.id);
   }
 
   return (
     <div className={styles.layout}>
-      <HarpiaSidebar items={navItems} activeHref={"/dashboard" as Route} onReset={handleReset} />
-
       <main className={styles.main}>
         <header className={styles.topbar}>
           <div className={styles.topbarTitle}>
             <span className={styles.eyebrow}>{viewer.organizationName}</span>
-            <h1 className={styles.title}>Dashboard</h1>
+            <h1 className={styles.title}>Início</h1>
             <p className={styles.subtitle}>Prioridades, filas e mudanças relevantes em um só lugar.</p>
-          </div>
-
-          <div className={styles.topbarMeta}>
-            <div className={styles.topbarControls}>
-              <HarpiaCommandPalette
-                items={commandItems}
-                triggerClassName={styles.commandTrigger}
-                triggerLabel="Buscar ou ir para..."
-              />
-              <ThemeToggle className={styles.themeDock} />
-            </div>
           </div>
         </header>
 

@@ -671,7 +671,7 @@ export async function processWatchtowerSweepJob(
       status: AgentRunStatus.EXECUTING,
       riskLevel: AgentRiskLevel.LOW,
       requiresApproval: false,
-      summary: "Watchtower em execucao."
+      summary: "Watchtower em execução."
     }
   });
 
@@ -927,17 +927,17 @@ export async function processPeopleReminderJob(
           ? "Seu aceite de política esta se apróximando do prazo."
           : `Motivo: ${payload.reason ?? "general"}.`;
     const subject = task
-      ? `Watchtower: tarefa requer aten??o - ${task.title}`
+      ? `Watchtower: tarefa requer atenção - ${task.title}`
       : payload.reason === "policy_assignment"
         ? "Harpia: nova política aguardando seu aceite"
         : payload.reason === "policy_ack_due_soon"
           ? "Harpia: lembrete de aceite de política"
           : "Harpia: lembrete operacional";
     const html = task
-      ? `<p>O Watchtower identificou uma ação que requer aten??o imediata.</p><p><strong>${task.title}</strong></p><p>${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}.` : ""}</p><p>${reasonLabel}</p>`
+      ? `<p>O Watchtower identificou uma ação que requer atenção imediata.</p><p><strong>${task.title}</strong></p><p>${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}.` : ""}</p><p>${reasonLabel}</p>`
       : `<p>A Harpia registrou uma pendencia operacional ligada a você.</p><p><strong>${employee?.fullName ?? "Colaborador"}</strong></p><p>${reasonLabel}</p><p>Abra o portal interno para revisar suas políticas e pendencias.</p>`;
     const text = task
-      ? `O Watchtower identificou uma ação que requer aten??o imediata.\n\n${task.title}\n${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}\n` : ""}${reasonLabel}`
+      ? `O Watchtower identificou uma ação que requer atenção imediata.\n\n${task.title}\n${task.relatedEmployee?.fullName ? `Colaborador relacionado: ${task.relatedEmployee.fullName}\n` : ""}${reasonLabel}`
       : `A Harpia registrou uma pendencia operacional ligada a você.\n\n${employee?.fullName ?? "Colaborador"}\n${reasonLabel}\nAbra o portal interno para revisar suas políticas e pendencias.`;
 
     await sendOperationalEmail({

@@ -73,7 +73,7 @@ export default async function RevenueOpsPage() {
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Revenue ops</span>
+        <span className={styles.eyebrow}>Receita</span>
         <h2 className={styles.title}>Receita, risco e aprovações</h2>
         <p className={styles.description}>
           Uma leitura interna mais direta da carteira, dos pedidos comerciais pendentes e do que merece atenção agora.
@@ -93,14 +93,26 @@ export default async function RevenueOpsPage() {
         <div className={styles.toolbarMeta}>
           <div className={styles.tabs}>
             <Button asChild variant="outline" size="sm">
-              <Link href="/settings/billing">Abrir billing</Link>
+              <Link href="/settings/billing">Abrir plano</Link>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <Link href="/dashboard">Voltar ao dashboard</Link>
+              <Link href="/dashboard">Voltar ao início</Link>
             </Button>
           </div>
-          <span className={styles.shortcutHint}>Sem painel ornamental: aprovação, risco e carteira no mesmo fluxo.</span>
+          <span className={styles.shortcutHint}>Aprovação, risco e carteira no mesmo fluxo.</span>
         </div>
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Decida pedidos pendentes
+        </span>
+        <span>
+          <strong>2.</strong> Revise riscos
+        </span>
+        <span>
+          <strong>3.</strong> Acompanhe uso e receita
+        </span>
       </div>
 
       <div className={styles.body}>
@@ -168,7 +180,10 @@ export default async function RevenueOpsPage() {
               ))
             ) : (
               <div className={styles.emptyWrap}>
-                <p className={styles.emptyState}>Nenhum pedido pendente no momento.</p>
+                <div className={styles.sectionStack}>
+                  <p className={styles.emptyTitle}>Nenhum pedido pendente.</p>
+                  <p className={styles.emptyState}>Quando houver upgrade ou ajuste comercial para aprovar, ele aparece aqui.</p>
+                </div>
               </div>
             )}
           </div>
@@ -190,7 +205,7 @@ export default async function RevenueOpsPage() {
                 <span className={styles.metaValue}>{snapshot.pendingRequests.length}</span>
               </div>
               <div className={styles.detailCell}>
-                <span className={styles.metaLabel}>Past due</span>
+                <span className={styles.metaLabel}>Em atraso</span>
                 <span className={styles.metaValue}>{snapshot.summary.pastDueOrganizations}</span>
               </div>
               <div className={styles.detailCell}>
@@ -265,7 +280,7 @@ export default async function RevenueOpsPage() {
                   <span className={styles.metaValue}>{formatMoney(item.projectedMonthlyRevenueCents)}</span>
                 </div>
                 <div className={styles.detailCell}>
-                  <span className={styles.metaLabel}>Seats</span>
+                  <span className={styles.metaLabel}>Membros</span>
                   <span className={styles.metaValue}>
                     {item.usage.teamMembers}/{item.effectiveLimits.teamMembers ?? "∞"}
                   </span>

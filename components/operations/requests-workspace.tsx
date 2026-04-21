@@ -387,9 +387,9 @@ export function RequestsWorkspace({
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Internal RH service desk</span>
+        <span className={styles.eyebrow}>Service desk interno</span>
         <h2 className={styles.title}>Solicitações</h2>
-        <p className={styles.description}>Fila mais clara, foco em SLA, dono e próximo passo sem obrigar o usuário a navegar demais.</p>
+        <p className={styles.description}>Acompanhe pedidos internos com dono, prazo e próximo passo sem precisar entender regras técnicas.</p>
       </div>
 
       <div className={styles.statRow}>
@@ -415,7 +415,7 @@ export function RequestsWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona o item atual e `Shift + X` marca toda a fila visível.</span>
+          <span className={styles.shortcutHint}>Dica: clique em uma solicitação para ver o detalhe. Use a busca para encontrar pessoa, categoria ou responsável.</span>
         </div>
 
         <div className={styles.searchWrap}>
@@ -429,13 +429,21 @@ export function RequestsWorkspace({
         </div>
       </div>
 
+      <div className={styles.workflowGuide} aria-label="Como usar esta tela">
+        <span><strong>1.</strong> Escolha uma solicitação</span>
+        <span><strong>2.</strong> Leia prazo, dono e contexto</span>
+        <span><strong>3.</strong> Responda, reatribua ou resolva</span>
+      </div>
+
       <div className={styles.body}>
         <section className={styles.listPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.panelHeaderRow}>
               <div>
-                <h3 className={styles.panelTitle}>Fila</h3>
-                <p className={styles.panelDescription}>{filteredRequests.length} caso(s) na visão atual.</p>
+                <h3 className={styles.panelTitle}>1. Escolha uma solicitação</h3>
+                <p className={styles.panelDescription}>
+                  {filteredRequests.length} caso(s) visíveis. Os mais urgentes ficam claros por SLA, dono e status.
+                </p>
               </div>
               <Button type="button" variant="outline" onClick={toggleAllVisible}>
                 {filteredRequests.length && filteredRequests.every((request) => selectedIds.includes(request.id)) ? "Limpar seleção" : "Selecionar todos"}
@@ -465,6 +473,8 @@ export function RequestsWorkspace({
               </div>
             </div>
           ) : null}
+
+          {pendingBulk ? <p className={styles.feedbackLine} aria-live="polite">Aplicando mudança na seleção...</p> : null}
 
           <div className={styles.list}>
             {filteredRequests.length ? (
@@ -501,7 +511,18 @@ export function RequestsWorkspace({
               ))
             ) : (
               <div className={styles.emptyWrap}>
-                <p className={styles.emptyState}>Nenhuma solicitação encontrada nesta visão.</p>
+                <p className={styles.emptyTitle}>Nada apareceu aqui.</p>
+                <p className={styles.emptyState}>Tente ver todos os casos ou limpar a busca para reencontrar solicitações antigas.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setView("all");
+                    setQuery("");
+                  }}
+                >
+                  Ver todas as solicitações
+                </Button>
               </div>
             )}
           </div>
@@ -604,7 +625,7 @@ export function RequestsWorkspace({
                         <h4 className={styles.panelTitle}>Próximo status</h4>
                         <p className={styles.detailText}>Mude o caso no mesmo contexto, sem abrir formulário extra.</p>
                       </div>
-                      {pendingStatus ? <span className={styles.metaLabel}>Atualizando...</span> : null}
+                  {pendingStatus ? <span className={styles.feedbackPill} aria-live="polite">Atualizando...</span> : null}
                     </div>
                     <div className={styles.quickActions}>
                       {Object.values(HrRequestStatus).map((status) => (
@@ -633,7 +654,7 @@ export function RequestsWorkspace({
                         <p className={styles.detailText}>Ajuste dono, prioridade e prazo sem sair da fila.</p>
                       </div>
                       <Button type="submit" variant="outline" disabled={pendingContext}>
-                        {pendingContext ? "Salvando..." : "Salvar contexto"}
+                      {pendingContext ? "Salvando..." : "Salvar"}
                       </Button>
                     </div>
                     <div className={styles.formGrid2}>

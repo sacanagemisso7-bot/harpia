@@ -8,11 +8,19 @@ import styles from "@/components/operations/ops-workspace.module.css";
 import { updateEmailTemplate } from "./actions";
 
 function formatTemplateType(type: string) {
-  return type
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  if (type === "APPLICATION_RECEIVED") {
+    return "Candidatura recebida";
+  }
+
+  if (type === "STAGE_ADVANCED") {
+    return "Avanço de etapa";
+  }
+
+  if (type === "REJECTION") {
+    return "Encerramento";
+  }
+
+  return "Template";
 }
 
 export default async function CommunicationsPage() {
@@ -22,7 +30,7 @@ export default async function CommunicationsPage() {
 
   const stats = [
     { label: "Templates", value: templates.length },
-    { label: "SMTP", value: smtpReady ? "On" : "Off" },
+    { label: "Envio", value: smtpReady ? "Pronto" : "Pendente" },
     { label: "Variáveis", value: 4 },
     { label: "Modo", value: "Editável" }
   ];
@@ -30,7 +38,7 @@ export default async function CommunicationsPage() {
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Communications</span>
+        <span className={styles.eyebrow}>Comunicações</span>
         <h2 className={styles.title}>Comunicações</h2>
         <p className={styles.description}>
           Biblioteca de e-mails operacionais em um fluxo mais limpo para revisar assunto, conteúdo e prontidão de entrega.
@@ -53,6 +61,18 @@ export default async function CommunicationsPage() {
         <Badge variant={smtpReady ? "success" : "warning"}>{smtpReady ? "SMTP configurado" : "SMTP pendente"}</Badge>
       </div>
 
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Revise o assunto
+        </span>
+        <span>
+          <strong>2.</strong> Ajuste o texto
+        </span>
+        <span>
+          <strong>3.</strong> Salve o template
+        </span>
+      </div>
+
       <div className={styles.body}>
         <section className={styles.listPanel}>
           <div className={styles.panelHeader}>
@@ -73,7 +93,7 @@ export default async function CommunicationsPage() {
                       <p className={styles.rowTitle}>{template.name}</p>
                       <p className={styles.rowSubtitle}>{formatTemplateType(template.type)}</p>
                     </div>
-                    <Badge variant="outline">{template.subject.length} chars</Badge>
+                    <Badge variant="outline">{template.subject.length} caracteres</Badge>
                   </div>
                   <p className={styles.detailText}>{template.subject}</p>
                   <p className={styles.detailText}>
@@ -84,7 +104,10 @@ export default async function CommunicationsPage() {
               ))
             ) : (
               <div className={styles.emptyWrap}>
-                <p className={styles.emptyState}>Ainda não há templates configurados neste workspace.</p>
+                <div className={styles.sectionStack}>
+                  <p className={styles.emptyTitle}>Nenhum template configurado.</p>
+                  <p className={styles.emptyState}>Crie mensagens padrão para candidatura recebida, avanço de etapa e encerramento.</p>
+                </div>
               </div>
             )}
           </div>

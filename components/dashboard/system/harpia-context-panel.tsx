@@ -19,7 +19,9 @@ export function HarpiaContextPanel({
       <div className={styles.secondaryStack}>
         <HarpiaSurface as="aside" className={styles.panelSection}>
           <header className={styles.panelHeader}>
-            <span className={styles.eyebrow}>{item.source}</span>
+            <span className={styles.eyebrow}>
+              {item.source === "hiring" ? "Contratação" : item.source === "operations" ? "Operação" : "Prioridade"}
+            </span>
             <h2 className={styles.panelTitle}>{item.title}</h2>
             <p className={styles.panelSubtitle}>{item.subtitle}</p>
           </header>
@@ -56,7 +58,7 @@ export function HarpiaContextPanel({
           <header className={styles.panelHeader}>
             <span className={styles.eyebrow}>Relacionados</span>
             <h3 className={styles.panelTitle}>Outros sinais fortes</h3>
-            <p className={styles.panelSubtitle}>Itens que normalmente merecem a mesma janela de aten??o.</p>
+            <p className={styles.panelSubtitle}>Itens que normalmente merecem a mesma janela de atenção.</p>
           </header>
 
           <div className={styles.candidateList}>
@@ -82,7 +84,7 @@ export function HarpiaContextPanel({
         </header>
 
         <div className={styles.insightList}>
-          <p className={styles.insightItem}>A coluna central junta prioridades, hiring e operação em uma unica leitura.</p>
+          <p className={styles.insightItem}>A coluna central junta prioridades, contratação e operação em uma única leitura.</p>
           <p className={styles.insightItem}>A lateral direita existe para contexto, não para competir com o restante da tela.</p>
         </div>
       </HarpiaSurface>
@@ -90,7 +92,7 @@ export function HarpiaContextPanel({
       <HarpiaSurface as="section" className={styles.panelSection}>
         <header className={styles.panelHeader}>
           <span className={styles.eyebrow}>Urgente</span>
-          <h3 className={styles.panelTitle}>Fila critica</h3>
+          <h3 className={styles.panelTitle}>Fila crítica</h3>
           <p className={styles.panelSubtitle}>Os pontos que valem revisar primeiro.</p>
         </header>
 
@@ -106,7 +108,7 @@ export function HarpiaContextPanel({
 
       <HarpiaSurface as="section" className={styles.panelSection}>
         <header className={styles.panelHeader}>
-          <span className={styles.eyebrow}>Top signals</span>
+          <span className={styles.eyebrow}>Sinais fortes</span>
           <h3 className={styles.panelTitle}>Candidatos fortes</h3>
           <p className={styles.panelSubtitle}>Atalhos para os perfis que merecem decisão agora.</p>
         </header>

@@ -72,8 +72,8 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
     kind: PeopleWorkflowKind.OFFBOARDING,
     steps: [
       {
-        title: "Confirmar documentacao e comunicação de desligamento",
-        description: "Organize a documentacao obrigatoria e os responsaveis pela execucao do processo.",
+        title: "Confirmar documentação e comunicação de desligamento",
+        description: "Organize a documentação obrigatória e os responsáveis pela execução do processo.",
         ownerLabel: "People Ops",
         dueInDays: 0,
         category: "documentation"
@@ -94,7 +94,7 @@ const DEFAULT_TEMPLATES: DefaultTemplateSeed[] = [
       },
       {
         title: "Realizar entrevista de saída",
-        description: "Registrar aprendizados, pontos de aten??o e sinais operacionais relevantes.",
+        description: "Registrar aprendizados, pontos de atenção e sinais operacionais relevantes.",
         ownerLabel: "People Ops",
         dueInDays: 3,
         category: "exit_interview"

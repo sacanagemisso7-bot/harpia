@@ -21,7 +21,7 @@ export function OrganizationSettingsForm({ action, defaultValues }: Organization
 
       <div className="grid gap-2 md:grid-cols-2">
         <div className="grid gap-2">
-          <Label htmlFor="slug">Slug</Label>
+          <Label htmlFor="slug">Endereço interno</Label>
           <Input id="slug" name="slug" defaultValue={defaultValues.slug} />
         </div>
 

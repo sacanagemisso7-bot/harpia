@@ -329,9 +329,9 @@ export function EmployeesWorkspace({
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Employee management</span>
+        <span className={styles.eyebrow}>Diretório de pessoas</span>
         <h2 className={styles.title}>Colaboradores</h2>
-        <p className={styles.description}>Busque rápido, filtre por contexto e navegue pela lista sem perder o fluxo.</p>
+        <p className={styles.description}>Encontre qualquer pessoa, veja contexto básico e abra o perfil completo quando precisar agir.</p>
       </div>
 
       <div className={styles.statRow}>
@@ -357,7 +357,7 @@ export function EmployeesWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona, `Shift + X` marca a vista e `Enter` abre o perfil.</span>
+          <span className={styles.shortcutHint}>Dica: escolha um colaborador para ver o resumo. Abra o perfil só quando precisar editar ou acompanhar.</span>
         </div>
 
         <div className={styles.searchWrap}>
@@ -371,13 +371,21 @@ export function EmployeesWorkspace({
         </div>
       </div>
 
+      <div className={styles.workflowGuide} aria-label="Como usar esta tela">
+        <span><strong>1.</strong> Busque a pessoa</span>
+        <span><strong>2.</strong> Confira status e gestor</span>
+        <span><strong>3.</strong> Abra o perfil para agir</span>
+      </div>
+
       <div className={styles.body}>
         <section className={styles.listPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.panelHeaderRow}>
               <div>
-                <h3 className={styles.panelTitle}>Lista</h3>
-                <p className={styles.panelDescription}>{filteredEmployees.length} resultado(s) na visão atual.</p>
+                <h3 className={styles.panelTitle}>1. Escolha um colaborador</h3>
+                <p className={styles.panelDescription}>
+                  {filteredEmployees.length} pessoa(s) visíveis. Use as visões para encontrar ativos, onboarding e pessoas sem gestor.
+                </p>
               </div>
               <Button type="button" variant="outline" onClick={toggleAllVisible}>
                 {filteredEmployees.length && filteredEmployees.every((employee) => selectedIds.includes(employee.id)) ? "Limpar seleção" : "Selecionar todos"}
@@ -407,6 +415,8 @@ export function EmployeesWorkspace({
               </div>
             </div>
           ) : null}
+
+          {pendingBulk ? <p className={styles.feedbackLine} aria-live="polite">Atualizando colaboradores selecionados...</p> : null}
 
           <div className={styles.list}>
             {filteredEmployees.length ? (
@@ -441,7 +451,18 @@ export function EmployeesWorkspace({
               ))
             ) : (
               <div className={styles.emptyWrap}>
-                <p className={styles.emptyState}>Nenhum colaborador encontrado nesta visão.</p>
+                <p className={styles.emptyTitle}>Nenhum colaborador encontrado.</p>
+                <p className={styles.emptyState}>Limpe os filtros ou volte para todos os colaboradores para ampliar a busca.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setView("all");
+                    setQuery("");
+                  }}
+                >
+                  Ver todos os colaboradores
+                </Button>
               </div>
             )}
           </div>
@@ -487,7 +508,7 @@ export function EmployeesWorkspace({
                         <h4 className={styles.panelTitle}>Status</h4>
                         <p className={styles.detailText}>Atualize o estado sem abrir um fluxo extra.</p>
                       </div>
-                      {pendingStatus ? <span className={styles.metaLabel}>Atualizando...</span> : null}
+                      {pendingStatus ? <span className={styles.feedbackPill} aria-live="polite">Atualizando...</span> : null}
                     </div>
                     <div className={styles.quickActions}>
                       {Object.values(EmployeeStatus).map((status) => (
@@ -568,18 +589,6 @@ export function EmployeesWorkspace({
                 </div>
                 <div className={styles.formGrid2}>
                   <Input name="workEmail" type="email" placeholder="Email corporativo" className={styles.fieldCompact} />
-                  <Input name="personalEmail" type="email" placeholder="Email pessoal" className={styles.fieldCompact} />
-                </div>
-                <div className={styles.formGrid2}>
-                  <Input name="title" required placeholder="Cargo" className={styles.fieldCompact} />
-                  <Input name="department" required placeholder="Área" className={styles.fieldCompact} />
-                </div>
-                <div className={styles.formGrid2}>
-                  <Input name="location" placeholder="Localização" className={styles.fieldCompact} />
-                  <Input name="employmentType" placeholder="Tipo de contratação" className={styles.fieldCompact} />
-                </div>
-                <div className={styles.formGrid2}>
-                  <Input name="startDate" type="date" className={styles.fieldCompact} />
                   <Select name="status" defaultValue="ONBOARDING" className={styles.selectCompact}>
                     <option value="ONBOARDING">Onboarding</option>
                     <option value="ACTIVE">Ativo</option>
@@ -587,16 +596,34 @@ export function EmployeesWorkspace({
                     <option value="OFFBOARDING">Offboarding</option>
                   </Select>
                 </div>
-                <Select name="managerEmployeeId" defaultValue="" className={styles.selectCompact}>
-                  <option value="">Sem gestor definido</option>
-                  {managerOptions.map((employee) => (
-                    <option key={employee.id} value={employee.id}>
-                      {employee.fullName} - {employee.title}
-                    </option>
-                  ))}
-                </Select>
-                <Input name="phone" placeholder="Telefone" className={styles.fieldCompact} />
-                <Textarea name="notes" placeholder="Notas iniciais" className={styles.textareaCompact} />
+                <div className={styles.formGrid2}>
+                  <Input name="title" required placeholder="Cargo" className={styles.fieldCompact} />
+                  <Input name="department" required placeholder="Área" className={styles.fieldCompact} />
+                </div>
+
+                <details className={styles.disclosureCard}>
+                  <summary className={styles.disclosureSummary}>Adicionar detalhes opcionais</summary>
+                  <div className={styles.disclosureBody}>
+                    <div className={styles.formGrid2}>
+                      <Input name="personalEmail" type="email" placeholder="Email pessoal" className={styles.fieldCompact} />
+                      <Input name="phone" placeholder="Telefone" className={styles.fieldCompact} />
+                    </div>
+                    <div className={styles.formGrid2}>
+                      <Input name="location" placeholder="Localização" className={styles.fieldCompact} />
+                      <Input name="employmentType" placeholder="Tipo de contratação" className={styles.fieldCompact} />
+                    </div>
+                    <Input name="startDate" type="date" className={styles.fieldCompact} />
+                    <Select name="managerEmployeeId" defaultValue="" className={styles.selectCompact}>
+                      <option value="">Sem gestor definido</option>
+                      {managerOptions.map((employee) => (
+                        <option key={employee.id} value={employee.id}>
+                          {employee.fullName} - {employee.title}
+                        </option>
+                      ))}
+                    </Select>
+                    <Textarea name="notes" placeholder="Notas iniciais" className={styles.textareaCompact} />
+                  </div>
+                </details>
                 <div className={styles.formActions}>
                   <p className={styles.detailText}>Depois você pode complementar o perfil e iniciar o onboarding completo.</p>
                   <Button type="submit">Cadastrar</Button>

@@ -345,7 +345,7 @@ function inferRequestCategory(message: string) {
 
 function inferPriority(message: string) {
   const normalized = message.toLowerCase();
-  if (normalized.includes("urgente") || normalized.includes("critico")) {
+  if (normalized.includes("urgente") || normalized.includes("crítico") || normalized.includes("critico")) {
     return PeopleTaskPriority.URGENT;
   }
 
@@ -751,7 +751,7 @@ function buildFallbackReply(
   }
 
   if (context.peopleTasks.length) {
-    sections.push(`Ha ${context.peopleTasks.length} tarefas operacionais correlatas, o que ajuda a transformar a conversa em execucao rastreavel.`);
+    sections.push(`Há ${context.peopleTasks.length} tarefas operacionais correlatas, o que ajuda a transformar a conversa em execução rastreável.`);
   }
 
   if (context.knowledge.length) {

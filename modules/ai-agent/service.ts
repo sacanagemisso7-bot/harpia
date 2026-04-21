@@ -364,7 +364,7 @@ export async function reviewAgentApproval(input: ReviewAgentApprovalInput): Prom
   const runActionType = approval.agentRun.actionType as CompanyChatActionType | null;
 
   if (!runActionType) {
-    throw new Error("A execucao do agente não possui tipo de ação valido.");
+    throw new Error("A execução do agente não possui tipo de ação válido.");
   }
 
   const definition = getAgentActionDefinition(runActionType);

@@ -18,23 +18,31 @@ type EmailTemplateFormProps = {
 };
 
 function formatTemplateType(type: EmailTemplateType) {
-  return type
-    .toLowerCase()
-    .split("_")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  if (type === EmailTemplateType.APPLICATION_RECEIVED) {
+    return "Candidatura recebida";
+  }
+
+  if (type === EmailTemplateType.STAGE_ADVANCED) {
+    return "Avanço de etapa";
+  }
+
+  if (type === EmailTemplateType.REJECTION) {
+    return "Encerramento";
+  }
+
+  return "Template";
 }
 
 export function EmailTemplateForm({ action, template }: EmailTemplateFormProps) {
   return (
-    <form action={action} className="grid gap-4 border border-border/85 bg-card p-4">
+    <form action={action} className="grid gap-4 border-b border-border/70 bg-transparent p-4 last:border-b-0">
       <input type="hidden" name="type" value={template.type} />
 
       <div className="grid gap-1.5">
         <p className="text-[0.7rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
           {formatTemplateType(template.type)}
         </p>
-        <p className="text-sm text-muted-foreground">Edite o conteúdo mantendo assunto, texto e HTML alinhados.</p>
+        <p className="text-sm text-muted-foreground">Edite assunto, texto e HTML no mesmo lugar.</p>
       </div>
 
       <div className="grid gap-2">

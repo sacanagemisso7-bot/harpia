@@ -92,8 +92,8 @@ const navItems: NavItem[] = [
   {
     id: "dashboard",
     href: "/dashboard",
-    label: "Dashboard",
-    description: "Visão geral",
+    label: "Início",
+    description: "Resumo do dia",
     icon: LayoutGrid,
     section: "workspace",
     requiredPermission: "view_people_command_center"
@@ -102,7 +102,7 @@ const navItems: NavItem[] = [
     id: "command-center",
     href: "/people/command-center",
     label: "Central",
-    description: "Operação de people ops",
+    description: "O que pede atenção",
     icon: Layers3,
     section: "workspace",
     requiredPermission: "view_people_command_center"
@@ -110,8 +110,8 @@ const navItems: NavItem[] = [
   {
     id: "chat",
     href: "/chat",
-    label: "Company Chat",
-    description: "Perguntas e ações",
+    label: "Chat da empresa",
+    description: "Pergunte e aja",
     icon: MessageSquareMore,
     section: "workspace",
     requiredPermission: "view_chat"
@@ -120,7 +120,7 @@ const navItems: NavItem[] = [
     id: "employees",
     href: "/employees",
     label: "Colaboradores",
-    description: "Base e perfis",
+    description: "Pessoas e perfis",
     icon: UserRoundSearch,
     section: "people",
     requiredPermission: "view_employees"
@@ -129,7 +129,7 @@ const navItems: NavItem[] = [
     id: "requests",
     href: "/requests",
     label: "Solicitações",
-    description: "Fila interna",
+    description: "Pedidos internos",
     icon: Bell,
     section: "people",
     requiredPermission: "view_hr_requests"
@@ -138,7 +138,7 @@ const navItems: NavItem[] = [
     id: "tasks",
     href: "/people/tasks",
     label: "Tarefas",
-    description: "Pendências do time",
+    description: "Pendências claras",
     icon: ClipboardList,
     section: "people",
     requiredPermission: "view_people_tasks"
@@ -147,7 +147,7 @@ const navItems: NavItem[] = [
     id: "onboarding",
     href: "/people/onboarding",
     label: "Onboarding",
-    description: "Entradas ativas",
+    description: "Entradas guiadas",
     icon: UsersRound,
     section: "people",
     requiredPermission: "view_people_command_center"
@@ -156,7 +156,7 @@ const navItems: NavItem[] = [
     id: "offboarding",
     href: "/people/offboarding",
     label: "Offboarding",
-    description: "Saídas ativas",
+    description: "Saídas seguras",
     icon: UsersRound,
     section: "people",
     requiredPermission: "view_people_command_center"
@@ -165,7 +165,7 @@ const navItems: NavItem[] = [
     id: "calendar",
     href: "/people/calendar",
     label: "Calendário",
-    description: "Agenda operacional",
+    description: "Prazos e eventos",
     icon: CalendarClock,
     section: "people",
     requiredPermission: "view_people_calendar"
@@ -174,7 +174,7 @@ const navItems: NavItem[] = [
     id: "compliance",
     href: "/people/compliance",
     label: "Compliance",
-    description: "Controles e políticas",
+    description: "Políticas e riscos",
     icon: ShieldCheck,
     section: "people",
     requiredPermission: "view_compliance"
@@ -183,7 +183,7 @@ const navItems: NavItem[] = [
     id: "knowledge",
     href: "/knowledge",
     label: "Conhecimento",
-    description: "Base interna",
+    description: "Respostas internas",
     icon: BookOpenText,
     section: "people",
     requiredPermission: "manage_knowledge"
@@ -192,7 +192,7 @@ const navItems: NavItem[] = [
     id: "approvals",
     href: "/people/agent-approvals",
     label: "Aprovações",
-    description: "Revisões pendentes",
+    description: "Decisões seguras",
     icon: ShieldCheck,
     section: "people",
     requiredPermission: "review_agent_approvals"
@@ -201,15 +201,15 @@ const navItems: NavItem[] = [
     id: "hiring",
     href: "/hiring",
     label: "Contratação",
-    description: "Pipeline e vagas",
+    description: "Vagas e pipeline",
     icon: BriefcaseBusiness,
     section: "admin"
   },
   {
     id: "analytics",
     href: "/analytics",
-    label: "Analytics",
-    description: "Leitura do negócio",
+    label: "Análises",
+    description: "Indicadores úteis",
     icon: Radar,
     section: "admin",
     requiredPermission: "view_analytics"
@@ -218,15 +218,15 @@ const navItems: NavItem[] = [
     id: "revenue",
     href: "/ops/revenue",
     label: "Receita",
-    description: "Receita e metas",
+    description: "Metas e receita",
     icon: TrendingUp,
     section: "admin"
   },
   {
     id: "billing",
     href: "/settings/billing",
-    label: "Billing",
-    description: "Plano e uso",
+    label: "Plano e uso",
+    description: "Limites e faturas",
     icon: CreditCard,
     section: "admin",
     requiredPermission: "manage_workspace"
@@ -235,7 +235,7 @@ const navItems: NavItem[] = [
     id: "settings",
     href: "/settings",
     label: "Configurações",
-    description: "Workspace",
+    description: "Conta e módulos",
     icon: Settings,
     section: "admin",
     requiredPermission: "manage_workspace"
@@ -252,7 +252,7 @@ const navItems: NavItem[] = [
 ];
 
 const sectionLabels: Record<NavSection, string> = {
-  workspace: "Operação",
+  workspace: "Principal",
   people: "Pessoas",
   admin: "Admin",
   self: "Você"
@@ -273,13 +273,13 @@ const compactHeaderMatchers = [
 const routeMeta = [
   {
     match: (pathname: string) => pathname.startsWith("/chat"),
-    title: "Company Chat",
-    description: "Converse com contexto real do workspace e transforme resposta em ação."
+    title: "Chat da empresa",
+    description: "Converse com contexto real e transforme resposta em ação."
   },
   {
     match: (pathname: string) => pathname.startsWith("/people/command-center"),
     title: "Central",
-    description: "Alertas, filas, workflows e riscos do RH em uma leitura direta."
+    description: "O que precisa de atenção agora, sem caçar em vários módulos."
   },
   {
     match: (pathname: string) => pathname.startsWith("/employees"),
@@ -289,21 +289,21 @@ const routeMeta = [
   {
     match: (pathname: string) => pathname.startsWith("/requests"),
     title: "Solicitações",
-    description: "Fila interna, SLA e ownership sem ruído."
+    description: "Pedidos internos com dono, prazo e próximo passo visíveis."
   },
   {
     match: (pathname: string) => pathname.startsWith("/hiring"),
     title: "Contratação",
-    description: "Vagas, candidatos e decisão em um fluxo único."
+    description: "Vagas, candidatos e decisões em um fluxo simples."
   },
   {
     match: (pathname: string) => pathname.startsWith("/analytics"),
-    title: "Analytics",
+    title: "Análises",
     description: "Indicadores para entender ritmo, gargalo e resultado."
   },
   {
     match: (pathname: string) => pathname.startsWith("/settings/billing"),
-    title: "Billing",
+    title: "Plano e uso",
     description: "Plano atual, consumo e próximas mudanças."
   },
   {
@@ -330,7 +330,7 @@ function resolveRouteCopy(pathname: string, fallbackLabel: string) {
 
   return {
     title: fallbackLabel,
-    description: "Fluxos, contexto e operação no mesmo ambiente de trabalho."
+    description: "Tudo que você precisa para agir sem trocar de contexto."
   };
 }
 
@@ -540,7 +540,7 @@ export function HarpiaSystemShellClient({
             </button>
           </div>
 
-          {!sidebarCollapsed ? <p className={styles.sidebarHelper}>Ctrl + K para buscar · [ para recolher</p> : null}
+          {!sidebarCollapsed ? <p className={styles.sidebarHelper}>Ctrl + K busca qualquer coisa · [ recolhe o menu</p> : null}
 
           <nav className={styles.navGroups} aria-label="Navegação principal">
             {groupedNav.map((group) => (
@@ -558,6 +558,9 @@ export function HarpiaSystemShellClient({
                         href={item.href}
                         className={cn(styles.navLink, isActive && styles.navLinkActive)}
                         aria-current={isActive ? "page" : undefined}
+                        aria-label={item.label}
+                        data-tooltip={item.label}
+                        data-section={group.label}
                         title={item.label}
                       >
                         <span className={styles.navIconWrap}>
@@ -661,7 +664,7 @@ export function HarpiaSystemShellClient({
               <HarpiaCommandPalette
                 items={commandItems}
                 triggerClassName={styles.commandTrigger}
-                triggerLabel="Buscar páginas e módulos"
+                triggerLabel="Buscar ou executar"
               />
 
               <ThemeToggle className={styles.themeControl} />

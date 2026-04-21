@@ -89,12 +89,12 @@ export function WorkspaceSavedViews({
               handleSave();
             }
           }}
-          placeholder="Salvar visão atual"
+          placeholder="Nome da visão atual"
           className={styles.savedViewsInput}
         />
         <Button type="button" variant="outline" onClick={handleSave} disabled={!name.trim() || pending}>
           <BookmarkPlus className="mr-2 h-4 w-4" />
-          {pending ? "Salvando..." : "Salvar vista"}
+          {pending ? "Salvando..." : "Salvar visão"}
         </Button>
       </div>
 

@@ -41,7 +41,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
   const modules = [
     {
       key: "hiring",
-      eyebrow: "Hiring",
+      eyebrow: "Contratação",
       title: "Pipeline ativo",
       subtitle: "Vagas, candidatos quentes e sinais que pedem decisão.",
       stats: [`${data.hiring.jobCount} vagas`, `${data.hiring.applicationCount} candidatos`, `${data.hiring.slaAlerts} alertas`],
@@ -55,45 +55,45 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
     },
     {
       key: "requests",
-      eyebrow: "Desk",
-      title: "Fila de requests",
-      subtitle: "Solicitações abertas, SLAs e responsaveis mais ativos.",
+      eyebrow: "Solicitações",
+      title: "Fila de pedidos",
+      subtitle: "Solicitações abertas, SLAs e responsáveis mais ativos.",
       stats: [`${data.metrics.openRequests} abertas`, `${data.metrics.requestsAtRisk} em risco`],
       items: data.requests.slice(0, 3).map((request) => ({
         id: request.id,
         href: "/requests" as Route,
         title: request.title,
-        meta: `${request.status} - ${request.assigneeUser?.name ?? "Sem responsavel"}`,
+        meta: `${request.status} - ${request.assigneeUser?.name ?? "Sem responsável"}`,
         value: request.effectiveSlaStatus
       }))
     },
     {
       key: "workflows",
-      eyebrow: "People ops",
+      eyebrow: "People Ops",
       title: "Workflows ativos",
-      subtitle: "Entradas e saídas em curso com progresso visivel.",
+      subtitle: "Entradas e saídas em curso com progresso visível.",
       stats: [`${data.metrics.onboardingActive} onboarding`, `${data.metrics.offboardingActive} offboarding`],
       items: workflowItems
     },
     {
       key: "tasks",
-      eyebrow: "Tasks",
-      title: "Pendencias operacionais",
-      subtitle: "Tarefas vencidas e pontos que travam execucao di?ria.",
+      eyebrow: "Tarefas",
+      title: "Pendências operacionais",
+      subtitle: "Tarefas vencidas e pontos que travam execução diária.",
       stats: [`${data.metrics.overdueTasks} vencidas`],
       items: data.overdueTasks.slice(0, 3).map((task) => ({
         id: task.id,
         href: "/people/tasks" as Route,
         title: task.title,
-        meta: `${task.relatedEmployee?.fullName ?? "Sem colaborador"} - ${task.assigneeUser?.name ?? "Sem owner"}`,
+        meta: `${task.relatedEmployee?.fullName ?? "Sem colaborador"} - ${task.assigneeUser?.name ?? "Sem responsável"}`,
         value: task.status
       }))
     },
     {
       key: "calendar",
-      eyebrow: "Calendar",
+      eyebrow: "Calendário",
       title: "Agenda próxima",
-      subtitle: "Eventos do time e movimentacoes do dia na operação.",
+      subtitle: "Eventos do time e movimentações do dia na operação.",
       stats: [`${data.metrics.eventsToday} hoje`],
       items: data.events.slice(0, 3).map((event) => ({
         id: event.id,
@@ -108,7 +108,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
       eyebrow: "Compliance",
       title: "Leituras pendentes",
       subtitle: "Documentos e requisitos com janela de ação aberta.",
-      stats: [`${data.metrics.pendingCompliance} pendencias`],
+      stats: [`${data.metrics.pendingCompliance} pendências`],
       items: data.compliance.slice(0, 3).map((entry) => ({
         id: entry.id,
         href: "/people/compliance" as Route,
@@ -153,7 +153,7 @@ export function HarpiaModuleDeck({ data }: { data: DashboardData }) {
                 <div className={styles.moduleItemTop}>
                   <span className={styles.moduleItemTitle}>Sem itens ativos</span>
                 </div>
-                <span className={styles.moduleItemMeta}>Nada critico nesta fila agora.</span>
+                <span className={styles.moduleItemMeta}>Nada crítico nesta fila agora.</span>
               </div>
             )}
           </div>

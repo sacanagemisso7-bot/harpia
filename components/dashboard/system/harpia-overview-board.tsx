@@ -25,14 +25,14 @@ export function HarpiaOverviewBoard({
     {
       key: "priority",
       eyebrow: "Prioridade",
-      title: "O que pede aten??o agora",
-      hint: "Riscos, SLAs e travas que pedem resposta r?pida.",
+      title: "O que pede atenção agora",
+      hint: "Riscos, SLAs e travas que pedem resposta rápida.",
       icon: <AlertTriangle className="h-4 w-4" />,
       items: priorityItems
     },
     {
       key: "hiring",
-      eyebrow: "Hiring",
+      eyebrow: "Contratação",
       title: "Quem merece decisão",
       hint: "Perfis fortes e movimentos do pipeline.",
       icon: <UsersRound className="h-4 w-4" />,
@@ -52,9 +52,9 @@ export function HarpiaOverviewBoard({
     <HarpiaSurface as="section" className={styles.boardPanel}>
       <div className={styles.boardHeader}>
         <div>
-          <span className={styles.eyebrow}>Workspace</span>
+          <span className={styles.eyebrow}>Operação</span>
           <h2 className={styles.boardTitle}>Central de operação</h2>
-          <p className={styles.boardSubtitle}>Tudo o que precisa de leitura r?pida sem depender de visualizacao complexa.</p>
+          <p className={styles.boardSubtitle}>Tudo o que precisa de leitura rápida sem depender de visualização complexa.</p>
         </div>
 
         <div className={styles.boardLegend}>

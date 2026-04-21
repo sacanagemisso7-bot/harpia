@@ -92,7 +92,7 @@ export function CompanyChatPromptStrip({
           disabled={pending}
           data-testid="company-chat-prompt"
           className={cn(
-            "inline-flex min-h-9 items-center rounded-[0.45rem] border border-border/90 bg-background px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-60",
+            "inline-flex min-h-9 items-center rounded-[0.28rem] border border-border/80 bg-background px-3 py-2 text-left text-sm text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-60",
             buttonClassName
           )}
           onClick={() => submitPrompt(prompt)}

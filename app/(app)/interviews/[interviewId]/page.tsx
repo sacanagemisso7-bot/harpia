@@ -88,13 +88,13 @@ export default async function InterviewDetailPage({
     { label: "Duração", value: `${durationMinutes}m` },
     { label: "Feedbacks", value: interview.feedbacks.length },
     { label: "Scorecard", value: scorecardItems.length },
-    { label: "Convite", value: smtpReady ? "Pronto" : "SMTP" }
+    { label: "Convite", value: smtpReady ? "Pronto" : "Pendente" }
   ];
 
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Interview</span>
+        <span className={styles.eyebrow}>Entrevista</span>
         <h2 className={styles.title}>{interview.title}</h2>
         <p className={styles.description}>
           {interview.application.candidate.fullName} · {interview.application.job.title}
@@ -112,6 +112,18 @@ export default async function InterviewDetailPage({
           <strong>{formatStatusLabel(interview.status)}</strong>
           <span>Status</span>
         </div>
+      </div>
+
+      <div className={styles.workflowGuide}>
+        <span>
+          <strong>1.</strong> Confira horário
+        </span>
+        <span>
+          <strong>2.</strong> Envie convite
+        </span>
+        <span>
+          <strong>3.</strong> Registre feedback
+        </span>
       </div>
 
       <div className={styles.body}>
@@ -157,7 +169,7 @@ export default async function InterviewDetailPage({
                 ) : null}
               </div>
               <div className={styles.detailCell}>
-                <span className={styles.metaLabel}>Owner</span>
+                <span className={styles.metaLabel}>Responsável</span>
                 <p className={styles.detailText}>{getRoleLabel(interview.scheduledBy.role)}</p>
               </div>
             </div>

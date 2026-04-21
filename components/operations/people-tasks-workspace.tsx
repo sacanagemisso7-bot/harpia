@@ -390,9 +390,9 @@ export function PeopleTasksWorkspace({
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>People tasks</span>
+        <span className={styles.eyebrow}>Tarefas de people ops</span>
         <h2 className={styles.title}>Tarefas</h2>
-        <p className={styles.description}>Menos backlog espalhado e mais clareza sobre dono, prazo e próximo movimento.</p>
+        <p className={styles.description}>Veja o que precisa ser feito, por quem e até quando, sem transformar o backlog em planilha.</p>
       </div>
 
       <div className={styles.statRow}>
@@ -418,7 +418,7 @@ export function PeopleTasksWorkspace({
               </button>
             ))}
           </div>
-          <span className={styles.shortcutHint}>Atalhos: `/` busca, `J/K` navegam, `X` seleciona o item atual e `Shift + X` marca toda a lista visível.</span>
+          <span className={styles.shortcutHint}>Dica: escolha uma tarefa, confira o contexto à direita e conclua, delegue ou ajuste prazo no mesmo lugar.</span>
         </div>
 
         <div className={styles.searchWrap}>
@@ -432,13 +432,21 @@ export function PeopleTasksWorkspace({
         </div>
       </div>
 
+      <div className={styles.workflowGuide} aria-label="Como usar esta tela">
+        <span><strong>1.</strong> Escolha uma tarefa</span>
+        <span><strong>2.</strong> Veja dono, prazo e bloqueio</span>
+        <span><strong>3.</strong> Conclua, delegue ou adie</span>
+      </div>
+
       <div className={styles.body}>
         <section className={styles.listPanel}>
           <div className={styles.panelHeader}>
             <div className={styles.panelHeaderRow}>
               <div>
-                <h3 className={styles.panelTitle}>Backlog</h3>
-                <p className={styles.panelDescription}>{filteredTasks.length} tarefa(s) visíveis nesta visão.</p>
+                <h3 className={styles.panelTitle}>1. Escolha uma tarefa</h3>
+                <p className={styles.panelDescription}>
+                  {filteredTasks.length} tarefa(s) visíveis. Use as visões para separar vencidas, bloqueadas e sem dono.
+                </p>
               </div>
               <Button type="button" variant="outline" onClick={toggleAllVisible}>
                 {filteredTasks.length && filteredTasks.every((task) => selectedIds.includes(task.id)) ? "Limpar seleção" : "Selecionar todos"}
@@ -468,6 +476,8 @@ export function PeopleTasksWorkspace({
               </div>
             </div>
           ) : null}
+
+          {pendingBulk ? <p className={styles.feedbackLine} aria-live="polite">Atualizando tarefas selecionadas...</p> : null}
 
           <div className={styles.list}>
             {filteredTasks.length ? (
@@ -504,7 +514,18 @@ export function PeopleTasksWorkspace({
               ))
             ) : (
               <div className={styles.emptyWrap}>
-                <p className={styles.emptyState}>Nenhuma tarefa encontrada nesta visão.</p>
+                <p className={styles.emptyTitle}>Nenhuma tarefa nesta visão.</p>
+                <p className={styles.emptyState}>Limpe a busca ou volte para todas as tarefas para entender o backlog completo.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setView("all");
+                    setQuery("");
+                  }}
+                >
+                  Ver todas as tarefas
+                </Button>
               </div>
             )}
           </div>
@@ -607,7 +628,7 @@ export function PeopleTasksWorkspace({
                         <h4 className={styles.panelTitle}>Próximo status</h4>
                         <p className={styles.detailText}>Resolva a tarefa com um clique, sem depender de select e submit.</p>
                       </div>
-                      {pendingStatus ? <span className={styles.metaLabel}>Atualizando...</span> : null}
+                      {pendingStatus ? <span className={styles.feedbackPill} aria-live="polite">Atualizando...</span> : null}
                     </div>
                     <div className={styles.quickActions}>
                       {Object.values(PeopleTaskStatus).map((status) => (
@@ -636,7 +657,7 @@ export function PeopleTasksWorkspace({
                         <p className={styles.detailText}>Atualize dono, prioridade e prazo no mesmo fluxo.</p>
                       </div>
                       <Button type="submit" variant="outline" disabled={pendingContext}>
-                        {pendingContext ? "Salvando..." : "Salvar contexto"}
+                        {pendingContext ? "Salvando..." : "Salvar"}
                       </Button>
                     </div>
                     <div className={styles.formGrid2}>

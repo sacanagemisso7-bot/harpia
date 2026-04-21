@@ -160,12 +160,12 @@ export const FIELD_WIDTH = 1040;
 export const FIELD_HEIGHT = 700;
 
 export const sidebarItems: HarpiaSidebarItem[] = [
-  { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: "home" },
+  { id: "dashboard", label: "Início", href: "/dashboard", icon: "home" },
   { id: "chat", label: "Chat", href: "/chat", icon: "chat", permission: "view_chat" },
-  { id: "employees", label: "Employees", href: "/employees", icon: "people", permission: "view_employees" },
-  { id: "requests", label: "Desk", href: "/requests", icon: "desk", permission: "view_hr_requests" },
-  { id: "jobs", label: "Hiring", href: "/hiring", icon: "jobs" },
-  { id: "settings", label: "Settings", href: "/settings", icon: "settings", permission: "manage_workspace" }
+  { id: "employees", label: "Colaboradores", href: "/employees", icon: "people", permission: "view_employees" },
+  { id: "requests", label: "Solicitações", href: "/requests", icon: "desk", permission: "view_hr_requests" },
+  { id: "jobs", label: "Contratação", href: "/hiring", icon: "jobs" },
+  { id: "settings", label: "Configurações", href: "/settings", icon: "settings", permission: "manage_workspace" }
 ];
 
 const clusterBlueprints: HarpiaCluster[] = [

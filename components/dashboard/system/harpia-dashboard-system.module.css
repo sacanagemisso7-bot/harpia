@@ -1,23 +1,18 @@
 .layout {
-  --dashboard-bg: #0c1219;
-  --dashboard-bg-2: #0f1620;
-  --dashboard-surface: rgba(26, 26, 29, 0.82);
-  --dashboard-surface-strong: rgba(35, 35, 38, 0.92);
-  --dashboard-border: rgba(148, 163, 184, 0.14);
-  --dashboard-border-soft: rgba(148, 163, 184, 0.08);
-  --dashboard-text: rgba(239, 244, 250, 0.96);
-  --dashboard-muted: rgba(166, 178, 194, 0.68);
-  --dashboard-subtle: rgba(166, 178, 194, 0.46);
-  --dashboard-accent: rgba(214, 198, 165, 0.92);
-  --dashboard-accent-soft: rgba(214, 198, 165, 0.12);
-  --dashboard-danger: rgba(244, 114, 182, 0.16);
-  min-height: 100svh;
+  --dashboard-surface: hsl(var(--card) / 0.78);
+  --dashboard-surface-strong: hsl(var(--card) / 0.9);
+  --dashboard-border: hsl(var(--border) / 0.66);
+  --dashboard-border-soft: hsl(var(--border) / 0.46);
+  --dashboard-text: hsl(var(--foreground));
+  --dashboard-muted: hsl(var(--muted-foreground));
+  --dashboard-subtle: hsl(var(--muted-foreground) / 0.72);
+  --dashboard-accent: hsl(var(--primary));
+  --dashboard-accent-soft: hsl(var(--primary) / 0.1);
+  --dashboard-danger: hsl(var(--destructive) / 0.12);
+  min-height: 0;
   display: grid;
-  grid-template-columns: 250px minmax(0, 1fr);
-  background:
-    radial-gradient(circle at top left, rgba(214, 198, 165, 0.15), transparent 24%),
-    radial-gradient(circle at bottom right, rgba(117, 134, 111, 0.08), transparent 22%),
-    linear-gradient(180deg, #0b0b0c 0%, #1a1a1d 50%, #111315 100%);
+  grid-template-columns: minmax(0, 1fr);
+  background: transparent;
   color: var(--dashboard-text);
 }
 
@@ -154,8 +149,8 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 1.3rem 1.4rem 1.4rem;
+  gap: 0.95rem;
+  padding: 0;
 }
 
 .topbar {
@@ -181,9 +176,9 @@
 .title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(2.05rem, 3vw, 2.9rem);
-  line-height: 0.95;
-  letter-spacing: -0.08em;
+  font-size: clamp(1.65rem, 2.5vw, 2.25rem);
+  line-height: 1;
+  letter-spacing: -0.06em;
   color: var(--dashboard-text);
 }
 
@@ -239,8 +234,8 @@
   min-height: 1.9rem;
   padding: 0 0.7rem;
   border: 1px solid var(--dashboard-border);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.24rem;
+  background: hsl(var(--background) / 0.34);
   font-size: 0.58rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -296,25 +291,14 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--dashboard-border);
-  border-radius: 1.15rem;
-  background:
-    linear-gradient(180deg, var(--dashboard-surface-strong), var(--dashboard-surface)),
-    radial-gradient(circle at top left, var(--dashboard-accent-soft), transparent 24%);
-  box-shadow:
-    0 18px 40px rgba(2, 6, 12, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(18px);
+  border-radius: 0.34rem;
+  background: var(--dashboard-surface);
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .surface::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
-  opacity: 0.5;
-  pointer-events: none;
+  display: none;
 }
 
 .metricCard {
@@ -394,8 +378,8 @@
   gap: 0.9rem;
   padding: 0.95rem;
   border: 1px solid var(--dashboard-border-soft);
-  border-radius: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  border-radius: 0.28rem;
+  background: hsl(var(--background) / 0.34);
 }
 
 .boardColumnHeader {
@@ -410,10 +394,10 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 0.75rem;
+  border-radius: 0.24rem;
   border: 1px solid var(--dashboard-border);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(221, 229, 239, 0.86);
+  background: hsl(var(--secondary) / 0.64);
+  color: hsl(var(--foreground));
 }
 
 .boardColumnTitle {
@@ -445,8 +429,8 @@
   gap: 0.18rem;
   padding: 0.9rem;
   border: 1px solid var(--dashboard-border-soft);
-  border-radius: 0.95rem;
-  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.28rem;
+  background: transparent;
   color: inherit;
   text-align: left;
   transition:
@@ -459,16 +443,14 @@
 .boardItem:hover,
 .boardItemActive {
   border-color: var(--dashboard-border);
-  background: rgba(255, 255, 255, 0.05);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
-  transform: translateY(-1px);
+  background: hsl(var(--secondary) / 0.58);
+  box-shadow: inset 2px 0 0 hsl(var(--primary));
+  transform: none;
 }
 
 .boardItemCritical {
-  border-color: rgba(244, 114, 182, 0.2);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
-    linear-gradient(90deg, rgba(244, 114, 182, 0.08), transparent 40%);
+  border-color: hsl(var(--destructive) / 0.24);
+  background: hsl(var(--destructive) / 0.06);
 }
 
 .boardItemTop,
@@ -501,12 +483,12 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: rgba(177, 197, 255, 0.88);
+  color: hsl(var(--primary));
 }
 
 .boardItemSubtitle {
   font-size: 0.78rem;
-  color: rgba(227, 233, 241, 0.84);
+  color: hsl(var(--foreground) / 0.84);
 }
 
 .boardItemMeta,
@@ -573,7 +555,7 @@
 .candidateItem:hover,
 .secondaryAction:hover {
   color: var(--dashboard-text);
-  transform: translateX(2px);
+  transform: none;
 }
 
 .metricRow span,
@@ -605,7 +587,7 @@
   justify-content: center;
   gap: 0.5rem;
   min-height: 2.8rem;
-  border-radius: 0.95rem;
+  border-radius: 0.28rem;
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -615,8 +597,8 @@
 
 .primaryAction {
   border: 1px solid rgba(214, 198, 165, 0.3);
-  background: linear-gradient(180deg, rgba(214, 198, 165, 0.94), rgba(184, 169, 138, 0.92));
-  color: rgba(10, 15, 23, 0.96);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 .secondaryAction {

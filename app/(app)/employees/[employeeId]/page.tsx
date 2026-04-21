@@ -34,6 +34,25 @@ function getStatusVariant(status: EmployeeStatus) {
 }
 
 function formatTokenLabel(value: string) {
+  const labels: Record<string, string> = {
+    ACTIVE: "Ativo",
+    ONBOARDING: "Onboarding",
+    OFFBOARDING: "Offboarding",
+    INACTIVE: "Inativo",
+    COMPLETED: "Concluído",
+    PENDING: "Pendente",
+    IN_PROGRESS: "Em andamento",
+    BLOCKED: "Bloqueado",
+    DONE: "Concluído",
+    CHECK_IN: "Check-in",
+    FOLLOW_UP: "Follow-up",
+    ALERT: "Alerta"
+  };
+
+  if (labels[value]) {
+    return labels[value];
+  }
+
   return value
     .toLowerCase()
     .split("_")
@@ -92,15 +111,15 @@ export default async function EmployeeProfilePage({
 
   const stats = [
     { label: "Gestor", value: employee.manager?.fullName ?? "--" },
-    { label: "Requests", value: employee.requestedHrRequests.length },
-    { label: "Tasks", value: employee.relatedTasks.length },
+    { label: "Solicitações", value: employee.requestedHrRequests.length },
+    { label: "Tarefas", value: employee.relatedTasks.length },
     { label: "Compliance", value: openComplianceCount }
   ];
 
   return (
     <div className={styles.workspace}>
       <div className={styles.header}>
-        <span className={styles.eyebrow}>Employee</span>
+        <span className={styles.eyebrow}>Colaborador</span>
         <h2 className={styles.title}>{employee.fullName}</h2>
         <p className={styles.description}>
           {employee.title} · {employee.department}
@@ -204,7 +223,7 @@ export default async function EmployeeProfilePage({
 
             <div className={styles.detailGrid}>
               <div className={styles.detailCell}>
-                <span className={styles.metaLabel}>Requests</span>
+                <span className={styles.metaLabel}>Solicitações</span>
                 {employee.requestedHrRequests.length ? (
                   employee.requestedHrRequests.map((request) => (
                     <p key={request.id} className={styles.detailText}>
@@ -217,7 +236,7 @@ export default async function EmployeeProfilePage({
               </div>
 
               <div className={styles.detailCell}>
-                <span className={styles.metaLabel}>Tasks</span>
+                <span className={styles.metaLabel}>Tarefas</span>
                 {employee.relatedTasks.length ? (
                   employee.relatedTasks.map((task) => (
                     <p key={task.id} className={styles.detailText}>
@@ -433,8 +452,8 @@ export default async function EmployeeProfilePage({
                   <Input name="title" required placeholder="Título curto do registro" />
                 </div>
 
-                <details className="rounded-[0.45rem] border border-border/80 bg-background px-3 py-3">
-                  <summary className="cursor-pointer list-none text-sm font-medium text-foreground">
+                <details className={styles.disclosureCard}>
+                  <summary className={styles.disclosureSummary}>
                     Adicionar resumo opcional
                   </summary>
                   <div className="mt-3 grid gap-2">
