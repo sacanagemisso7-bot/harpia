@@ -6,13 +6,16 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SavedViewType } from "@prisma/client";
 
+import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
 import { ApplicationStageForm, type StageTransitionState } from "@/components/applications/application-stage-form";
 import { WorkspaceSavedViews } from "@/components/operations/workspace-saved-views";
+import { buildApplicationResolveAssist } from "@/lib/ai/resolve-assist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { formatScore } from "@/lib/utils";
+import type { AiResolveActionState } from "@/types/ai-resolve";
 
 import styles from "@/components/operations/ops-workspace.module.css";
 
@@ -40,6 +43,10 @@ type PipelineStageRecord = {
 type PipelineStageOption = {
   id: string;
   name: string;
+  key?: string | null;
+  isDefault?: boolean;
+  isTerminal?: boolean;
+  position?: number;
 };
 
 type JobOption = {
@@ -69,6 +76,7 @@ type PipelineWorkspaceProps = {
     state: StageTransitionState,
     formData: FormData
   ) => Promise<StageTransitionState>;
+  resolveApplicationWithAiAction: (state: AiResolveActionState, formData: FormData) => Promise<AiResolveActionState>;
   saveWorkspaceViewAction: (formData: FormData) => Promise<SaveWorkspaceViewResult>;
   deleteSavedViewAction: (formData: FormData) => Promise<void>;
 };
@@ -109,6 +117,7 @@ export function PipelineWorkspace({
   canManageApplications,
   savedViews,
   moveApplicationStageAction,
+  resolveApplicationWithAiAction,
   saveWorkspaceViewAction,
   deleteSavedViewAction
 }: PipelineWorkspaceProps) {
@@ -273,6 +282,53 @@ export function PipelineWorkspace({
 
   const selectedApplication =
     filteredApplications.find((application) => application.id === selectedId) ?? filteredApplications[0] ?? null;
+  const selectedApplicationAssist = selectedApplication
+    ? buildApplicationResolveAssist({
+        candidateName: selectedApplication.candidate.fullName,
+        jobTitle: selectedApplication.job.title,
+        score: selectedApplication.score,
+        currentStageId: selectedApplication.stageId,
+        currentStageName: selectedApplication.stageName,
+        stages: stages.map((stage) => ({
+          id: stage.id,
+          name: stage.name,
+          key: stage.key ?? null,
+          isTerminal: stage.isTerminal,
+          position: stage.position
+        })),
+        copilotDecision:
+          selectedApplication.score !== null && selectedApplication.score >= 80
+            ? {
+                recommendation: "ADVANCE",
+                summary: "A candidatura mostra sinais suficientes para seguir adiante com confiança operacional.",
+                reasons: [
+                  `Score atual em ${formatScore(selectedApplication.score)}.`,
+                  `${selectedApplication.candidate.fullName} já mostra aderência relevante à vaga.`
+                ],
+                nextActions: ["Avançar no pipeline.", "Confirmar os sinais finais da próxima etapa."]
+              }
+            : selectedApplication.score !== null && selectedApplication.score < 45
+              ? {
+                  recommendation: "REJECT",
+                  summary: "A candidatura mostra sinais insuficientes para continuar sem gerar ruído no funil.",
+                  reasons: [
+                    `Score atual em ${formatScore(selectedApplication.score)}.`,
+                    "O caso pede uma decisão objetiva para não travar o pipeline."
+                  ],
+                  nextActions: ["Encerrar na etapa terminal adequada.", "Registrar o motivo do fechamento."]
+                }
+              : {
+                  recommendation: "HOLD",
+                  summary: "Ainda faltam sinais para uma movimentação mais agressiva no pipeline.",
+                  reasons: [
+                    `Score atual em ${formatScore(selectedApplication.score)}.`,
+                    "A candidatura ainda depende de validação complementar."
+                  ],
+                  nextActions: ["Manter a etapa atual.", "Registrar o que ainda precisa ser confirmado."]
+                },
+        interviewCount: 0
+      })
+    : null;
 
   const stats = [
     { label: "Aplicações", value: applications.length },
@@ -466,6 +522,26 @@ export function PipelineWorkspace({
                     <span className={styles.metaValue}>{selectedApplication.job.title}</span>
                   </div>
                 </div>
+
+                {canManageApplications && selectedApplicationAssist ? (
+                  <AiResolvePanel
+                    entityId={selectedApplication.id}
+                    entityFieldName="applicationId"
+                    selectionFieldName="stageId"
+                    summary={selectedApplicationAssist.summary}
+                    suggestedAction={selectedApplicationAssist.suggestedAction}
+                    expectedImpact={selectedApplicationAssist.expectedImpact}
+                    confidence={selectedApplicationAssist.confidence}
+                    sources={selectedApplicationAssist.sources}
+                    suggestedStatus={selectedApplicationAssist.suggestedStageId}
+                    statusOptions={stages.map((stage) => ({
+                      value: stage.id,
+                      label: stage.name
+                    }))}
+                    draftNote={selectedApplicationAssist.draftNote}
+                    action={resolveApplicationWithAiAction}
+                  />
+                ) : null}
 
                 {canManageApplications ? (
                   <div className={styles.detailSection}>

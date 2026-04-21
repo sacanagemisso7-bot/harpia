@@ -5,12 +5,17 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { HrRequestCategory, HrRequestStatus, PeopleTaskPriority, SavedViewType } from "@prisma/client";
 
+import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
+import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
 import { WorkspaceSavedViews } from "@/components/operations/workspace-saved-views";
+import { buildHrRequestNextStep } from "@/lib/ai/next-step";
+import { buildHrRequestResolveAssist } from "@/lib/ai/resolve-assist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { AiResolveActionState } from "@/types/ai-resolve";
 
 import styles from "./ops-workspace.module.css";
 
@@ -61,6 +66,7 @@ type RequestsWorkspaceProps = {
   bulkUpdateHrRequestStatusAction: (formData: FormData) => Promise<void>;
   updateHrRequestDetailsAction: (formData: FormData) => Promise<void>;
   addHrRequestCommentAction: (formData: FormData) => Promise<void>;
+  resolveHrRequestWithAiAction: (state: AiResolveActionState, formData: FormData) => Promise<AiResolveActionState>;
   savedViews: Array<{ id: string; name: string; query: string }>;
   saveWorkspaceViewAction: (formData: FormData) => Promise<{ error?: string; success?: string }>;
   deleteSavedViewAction: (formData: FormData) => Promise<void>;
@@ -125,6 +131,7 @@ export function RequestsWorkspace({
   bulkUpdateHrRequestStatusAction,
   updateHrRequestDetailsAction,
   addHrRequestCommentAction,
+  resolveHrRequestWithAiAction,
   savedViews,
   saveWorkspaceViewAction,
   deleteSavedViewAction
@@ -285,6 +292,28 @@ export function RequestsWorkspace({
   }, [filteredRequests, query, selectedId, selectedIds]);
 
   const selectedRequest = filteredRequests.find((request) => request.id === selectedId) ?? filteredRequests[0] ?? null;
+  const selectedRequestNextStep = selectedRequest
+    ? buildHrRequestNextStep({
+        status: selectedRequest.status,
+        effectiveSlaStatus: selectedRequest.effectiveSlaStatus,
+        priority: selectedRequest.priority,
+        assigneeName: selectedRequest.assigneeUser?.name ?? null,
+        commentCount: selectedRequest.comments.length
+      })
+    : null;
+  const selectedRequestAssist = selectedRequest
+    ? buildHrRequestResolveAssist({
+        title: selectedRequest.title,
+        description: selectedRequest.description,
+        category: selectedRequest.category,
+        priority: selectedRequest.priority,
+        status: selectedRequest.status,
+        effectiveSlaStatus: selectedRequest.effectiveSlaStatus,
+        requesterName: selectedRequest.requesterEmployee?.fullName ?? selectedRequest.requesterUser?.name ?? null,
+        assigneeName: selectedRequest.assigneeUser?.name ?? null,
+        commentCount: selectedRequest.comments.length
+      })
+    : null;
   const stats = [
     { label: "Abertas", value: metrics.open },
     { label: "Em risco", value: metrics.atRisk },
@@ -522,6 +551,52 @@ export function RequestsWorkspace({
                   </div>
                 </div>
 
+                {selectedRequestNextStep ? (
+                  <AiNextStepCard
+                    recommendedStep={selectedRequestNextStep.recommendedStep}
+                    reason={selectedRequestNextStep.reason}
+                    tone={selectedRequestNextStep.tone}
+                  >
+                    {selectedRequestNextStep.actionKey === "close" && canManage ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        disabled={pendingStatus || selectedRequest.status === HrRequestStatus.RESOLVED}
+                        onClick={() => applyRequestStatus(HrRequestStatus.RESOLVED)}
+                      >
+                        {selectedRequestNextStep.actionLabel}
+                      </Button>
+                    ) : selectedRequestNextStep.actionKey === "respond" || !canManage ? (
+                      <Button asChild size="sm" variant="outline">
+                        <a href="#request-comment-compose">{canManage ? selectedRequestNextStep.actionLabel : "Responder"}</a>
+                      </Button>
+                    ) : (
+                      <Button asChild size="sm" variant="outline">
+                        <a href="#request-context">{selectedRequestNextStep.actionLabel}</a>
+                      </Button>
+                    )}
+                  </AiNextStepCard>
+                ) : null}
+
+                {canManage && selectedRequestAssist ? (
+                  <AiResolvePanel
+                    entityId={selectedRequest.id}
+                    entityFieldName="requestId"
+                    summary={selectedRequestAssist.summary}
+                    suggestedAction={selectedRequestAssist.suggestedAction}
+                    expectedImpact={selectedRequestAssist.expectedImpact}
+                    confidence={selectedRequestAssist.confidence}
+                    sources={selectedRequestAssist.sources}
+                    suggestedStatus={selectedRequestAssist.suggestedStatus}
+                    statusOptions={Object.values(HrRequestStatus).map((status) => ({
+                      value: status,
+                      label: formatEnumLabel(status)
+                    }))}
+                    draftNote={selectedRequestAssist.draftNote}
+                    action={resolveHrRequestWithAiAction}
+                  />
+                ) : null}
+
                 {canManage ? (
                   <div className={styles.detailSection}>
                     <div className={styles.sectionHeader}>
@@ -550,7 +625,7 @@ export function RequestsWorkspace({
                 ) : null}
 
                 {canManage ? (
-                  <form action={submitRequestContext} className={styles.sectionStack}>
+                  <form id="request-context" action={submitRequestContext} className={styles.sectionStack}>
                     <input type="hidden" name="requestId" value={selectedRequest.id} />
                     <div className={styles.sectionHeader}>
                       <div>
@@ -606,7 +681,7 @@ export function RequestsWorkspace({
                   )}
                 </div>
 
-                <form action={addHrRequestCommentAction} className={styles.sectionStack}>
+                <form id="request-comment-compose" action={addHrRequestCommentAction} className={styles.sectionStack}>
                   <input type="hidden" name="requestId" value={selectedRequest.id} />
                   <div className={styles.sectionHeader}>
                     <h4 className={styles.panelTitle}>Adicionar comentário</h4>

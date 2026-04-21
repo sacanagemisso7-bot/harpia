@@ -53,8 +53,10 @@ const actionProposalSchema = z.object({
     "create_offboarding_plan",
     "create_hr_request",
     "update_hr_request",
+    "resolve_hr_request",
     "create_people_task",
-    "update_people_task"
+    "update_people_task",
+    "resolve_people_task"
   ]),
   label: z.string(),
   description: z.string(),
@@ -503,26 +505,34 @@ async function buildActionProposals(organizationId: string, message: string, con
     });
   }
 
-  if ((normalized.includes("resolver solicit") || normalized.includes("fechar solicit")) && context.hrRequests[0]) {
+  if (
+    (normalized.includes("resolver solicit") || normalized.includes("fechar solicit") || normalized.includes("resolver com ia")) &&
+    context.hrRequests[0]
+  ) {
     addProposal({
-      type: "update_hr_request",
+      type: "resolve_hr_request",
       label: `Resolver solicitação ${context.hrRequests[0].title}`,
-      description: "Atualiza o status da solicitação para resolvida.",
+      description: "Abre uma resolução assistida com impacto, confiança e trilha de aprovação quando necessário.",
       payload: {
         requestId: context.hrRequests[0].id,
-        status: HrRequestStatus.RESOLVED
+        status: HrRequestStatus.RESOLVED,
+        note: `Fechamento sugerido pela IA para ${context.hrRequests[0].title}.`
       }
     });
   }
 
-  if ((normalized.includes("concluir tarefa") || normalized.includes("finalizar tarefa")) && context.peopleTasks[0]) {
+  if (
+    (normalized.includes("concluir tarefa") || normalized.includes("finalizar tarefa") || normalized.includes("resolver com ia")) &&
+    context.peopleTasks[0]
+  ) {
     addProposal({
-      type: "update_people_task",
-      label: `Concluir tarefa ${context.peopleTasks[0].title}`,
-      description: "Marca a tarefa operacional como concluida.",
+      type: "resolve_people_task",
+      label: `Resolver tarefa ${context.peopleTasks[0].title}`,
+      description: "Abre uma resolução assistida com registro de fechamento e aprovação quando fizer sentido.",
       payload: {
         taskId: context.peopleTasks[0].id,
-        status: PeopleTaskStatus.DONE
+        status: PeopleTaskStatus.DONE,
+        note: `Fechamento sugerido pela IA para ${context.peopleTasks[0].title}.`
       }
     });
   }
@@ -558,6 +568,46 @@ async function buildActionProposals(organizationId: string, message: string, con
           }
         });
       }
+    }
+  }
+
+  if (
+    (normalized.includes("resolver candidatura") ||
+      normalized.includes("decidir candidatura") ||
+      normalized.includes("resolver com ia")) &&
+    context.applications[0]
+  ) {
+    const application = context.applications[0];
+    const stageList = await prisma.pipelineStage.findMany({
+      where: {
+        organizationId
+      },
+      orderBy: [{ position: "asc" }]
+    });
+    const currentIndex = stageList.findIndex((stage) => stage.id === application.currentStageId);
+    const nextStage = currentIndex >= 0 ? stageList[currentIndex + 1] ?? null : null;
+    const rejectedStage =
+      stageList.find((stage) => stage.key === "rejected") ??
+      stageList.find((stage) => stage.isTerminal) ??
+      null;
+    const preferredStage =
+      application.score !== null && application.score >= 80
+        ? nextStage
+        : application.score !== null && application.score <= 45
+          ? rejectedStage
+          : null;
+
+    if (preferredStage && preferredStage.id !== application.currentStageId) {
+      addProposal({
+        type: "move_stage",
+        label: `Resolver candidatura de ${application.candidate.fullName}`,
+        description: "Move a candidatura para a etapa sugerida pela leitura operacional da conversa.",
+        payload: {
+          applicationId: application.id,
+          stageId: preferredStage.id,
+          notes: `Encaminhamento assistido da conversa para ${preferredStage.name}.`
+        }
+      });
     }
   }
 

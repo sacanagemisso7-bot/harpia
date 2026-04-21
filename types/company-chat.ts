@@ -15,8 +15,10 @@ export type CompanyChatActionType =
   | "create_offboarding_plan"
   | "create_hr_request"
   | "update_hr_request"
+  | "resolve_hr_request"
   | "create_people_task"
-  | "update_people_task";
+  | "update_people_task"
+  | "resolve_people_task";
 
 export type CompanyChatActionProposal = {
   type: CompanyChatActionType;

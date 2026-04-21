@@ -5,12 +5,17 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PeopleTaskPriority, PeopleTaskStatus, SavedViewType } from "@prisma/client";
 
+import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
+import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
 import { WorkspaceSavedViews } from "@/components/operations/workspace-saved-views";
+import { buildPeopleTaskNextStep } from "@/lib/ai/next-step";
+import { buildPeopleTaskResolveAssist } from "@/lib/ai/resolve-assist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import type { AiResolveActionState } from "@/types/ai-resolve";
 
 import styles from "./ops-workspace.module.css";
 
@@ -61,6 +66,7 @@ type TasksWorkspaceProps = {
   bulkUpdatePeopleTaskStatusAction: (formData: FormData) => Promise<void>;
   updatePeopleTaskDetailsAction: (formData: FormData) => Promise<void>;
   addPeopleTaskCommentAction: (formData: FormData) => Promise<void>;
+  resolvePeopleTaskWithAiAction: (state: AiResolveActionState, formData: FormData) => Promise<AiResolveActionState>;
   savedViews: Array<{ id: string; name: string; query: string }>;
   saveWorkspaceViewAction: (formData: FormData) => Promise<{ error?: string; success?: string }>;
   deleteSavedViewAction: (formData: FormData) => Promise<void>;
@@ -129,6 +135,7 @@ export function PeopleTasksWorkspace({
   bulkUpdatePeopleTaskStatusAction,
   updatePeopleTaskDetailsAction,
   addPeopleTaskCommentAction,
+  resolvePeopleTaskWithAiAction,
   savedViews,
   saveWorkspaceViewAction,
   deleteSavedViewAction
@@ -289,6 +296,27 @@ export function PeopleTasksWorkspace({
   }, [filteredTasks, query, selectedId, selectedIds]);
 
   const selectedTask = filteredTasks.find((task) => task.id === selectedId) ?? filteredTasks[0] ?? null;
+  const selectedTaskNextStep = selectedTask
+    ? buildPeopleTaskNextStep({
+        status: selectedTask.status,
+        isOverdue: selectedTask.isOverdue,
+        assigneeName: selectedTask.assigneeUser?.name ?? selectedTask.assigneeEmployee?.fullName ?? null,
+        commentCount: selectedTask.comments.length
+      })
+    : null;
+  const selectedTaskAssist = selectedTask
+    ? buildPeopleTaskResolveAssist({
+        title: selectedTask.title,
+        description: selectedTask.description,
+        priority: selectedTask.priority,
+        status: selectedTask.status,
+        sourceType: selectedTask.sourceType,
+        isOverdue: selectedTask.isOverdue,
+        relatedEmployeeName: selectedTask.relatedEmployee?.fullName ?? null,
+        assigneeName: selectedTask.assigneeUser?.name ?? selectedTask.assigneeEmployee?.fullName ?? null,
+        commentCount: selectedTask.comments.length
+      })
+    : null;
   const stats = [
     { label: "Total", value: metrics.total },
     { label: "Vencidas", value: metrics.overdue },
@@ -526,6 +554,52 @@ export function PeopleTasksWorkspace({
                   </div>
                 </div>
 
+                {canManage && selectedTaskNextStep ? (
+                  <AiNextStepCard
+                    recommendedStep={selectedTaskNextStep.recommendedStep}
+                    reason={selectedTaskNextStep.reason}
+                    tone={selectedTaskNextStep.tone}
+                  >
+                    {selectedTaskNextStep.actionKey === "complete" ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        disabled={pendingStatus || selectedTask.status === PeopleTaskStatus.DONE}
+                        onClick={() => applyTaskStatus(PeopleTaskStatus.DONE)}
+                      >
+                        {selectedTaskNextStep.actionLabel}
+                      </Button>
+                    ) : selectedTaskNextStep.actionKey === "comment" ? (
+                      <Button asChild size="sm" variant="outline">
+                        <a href="#task-comment-compose">{selectedTaskNextStep.actionLabel}</a>
+                      </Button>
+                    ) : (
+                      <Button asChild size="sm" variant="outline">
+                        <a href="#task-context">{selectedTaskNextStep.actionLabel}</a>
+                      </Button>
+                    )}
+                  </AiNextStepCard>
+                ) : null}
+
+                {canManage && selectedTaskAssist ? (
+                  <AiResolvePanel
+                    entityId={selectedTask.id}
+                    entityFieldName="taskId"
+                    summary={selectedTaskAssist.summary}
+                    suggestedAction={selectedTaskAssist.suggestedAction}
+                    expectedImpact={selectedTaskAssist.expectedImpact}
+                    confidence={selectedTaskAssist.confidence}
+                    sources={selectedTaskAssist.sources}
+                    suggestedStatus={selectedTaskAssist.suggestedStatus}
+                    statusOptions={Object.values(PeopleTaskStatus).map((status) => ({
+                      value: status,
+                      label: formatEnumLabel(status)
+                    }))}
+                    draftNote={selectedTaskAssist.draftNote}
+                    action={resolvePeopleTaskWithAiAction}
+                  />
+                ) : null}
+
                 {canManage ? (
                   <div className={styles.detailSection}>
                     <div className={styles.sectionHeader}>
@@ -554,7 +628,7 @@ export function PeopleTasksWorkspace({
                 ) : null}
 
                 {canManage ? (
-                  <form action={submitTaskContext} className={styles.sectionStack}>
+                  <form id="task-context" action={submitTaskContext} className={styles.sectionStack}>
                     <input type="hidden" name="taskId" value={selectedTask.id} />
                     <div className={styles.sectionHeader}>
                       <div>
@@ -611,7 +685,7 @@ export function PeopleTasksWorkspace({
                 </div>
 
                 {canManage ? (
-                  <form action={addPeopleTaskCommentAction} className={styles.sectionStack}>
+                  <form id="task-comment-compose" action={addPeopleTaskCommentAction} className={styles.sectionStack}>
                     <input type="hidden" name="taskId" value={selectedTask.id} />
                     <div className={styles.sectionHeader}>
                       <h4 className={styles.panelTitle}>Adicionar comentário</h4>

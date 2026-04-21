@@ -16,7 +16,9 @@ import { isEmailConfigured } from "@/lib/email/transporter";
 import { logError } from "@/lib/observability/logger";
 import { prisma } from "@/lib/prisma/client";
 import { hiringNoteSchema } from "@/lib/validations/note";
+import { applyAgentAction } from "@/modules/ai-agent/service";
 import { enqueueBackgroundJob } from "@/modules/background-jobs/service";
+import type { AiResolveActionState } from "@/types/ai-resolve";
 
 export async function createApplication(
   candidateId: string,
@@ -193,6 +195,7 @@ export async function moveApplicationStage(
 ): Promise<StageTransitionState> {
   const user = await requirePermission("manage_applications");
   const stageId = String(formData.get("stageId") ?? "");
+  const note = String(formData.get("note") ?? "").trim();
 
   if (!stageId) {
     return {
@@ -236,7 +239,7 @@ export async function moveApplicationStage(
           fromStageId: application.currentStageId,
           toStageId: stage.id,
           movedById: user.id,
-          notes: "Movimentação atualizada pelo workspace."
+          notes: note || "Movimentação atualizada pelo workspace."
         }
       }
     }
@@ -269,6 +272,129 @@ export async function moveApplicationStage(
 
 export async function moveApplicationStageQuick(applicationId: string, formData: FormData) {
   await moveApplicationStage(applicationId, {}, formData);
+}
+
+export async function resolveApplicationWithAiAction(
+  _previousState: AiResolveActionState,
+  formData: FormData
+): Promise<AiResolveActionState> {
+  const user = await requirePermission("manage_applications");
+  const applicationId = String(formData.get("applicationId") ?? "");
+  const stageId = String(formData.get("stageId") ?? "");
+  const note = String(formData.get("note") ?? "").trim();
+  const mode = formData.get("mode") === "approval" ? "approval" : "apply";
+
+  if (!applicationId || !stageId) {
+    return {
+      error: "Aplicação ou etapa inválida.",
+      mode
+    };
+  }
+
+  const [application, stage] = await Promise.all([
+    prisma.application.findFirst({
+      where: {
+        id: applicationId,
+        organizationId: user.organizationId
+      },
+      include: {
+        candidate: true,
+        job: true
+      }
+    }),
+    prisma.pipelineStage.findFirst({
+      where: {
+        id: stageId,
+        organizationId: user.organizationId
+      }
+    })
+  ]);
+
+  if (!application || !stage) {
+    return {
+      error: "Não foi possível resolver esta candidatura agora.",
+      mode
+    };
+  }
+
+  try {
+    if (mode === "approval") {
+      const result = await applyAgentAction({
+        organizationId: user.organizationId,
+        userId: user.id,
+        userRole: user.role,
+        type: "move_stage",
+        payload: {
+          applicationId: application.id,
+          stageId: stage.id,
+          notes: note || "Movimentação assistida solicitada a partir do workspace."
+        },
+        goal: `Resolver a candidatura ${application.candidate.fullName} com apoio da IA.`
+      });
+
+      await createAuditEvent({
+        organizationId: user.organizationId,
+        actorId: user.id,
+        action: "application.ai_resolution_requested",
+        entityType: "application",
+        entityId: application.id,
+        summary: result.summary,
+        metadata: {
+          stageId: stage.id,
+          mode
+        }
+      });
+
+      revalidatePath("/dashboard");
+      revalidatePath("/pipeline");
+      revalidatePath(`/jobs/${application.jobId}`);
+      revalidatePath(`/candidates/${application.candidateId}`);
+      revalidatePath(`/applications/${application.id}`);
+
+      return {
+        success: result.summary,
+        mode
+      };
+    }
+
+    const moveFormData = new FormData();
+    moveFormData.set("stageId", stage.id);
+
+    if (note) {
+      moveFormData.set("note", note);
+    }
+
+    const result = await moveApplicationStage(application.id, {}, moveFormData);
+
+    if (result.error) {
+      return {
+        error: result.error,
+        mode
+      };
+    }
+
+    await createAuditEvent({
+      organizationId: user.organizationId,
+      actorId: user.id,
+      action: "application.ai_resolution_applied",
+      entityType: "application",
+      entityId: application.id,
+      summary: `Encaminhamento assistido aplicado em ${application.candidate.fullName}.`,
+      metadata: {
+        stageId: stage.id
+      }
+    });
+
+    return {
+      success: result.success ?? `Candidatura movida para ${stage.name}.`,
+      mode
+    };
+  } catch (error) {
+    return {
+      error: error instanceof Error ? error.message : "Não foi possível concluir a ação assistida agora.",
+      mode
+    };
+  }
 }
 
 export async function sendApplicationEmail(

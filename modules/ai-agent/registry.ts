@@ -10,8 +10,8 @@ import {
 
 import type { AppPermission } from "@/lib/auth/permission-matrix";
 import { prisma } from "@/lib/prisma/client";
-import { createHrRequest, updateHrRequestStatus } from "@/modules/hr-requests/service";
-import { createPeopleTask, updatePeopleTaskStatus } from "@/modules/people-tasks/service";
+import { addHrRequestComment, createHrRequest, updateHrRequestStatus } from "@/modules/hr-requests/service";
+import { addPeopleTaskComment, createPeopleTask, updatePeopleTaskStatus } from "@/modules/people-tasks/service";
 import { createWorkflowRunFromTemplate } from "@/modules/people-ops/service";
 import type { CompanyChatActionProposal, CompanyChatActionType } from "@/types/company-chat";
 
@@ -196,6 +196,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
     async buildPreview(input) {
       const applicationId = asString(input.payload.applicationId);
       const stageId = asString(input.payload.stageId);
+      const notes = asString(input.payload.notes);
 
       if (!applicationId || !stageId) {
         throw new Error("A movimentação de etapa precisa de aplicação e etapa de destino.");
@@ -215,11 +216,12 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
         throw new Error("Etapa de destino não encontrada no workspace atual.");
       }
 
-      return `Mover ${application.candidate.fullName} da vaga ${application.job.title} para ${stage.name}.`;
+      return `Mover ${application.candidate.fullName} da vaga ${application.job.title} para ${stage.name}.${notes ? ` Motivo: ${notes}` : ""}`;
     },
     async execute(input) {
       const applicationId = asString(input.payload.applicationId);
       const stageId = asString(input.payload.stageId);
+      const notes = asString(input.payload.notes);
 
       if (!applicationId || !stageId) {
         throw new Error("Chat action is missing stage transition context.");
@@ -262,7 +264,7 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
               fromStageId: application.currentStageId,
               toStageId: stageId,
               movedById: input.userId,
-              notes: "Movimentação confirmada via agente corporativo."
+              notes: notes || "Movimentação confirmada via agente corporativo."
             }
           }
         }
@@ -274,7 +276,8 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
         targetId: application.id,
         resultPayload: asJsonValue({
           applicationId: application.id,
-          stageId: stage.id
+          stageId: stage.id,
+          notes
         })
       };
     }
@@ -629,6 +632,61 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
       };
     }
   },
+  resolve_hr_request: {
+    type: "resolve_hr_request",
+    label: "Resolver solicitação com IA",
+    riskLevel: AgentRiskLevel.HIGH,
+    requiresApproval: true,
+    requiredPermission: "manage_hr_requests",
+    async buildPreview(input) {
+      const requestId = asString(input.payload.requestId);
+      const status = (asString(input.payload.status) as HrRequestStatus | null) ?? HrRequestStatus.IN_PROGRESS;
+
+      if (!requestId) {
+        throw new Error("A resolução assistida precisa de uma solicitação.");
+      }
+
+      const request = await getHrRequestContext(input.organizationId, requestId);
+      return `Aplicar resolução assistida em "${request.title}" movendo o caso para ${status.toLowerCase()}.`;
+    },
+    async execute(input) {
+      const requestId = asString(input.payload.requestId);
+      const status = asString(input.payload.status) as HrRequestStatus | null;
+      const note = asString(input.payload.note);
+
+      if (!requestId || !status) {
+        throw new Error("Chat action is missing AI HR request resolution data.");
+      }
+
+      const updated = await updateHrRequestStatus({
+        organizationId: input.organizationId,
+        actorId: input.userId,
+        requestId,
+        status
+      });
+
+      if (note) {
+        await addHrRequestComment({
+          organizationId: input.organizationId,
+          actorId: input.userId,
+          requestId,
+          message: note,
+          isInternal: true
+        });
+      }
+
+      return {
+        summary: "Solicitação resolvida com trilha assistida do agente.",
+        targetType: "hr_request",
+        targetId: updated.id,
+        resultPayload: asJsonValue({
+          requestId: updated.id,
+          status: updated.status,
+          note
+        })
+      };
+    }
+  },
   create_people_task: {
     type: "create_people_task",
     label: "Criar people task",
@@ -724,6 +782,60 @@ const actionRegistry: Record<CompanyChatActionType, AgentActionDefinition> = {
         resultPayload: asJsonValue({
           taskId: updated.id,
           status: updated.status
+        })
+      };
+    }
+  },
+  resolve_people_task: {
+    type: "resolve_people_task",
+    label: "Resolver tarefa com IA",
+    riskLevel: AgentRiskLevel.HIGH,
+    requiresApproval: true,
+    requiredPermission: "manage_people_tasks",
+    async buildPreview(input) {
+      const taskId = asString(input.payload.taskId);
+      const status = (asString(input.payload.status) as PeopleTaskStatus | null) ?? PeopleTaskStatus.IN_PROGRESS;
+
+      if (!taskId) {
+        throw new Error("A resolução assistida precisa de uma tarefa.");
+      }
+
+      const task = await getPeopleTaskContext(input.organizationId, taskId);
+      return `Aplicar resolução assistida em "${task.title}" movendo a tarefa para ${status.toLowerCase()}.`;
+    },
+    async execute(input) {
+      const taskId = asString(input.payload.taskId);
+      const status = asString(input.payload.status) as PeopleTaskStatus | null;
+      const note = asString(input.payload.note);
+
+      if (!taskId || !status) {
+        throw new Error("Chat action is missing AI people task resolution data.");
+      }
+
+      const updated = await updatePeopleTaskStatus({
+        organizationId: input.organizationId,
+        actorId: input.userId,
+        taskId,
+        status
+      });
+
+      if (note) {
+        await addPeopleTaskComment({
+          organizationId: input.organizationId,
+          actorId: input.userId,
+          taskId,
+          message: note
+        });
+      }
+
+      return {
+        summary: "Tarefa resolvida com trilha assistida do agente.",
+        targetType: "people_task",
+        targetId: updated.id,
+        resultPayload: asJsonValue({
+          taskId: updated.id,
+          status: updated.status,
+          note
         })
       };
     }

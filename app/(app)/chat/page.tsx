@@ -129,15 +129,16 @@ export default async function CompanyChatPage({
   const latestAssistantMessage = [...activeMessages].reverse().find((message) => message.role === "ASSISTANT");
   const latestAssistantMetadata = latestAssistantMessage ? parseMessageMetadata(latestAssistantMessage.metadata) : null;
   const messageCount = activeMessages.length;
+  const resolverPrompt = "Resolver com IA o item mais urgente daqui.";
 
   const prompts =
     latestAssistantMetadata?.suggestedPrompts.length
-      ? latestAssistantMetadata.suggestedPrompts.slice(0, 4)
+      ? [resolverPrompt, ...latestAssistantMetadata.suggestedPrompts.filter((prompt) => prompt !== resolverPrompt)].slice(0, 4)
       : [
+          resolverPrompt,
           "Quais pendências do RH exigem atenção hoje?",
           "Resuma os onboardings ativos.",
-          "O que está em risco no service desk?",
-          "Quais políticas sustentam esta decisão?"
+          "O que está em risco no service desk?"
         ];
 
   return (

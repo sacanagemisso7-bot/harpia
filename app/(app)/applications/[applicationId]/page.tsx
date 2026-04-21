@@ -3,12 +3,16 @@ import Link from "next/link";
 import { ArrowRightLeft, BriefcaseBusiness, CalendarClock, CircleGauge, Sparkles, UserRound } from "lucide-react";
 import { notFound } from "next/navigation";
 
+import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
+import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
 import { ApplicationStageForm } from "@/components/applications/application-stage-form";
 import { RecalculateScoreForm } from "@/components/applications/recalculate-score-form";
 import { SendTemplateEmailForm } from "@/components/communications/send-template-email-form";
 import { InterviewForm } from "@/components/interviews/interview-form";
 import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
+import { buildApplicationNextStep } from "@/lib/ai/next-step";
+import { buildApplicationResolveAssist } from "@/lib/ai/resolve-assist";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getStageCopilotDecision } from "@/lib/ai/stage-copilot";
@@ -26,6 +30,7 @@ import {
   moveApplicationStage,
   moveApplicationStageQuick,
   recalculateApplicationScore,
+  resolveApplicationWithAiAction,
   sendApplicationEmail
 } from "../actions";
 import { createInterview } from "../../interviews/actions";
@@ -119,6 +124,28 @@ export default async function ApplicationDetailPage({
     { label: "Entrevistas", value: application.interviews.length },
     { label: "Notas", value: application.notes.length }
   ];
+  const applicationResolveAssist = buildApplicationResolveAssist({
+    candidateName: application.candidate.fullName,
+    jobTitle: application.job.title,
+    score: application.score,
+    currentStageId: application.currentStageId,
+    currentStageName: application.currentStage?.name ?? null,
+    stages: stages.map((stage) => ({
+      id: stage.id,
+      name: stage.name,
+      key: stage.key,
+      isTerminal: stage.isTerminal,
+      position: stage.position
+    })),
+    copilotDecision,
+    interviewCount: application.interviews.length
+  });
+  const applicationNextStep = buildApplicationNextStep({
+    recommendation: copilotDecision.recommendation,
+    interviewCount: application.interviews.length,
+    suggestedStageLabel: applicationResolveAssist.suggestedStageLabel,
+    currentStageLabel: application.currentStage?.name ?? "Sem etapa"
+  });
 
   return (
     <div className={styles.workspace}>
@@ -189,6 +216,25 @@ export default async function ApplicationDetailPage({
                 <p className={styles.detailText}>Sem perguntas sugeridas no momento.</p>
               )}
             </div>
+            {canManageApplication ? (
+              <AiResolvePanel
+                entityId={application.id}
+                entityFieldName="applicationId"
+                selectionFieldName="stageId"
+                summary={applicationResolveAssist.summary}
+                suggestedAction={applicationResolveAssist.suggestedAction}
+                expectedImpact={applicationResolveAssist.expectedImpact}
+                confidence={applicationResolveAssist.confidence}
+                sources={applicationResolveAssist.sources}
+                suggestedStatus={applicationResolveAssist.suggestedStageId}
+                statusOptions={stages.map((stage) => ({
+                  value: stage.id,
+                  label: stage.name
+                }))}
+                draftNote={applicationResolveAssist.draftNote}
+                action={resolveApplicationWithAiAction}
+              />
+            ) : null}
           </section>
 
           <section className={styles.detailPanel}>
@@ -259,7 +305,7 @@ export default async function ApplicationDetailPage({
             )}
           </section>
 
-          <section className={styles.formPanel}>
+          <section id="application-notes" className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Notas internas</h3>
               <p className={styles.panelDescription}>Contexto compartilhado do time sobre esta aplicação.</p>
@@ -278,6 +324,41 @@ export default async function ApplicationDetailPage({
         </div>
 
         <aside className={styles.detailColumn}>
+          <AiNextStepCard
+            recommendedStep={applicationNextStep.recommendedStep}
+            reason={applicationNextStep.reason}
+            tone={applicationNextStep.tone}
+          >
+            {(applicationNextStep.actionKey === "advance_stage" || applicationNextStep.actionKey === "reject") && canManageApplication ? (
+              <form action={moveApplicationStageQuick.bind(null, application.id)}>
+                <input type="hidden" name="stageId" value={applicationResolveAssist.suggestedStageId} />
+                <Button
+                  type="submit"
+                  size="sm"
+                  disabled={!applicationResolveAssist.suggestedStageId || applicationResolveAssist.suggestedStageId === application.currentStageId}
+                >
+                  {applicationNextStep.actionLabel}
+                </Button>
+              </form>
+            ) : applicationNextStep.actionKey === "schedule_interview" ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="#application-interviews">{applicationNextStep.actionLabel}</a>
+              </Button>
+            ) : applicationNextStep.actionKey === "review_score" ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="#application-score">{applicationNextStep.actionLabel}</a>
+              </Button>
+            ) : (
+              <Button asChild size="sm" variant="outline">
+                <a href="#application-notes">
+                  {applicationNextStep.actionKey === "advance_stage" || applicationNextStep.actionKey === "reject"
+                    ? "Registrar nota"
+                    : applicationNextStep.actionLabel}
+                </a>
+              </Button>
+            )}
+          </AiNextStepCard>
+
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Ações rápidas</h3>
@@ -286,7 +367,7 @@ export default async function ApplicationDetailPage({
 
             {canManageApplication ? (
               <div className={styles.sectionStack}>
-                <div className={styles.detailCell}>
+                <div id="application-score" className={styles.detailCell}>
                   <div className={styles.sectionHeader}>
                     <span className={styles.metaValue}>
                       <CircleGauge className="mr-2 inline h-4 w-4" />
@@ -335,7 +416,7 @@ export default async function ApplicationDetailPage({
             )}
           </section>
 
-          <section className={styles.formPanel}>
+          <section id="application-interviews" className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Entrevistas</h3>
               <p className={styles.panelDescription}>Agende novas conversas e acompanhe as já abertas.</p>

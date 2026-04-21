@@ -5,10 +5,12 @@ import { notFound } from "next/navigation";
 import { AnalyzeResumeForm } from "@/components/candidates/analyze-resume-form";
 import { ApplyToJobForm } from "@/components/candidates/apply-to-job-form";
 import { ResumeUploadForm } from "@/components/candidates/resume-upload-form";
+import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
 import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { buildCandidateNextStep } from "@/lib/ai/next-step";
 import { hasPermission } from "@/lib/auth/permissions";
 import { requireCurrentUser } from "@/lib/auth/current-user";
 import { getCandidateById } from "@/lib/candidates/queries";
@@ -68,6 +70,12 @@ export default async function CandidateDetailPage({
   const canManageCandidate = hasPermission(user.role, "manage_candidates");
   const canManageApplications = hasPermission(user.role, "manage_applications");
   const canCreateNotes = hasPermission(user.role, "create_hiring_notes");
+  const candidateNextStep = buildCandidateNextStep({
+    resumeCount: canManageCandidate ? candidate.resumes.length : Math.max(candidate.resumes.length, 1),
+    hasParsedProfile: canManageCandidate ? Boolean(parsedProfile) : true,
+    applicationCount: candidate.applications.length,
+    availableJobCount: canManageApplications ? availableJobs.length : 0
+  });
 
   return (
     <div className={styles.workspace}>
@@ -236,7 +244,7 @@ export default async function CandidateDetailPage({
             </div>
           </section>
 
-          <section className={styles.formPanel}>
+          <section id="candidate-note-compose" className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Notas internas</h3>
               <p className={styles.panelDescription}>Contexto compartilhado do time sobre este perfil.</p>
@@ -248,6 +256,34 @@ export default async function CandidateDetailPage({
         </div>
 
         <aside className={styles.detailColumn}>
+          <AiNextStepCard
+            recommendedStep={candidateNextStep.recommendedStep}
+            reason={candidateNextStep.reason}
+            tone={candidateNextStep.tone}
+          >
+            {candidateNextStep.actionKey === "review_application" && candidate.applications[0] ? (
+              <Button asChild size="sm">
+                <Link href={`/applications/${candidate.applications[0].id}`}>{candidateNextStep.actionLabel}</Link>
+              </Button>
+            ) : candidateNextStep.actionKey === "apply_to_job" ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="#candidate-apply-job">{candidateNextStep.actionLabel}</a>
+              </Button>
+            ) : candidateNextStep.actionKey === "analyze_resume" ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="#candidate-analyze-ai">{candidateNextStep.actionLabel}</a>
+              </Button>
+            ) : candidateNextStep.actionKey === "upload_resume" ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="#candidate-upload-resume">{candidateNextStep.actionLabel}</a>
+              </Button>
+            ) : (
+              <Button asChild size="sm" variant="outline">
+                <a href="#candidate-note-compose">{candidateNextStep.actionLabel}</a>
+              </Button>
+            )}
+          </AiNextStepCard>
+
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
               <h3 className={styles.panelTitle}>Ações rápidas</h3>
@@ -256,7 +292,7 @@ export default async function CandidateDetailPage({
 
             <div className={styles.sectionStack}>
               {canManageCandidate ? (
-                <div className={styles.detailCell}>
+                <div id="candidate-upload-resume" className={styles.detailCell}>
                   <span className={styles.metaLabel}>Enviar currículo</span>
                   <ResumeUploadForm action={uploadResume.bind(null, candidate.id)} />
                 </div>
@@ -265,7 +301,7 @@ export default async function CandidateDetailPage({
               )}
 
               {canManageApplications && availableJobs.length ? (
-                <div className={styles.detailCell}>
+                <div id="candidate-apply-job" className={styles.detailCell}>
                   <span className={styles.metaLabel}>Aplicar em vaga</span>
                   <ApplyToJobForm action={createApplication.bind(null, candidate.id)} jobs={availableJobs} />
                 </div>
@@ -276,7 +312,7 @@ export default async function CandidateDetailPage({
               )}
 
               {canManageCandidate ? (
-                <div className={styles.detailCell}>
+                <div id="candidate-analyze-ai" className={styles.detailCell}>
                   <span className={styles.metaLabel}>Analisar com IA</span>
                   <AnalyzeResumeForm action={analyzeCandidateResume.bind(null, candidate.id)} />
                 </div>

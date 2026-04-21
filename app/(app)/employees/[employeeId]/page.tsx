@@ -9,11 +9,13 @@ import {
   updateEmployeeStatusAction
 } from "@/app/(app)/employees/actions";
 import { acknowledgePolicyAction } from "@/app/(app)/people/compliance/actions";
+import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { buildEmployeeNextStep } from "@/lib/ai/next-step";
 import { hasPermission, requirePermission } from "@/lib/auth/permissions";
 import { getEmployeeProfile, listEmployeesForSelect } from "@/modules/employees/queries";
 
@@ -71,6 +73,21 @@ export default async function EmployeeProfilePage({
   const openComplianceCount =
     employee.complianceRequirements.filter((item) => item.status === "PENDING").length +
     employee.policyAcknowledgements.filter((item) => !item.acknowledgedAt).length;
+  const hasActiveOnboardingRun = employee.workflowRuns.some(
+    (run) => run.kind === PeopleWorkflowKind.ONBOARDING && run.status !== "COMPLETED"
+  );
+  const openRequestCount = employee.requestedHrRequests.filter(
+    (request) => request.status !== "RESOLVED" && request.status !== "CANCELED"
+  ).length;
+  const openTaskCount = employee.relatedTasks.filter((task) => task.status !== "DONE").length;
+  const employeeNextStep = buildEmployeeNextStep({
+    status: employee.status,
+    hasActiveOnboardingRun,
+    checkInCount: employee.checkIns.length,
+    openComplianceCount,
+    openRequestCount,
+    openTaskCount
+  });
   const now = Date.now();
 
   const stats = [
@@ -240,6 +257,34 @@ export default async function EmployeeProfilePage({
         </div>
 
         <aside className={styles.detailColumn}>
+          <AiNextStepCard
+            recommendedStep={employeeNextStep.recommendedStep}
+            reason={employeeNextStep.reason}
+            tone={employeeNextStep.tone}
+          >
+            {employeeNextStep.actionKey === "start_onboarding" && canManageWorkflows ? (
+              <form action={startEmployeeWorkflowAction}>
+                <input type="hidden" name="employeeId" value={employee.id} />
+                <input type="hidden" name="kind" value={PeopleWorkflowKind.ONBOARDING} />
+                <Button type="submit" size="sm">
+                  {employeeNextStep.actionLabel}
+                </Button>
+              </form>
+            ) : employeeNextStep.actionKey === "open_request" ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="/requests">{employeeNextStep.actionLabel}</a>
+              </Button>
+            ) : employeeNextStep.actionKey === "follow_up" && canManageCheckins ? (
+              <Button asChild size="sm" variant="outline">
+                <a href="#employee-checkin-compose">{employeeNextStep.actionLabel}</a>
+              </Button>
+            ) : (
+              <Button asChild size="sm" variant="outline">
+                <a href="/requests">Abrir request</a>
+              </Button>
+            )}
+          </AiNextStepCard>
+
           {canManageEmployees ? (
             <section className={styles.formPanel}>
               <div className={styles.panelHeader}>
@@ -358,7 +403,7 @@ export default async function EmployeeProfilePage({
           ) : null}
 
           {canManageCheckins ? (
-            <section className={styles.formPanel}>
+            <section id="employee-checkin-compose" className={styles.formPanel}>
               <div className={styles.panelHeader}>
                 <h3 className={styles.panelTitle}>Novo registro</h3>
                 <p className={styles.panelDescription}>Check-ins, alertas e follow-ups no mesmo fluxo.</p>

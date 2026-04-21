@@ -8,6 +8,7 @@ import { getPipelineStages } from "@/lib/pipeline/queries";
 import { getSavedViews } from "@/lib/saved-views/queries";
 
 import { moveApplicationStage } from "../applications/actions";
+import { resolveApplicationWithAiAction } from "../applications/actions";
 import { deleteSavedViewAction, saveWorkspaceViewAction } from "../saved-views/actions";
 
 export default async function PipelinePage({
@@ -37,6 +38,7 @@ export default async function PipelinePage({
       canManageApplications={canManageApplications}
       savedViews={savedViews}
       moveApplicationStageAction={moveApplicationStage}
+      resolveApplicationWithAiAction={resolveApplicationWithAiAction}
       saveWorkspaceViewAction={saveWorkspaceViewAction}
       deleteSavedViewAction={deleteSavedViewAction}
     />
