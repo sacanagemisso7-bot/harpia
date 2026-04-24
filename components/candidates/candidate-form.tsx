@@ -2,6 +2,7 @@
 
 import { CandidateSource } from "@prisma/client";
 
+import { AssistedCreateBox } from "@/components/ai/assisted-create-box";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +31,15 @@ type CandidateFormProps = {
 export function CandidateForm({ action, submitLabel, defaultValues }: CandidateFormProps) {
   return (
     <form action={action} className="workspace-form">
+      {!defaultValues ? (
+        <AssistedCreateBox
+          mode="candidate"
+          fieldNames={{
+            title: "fullName",
+            description: "summary"
+          }}
+        />
+      ) : null}
       <div className="workspace-form-grid">
         <div className="space-y-2 workspace-form-span-full">
           <Label htmlFor="fullName">Nome completo</Label>
@@ -67,7 +77,7 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="highestEducation">Formacao</Label>
+          <Label htmlFor="highestEducation">Formação</Label>
           <Input
             id="highestEducation"
             name="highestEducation"
@@ -77,9 +87,9 @@ export function CandidateForm({ action, submitLabel, defaultValues }: CandidateF
         <div className="space-y-2">
           <Label htmlFor="source">Origem</Label>
           <Select id="source" name="source" defaultValue={defaultValues?.source ?? CandidateSource.MANUAL_IMPORT}>
-            <option value={CandidateSource.MANUAL_IMPORT}>Importacao manual</option>
+            <option value={CandidateSource.MANUAL_IMPORT}>Importação manual</option>
             <option value={CandidateSource.LINKEDIN}>LinkedIn</option>
-            <option value={CandidateSource.REFERRAL}>Indicacao</option>
+            <option value={CandidateSource.REFERRAL}>Indicação</option>
             <option value={CandidateSource.CAREERS_PAGE}>Página de carreiras</option>
           </Select>
         </div>

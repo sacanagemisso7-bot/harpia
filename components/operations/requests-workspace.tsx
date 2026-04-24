@@ -7,9 +7,13 @@ import { HrRequestCategory, HrRequestStatus, PeopleTaskPriority, SavedViewType }
 
 import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
 import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
+import { AiTriagePill } from "@/components/ai/ai-triage-pill";
+import { AssistedCreateBox } from "@/components/ai/assisted-create-box";
+import { ContextualAssistantPanel } from "@/components/ai/contextual-assistant-panel";
 import { WorkspaceSavedViews } from "@/components/operations/workspace-saved-views";
 import { buildHrRequestNextStep } from "@/lib/ai/next-step";
 import { buildHrRequestResolveAssist } from "@/lib/ai/resolve-assist";
+import { buildHrRequestTriage } from "@/lib/ai/triage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -314,6 +318,19 @@ export function RequestsWorkspace({
         commentCount: selectedRequest.comments.length
       })
     : null;
+  const selectedRequestSignal = selectedRequest
+    ? buildHrRequestTriage({
+        title: selectedRequest.title,
+        description: selectedRequest.description,
+        category: selectedRequest.category,
+        priority: selectedRequest.priority,
+        status: selectedRequest.status,
+        effectiveSlaStatus: selectedRequest.effectiveSlaStatus,
+        assigneeName: selectedRequest.assigneeUser?.name ?? null,
+        requesterName: selectedRequest.requesterEmployee?.fullName ?? selectedRequest.requesterUser?.name ?? null,
+        commentCount: selectedRequest.comments.length
+      })
+    : null;
   const stats = [
     { label: "Abertas", value: metrics.open },
     { label: "Em risco", value: metrics.atRisk },
@@ -478,37 +495,55 @@ export function RequestsWorkspace({
 
           <div className={styles.list}>
             {filteredRequests.length ? (
-              filteredRequests.map((request) => (
-                <div
-                  key={request.id}
-                  className={`${styles.row} ${styles.rowSelectable} ${selectedRequest?.id === request.id ? styles.rowActive : ""}`}
-                >
-                  <input
-                    type="checkbox"
-                    className={styles.rowCheck}
-                    checked={selectedIds.includes(request.id)}
-                    onChange={() => toggleSelected(request.id)}
-                    aria-label={`Selecionar ${request.title}`}
-                  />
+              filteredRequests.map((request) => {
+                const signal = buildHrRequestTriage({
+                  title: request.title,
+                  description: request.description,
+                  category: request.category,
+                  priority: request.priority,
+                  status: request.status,
+                  effectiveSlaStatus: request.effectiveSlaStatus,
+                  assigneeName: request.assigneeUser?.name ?? null,
+                  requesterName: request.requesterEmployee?.fullName ?? request.requesterUser?.name ?? null,
+                  commentCount: request.comments.length
+                });
 
-                  <button type="button" className={styles.rowContent} onClick={() => setSelectedId(request.id)}>
-                    <div className={styles.rowTop}>
-                      <div className={styles.rowLead}>
-                        <p className={styles.rowTitle}>{request.title}</p>
-                        <p className={styles.rowSubtitle}>{formatEnumLabel(request.category)}</p>
+                return (
+                  <div
+                    key={request.id}
+                    className={`${styles.row} ${styles.rowSelectable} ${selectedRequest?.id === request.id ? styles.rowActive : ""}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className={styles.rowCheck}
+                      checked={selectedIds.includes(request.id)}
+                      onChange={() => toggleSelected(request.id)}
+                      aria-label={`Selecionar ${request.title}`}
+                    />
+
+                    <button type="button" className={styles.rowContent} onClick={() => setSelectedId(request.id)}>
+                      <div className={styles.rowTop}>
+                        <div className={styles.rowLead}>
+                          <p className={styles.rowTitle}>{request.title}</p>
+                          <p className={styles.rowSubtitle}>{formatEnumLabel(request.category)}</p>
+                        </div>
+                        <Badge variant={getSlaVariant(request.effectiveSlaStatus)}>
+                          {formatEnumLabel(request.effectiveSlaStatus)}
+                        </Badge>
                       </div>
-                      <Badge variant={getSlaVariant(request.effectiveSlaStatus)}>{formatEnumLabel(request.effectiveSlaStatus)}</Badge>
-                    </div>
 
-                    <div className={styles.rowMeta}>
-                      <span className={styles.metaValue}>
-                        {request.assigneeUser?.name ? `Dono: ${request.assigneeUser.name}` : "Sem dono"}
-                      </span>
-                      <span className={styles.metaValue}>{formatEnumLabel(request.status)}</span>
-                    </div>
-                  </button>
-                </div>
-              ))
+                      <AiTriagePill signal={signal} />
+
+                      <div className={styles.rowMeta}>
+                        <span className={styles.metaValue}>
+                          {request.assigneeUser?.name ? `Dono: ${request.assigneeUser.name}` : "Sem dono"}
+                        </span>
+                        <span className={styles.metaValue}>{formatEnumLabel(request.status)}</span>
+                      </div>
+                    </button>
+                  </div>
+                );
+              })
             ) : (
               <div className={styles.emptyWrap}>
                 <p className={styles.emptyTitle}>Nada apareceu aqui.</p>
@@ -599,23 +634,35 @@ export function RequestsWorkspace({
                   </AiNextStepCard>
                 ) : null}
 
-                {canManage && selectedRequestAssist ? (
-                  <AiResolvePanel
-                    entityId={selectedRequest.id}
-                    entityFieldName="requestId"
-                    summary={selectedRequestAssist.summary}
-                    suggestedAction={selectedRequestAssist.suggestedAction}
-                    expectedImpact={selectedRequestAssist.expectedImpact}
-                    confidence={selectedRequestAssist.confidence}
-                    sources={selectedRequestAssist.sources}
-                    suggestedStatus={selectedRequestAssist.suggestedStatus}
-                    statusOptions={Object.values(HrRequestStatus).map((status) => ({
-                      value: status,
-                      label: formatEnumLabel(status)
-                    }))}
-                    draftNote={selectedRequestAssist.draftNote}
-                    action={resolveHrRequestWithAiAction}
+                {selectedRequestSignal ? (
+                  <ContextualAssistantPanel
+                    summary={`O Harpia classificou esta solicitação como ${selectedRequestSignal.ownerArea}, com urgência ${selectedRequestSignal.urgency} e risco ${selectedRequestSignal.risk}.`}
+                    signal={selectedRequestSignal}
+                    itemLabel="solicitação"
+                    primaryHref={selectedRequestSignal.canAutoResolve ? "#request-ai-resolve" : "#request-comment-compose"}
+                    primaryLabel={selectedRequestSignal.canAutoResolve ? "Resolver com IA" : "Responder agora"}
                   />
+                ) : null}
+
+                {canManage && selectedRequestAssist ? (
+                  <div id="request-ai-resolve">
+                    <AiResolvePanel
+                      entityId={selectedRequest.id}
+                      entityFieldName="requestId"
+                      summary={selectedRequestAssist.summary}
+                      suggestedAction={selectedRequestAssist.suggestedAction}
+                      expectedImpact={selectedRequestAssist.expectedImpact}
+                      confidence={selectedRequestAssist.confidence}
+                      sources={selectedRequestAssist.sources}
+                      suggestedStatus={selectedRequestAssist.suggestedStatus}
+                      statusOptions={Object.values(HrRequestStatus).map((status) => ({
+                        value: status,
+                        label: formatEnumLabel(status)
+                      }))}
+                      draftNote={selectedRequestAssist.draftNote}
+                      action={resolveHrRequestWithAiAction}
+                    />
+                  </div>
                 ) : null}
 
                 {canManage ? (
@@ -743,6 +790,15 @@ export function RequestsWorkspace({
             </div>
 
             <form action={createHrRequestAction} className={styles.formGrid}>
+              <AssistedCreateBox
+                mode="request"
+                fieldNames={{
+                  title: "title",
+                  description: "description",
+                  category: "category",
+                  priority: "priority"
+                }}
+              />
               <Input name="title" required placeholder="Título da solicitação" className={styles.fieldCompact} />
               <div className={styles.formGrid2}>
                 <Select name="category" defaultValue={HrRequestCategory.GENERAL_SUPPORT} className={styles.selectCompact}>

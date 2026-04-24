@@ -24,6 +24,7 @@ import {
   TrendingUp,
   UserRoundSearch,
   UsersRound,
+  WandSparkles,
   X,
   type LucideIcon
 } from "lucide-react";
@@ -115,6 +116,15 @@ const navItems: NavItem[] = [
     icon: MessageSquareMore,
     section: "workspace",
     requiredPermission: "view_chat"
+  },
+  {
+    id: "automations",
+    href: "/automations" as Route,
+    label: "Automações",
+    description: "Watchtower e regras de IA",
+    icon: WandSparkles,
+    section: "workspace",
+    requiredPermission: "view_people_command_center"
   },
   {
     id: "employees",
@@ -272,6 +282,11 @@ const compactHeaderMatchers = [
 
 const routeMeta = [
   {
+    match: (pathname: string) => pathname.startsWith("/dashboard"),
+    title: "Overview",
+    description: "Métricas, prioridades e execução diária em uma visão simples."
+  },
+  {
     match: (pathname: string) => pathname.startsWith("/chat"),
     title: "Chat da empresa",
     description: "Converse com contexto real e transforme resposta em ação."
@@ -280,6 +295,11 @@ const routeMeta = [
     match: (pathname: string) => pathname.startsWith("/people/command-center"),
     title: "Central",
     description: "O que precisa de atenção agora, sem caçar em vários módulos."
+  },
+  {
+    match: (pathname: string) => pathname.startsWith("/automations"),
+    title: "Automações",
+    description: "Watchtower, regras assistidas e execuções auditáveis."
   },
   {
     match: (pathname: string) => pathname.startsWith("/employees"),
@@ -363,7 +383,6 @@ export function HarpiaSystemShellClient({
   signOutAction
 }: HarpiaSystemShellClientProps) {
   const pathname = usePathname();
-  const isDashboardRoute = pathname === "/dashboard";
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
@@ -491,6 +510,46 @@ export function HarpiaSystemShellClient({
           }
         ]
       : []),
+    ...(hasPermission(user.role, "view_chat")
+      ? [
+          {
+            id: "ai-resolve-queue",
+            label: "Resolver fila com IA",
+            description: "Abrir o chat com contexto para priorizar solicitações e tarefas.",
+            href: "/chat?prompt=Analise%20minhas%20filas%20de%20solicitacoes%20e%20tarefas%2C%20aponte%20o%20que%20devo%20resolver%20primeiro%20e%20prepare%20acoes%20seguras." as Route,
+            section: "IA operacional",
+            keywords: ["ia", "resolver", "fila", "priorizar", "operacao"]
+          },
+          {
+            id: "ai-create-task",
+            label: "Criar tarefa com IA",
+            description: "Descrever uma pendência solta e transformar em tarefa estruturada.",
+            href: "/chat?prompt=Transforme%20esta%20pendencia%20em%20uma%20tarefa%20com%20titulo%2C%20responsavel%2C%20prazo%20e%20prioridade%3A%20" as Route,
+            section: "IA operacional",
+            keywords: ["ia", "tarefa", "criar", "assistida"]
+          },
+          {
+            id: "ai-create-request",
+            label: "Abrir solicitação com IA",
+            description: "Converter um pedido informal em solicitação clara.",
+            href: "/chat?prompt=Estruture%20esta%20mensagem%20como%20uma%20solicitacao%20interna%20com%20categoria%2C%20urgencia%2C%20dono%20e%20proximo%20passo%3A%20" as Route,
+            section: "IA operacional",
+            keywords: ["ia", "request", "solicitacao", "abrir"]
+          }
+        ]
+      : []),
+    ...(hasPermission(user.role, "view_people_command_center")
+      ? [
+          {
+            id: "automation-studio",
+            label: "Automações com IA",
+            description: "Abrir Watchtower, rascunhos e execuções auditáveis.",
+            href: "/automations" as Route,
+            section: "IA operacional",
+            keywords: ["automacoes", "watchtower", "ia", "regras"]
+          }
+        ]
+      : []),
     ...visibleNav.map((item) => ({
       id: item.id,
       label: item.label,
@@ -500,10 +559,6 @@ export function HarpiaSystemShellClient({
       keywords: [item.id, item.section]
     }))
   ];
-
-  if (isDashboardRoute) {
-    return <div className={styles.dashboardRoute}>{children}</div>;
-  }
 
   return (
     <div className={cn(styles.shell, sidebarCollapsed && styles.shellCollapsed, mobileNavOpen && styles.shellMobileOpen)}>

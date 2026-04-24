@@ -30,6 +30,47 @@ function formatEnumLabel(value: string) {
     .join(" ");
 }
 
+function readPayload(payload: unknown) {
+  return payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
+}
+
+function getAffectedRecordCount(payload: Record<string, unknown>) {
+  const listCount = Array.isArray(payload.applicationIds) ? payload.applicationIds.length : 0;
+  const singleKeys = ["requestId", "taskId", "employeeId", "applicationId", "candidateId"].filter((key) => Boolean(payload[key])).length;
+  return Math.max(listCount, singleKeys);
+}
+
+function getBeforeAfter(actionType: string | null, payload: Record<string, unknown>) {
+  const status = typeof payload.status === "string" ? payload.status : null;
+  const stageId = typeof payload.stageId === "string" ? payload.stageId : null;
+
+  if (status) {
+    return {
+      before: "Status atual do registro",
+      after: `Status proposto: ${formatEnumLabel(status)}`
+    };
+  }
+
+  if (stageId || actionType === "move_stage") {
+    return {
+      before: "Etapa atual da candidatura",
+      after: "Nova etapa validada pelo agente"
+    };
+  }
+
+  if (actionType?.includes("create")) {
+    return {
+      before: "Nenhum registro criado",
+      after: "Novo registro operacional com auditoria"
+    };
+  }
+
+  return {
+    before: "Estado atual preservado",
+    after: "Mudança será aplicada após aprovação"
+  };
+}
+
 export default async function AgentApprovalsPage() {
   const user = await requirePermission("review_agent_approvals");
   const [pendingApprovals, recentRuns] = await Promise.all([
@@ -76,7 +117,13 @@ export default async function AgentApprovalsPage() {
 
           <div className={styles.list}>
             {pendingApprovals.length ? (
-              pendingApprovals.map((approval) => (
+              pendingApprovals.map((approval) => {
+                const payload = readPayload(approval.payload);
+                const actionType = approval.agentRun.actionType;
+                const diff = getBeforeAfter(actionType, payload);
+                const affectedRecords = getAffectedRecordCount(payload);
+
+                return (
                 <div key={approval.id} className={styles.row}>
                   <div className={styles.rowTop}>
                     <div className={styles.rowLead}>
@@ -92,6 +139,44 @@ export default async function AgentApprovalsPage() {
                     </div>
                   </div>
                   <p className={styles.rowSubtitle}>{approval.summary}</p>
+                  <div className={styles.approvalPremium}>
+                    <div className={styles.sectionHeader}>
+                      <div>
+                        <span className={styles.metaLabel}>Checkpoint enterprise</span>
+                        <h4 className={styles.panelTitle}>Revise antes de executar</h4>
+                      </div>
+                      <Badge variant={approval.riskLevel === "CRITICAL" ? "destructive" : "outline"}>
+                        Risco {formatEnumLabel(approval.riskLevel)}
+                      </Badge>
+                    </div>
+                    <div className={styles.approvalChecklist}>
+                      <div>
+                        <span className={styles.metaLabel}>Ação proposta</span>
+                        <span className={styles.metaValue}>{actionType ? formatEnumLabel(actionType) : "Ação do agente"}</span>
+                      </div>
+                      <div>
+                        <span className={styles.metaLabel}>Registros afetados</span>
+                        <span className={styles.metaValue}>{affectedRecords || "Sob demanda"}</span>
+                      </div>
+                      <div>
+                        <span className={styles.metaLabel}>Motivo</span>
+                        <span className={styles.metaValue}>Executar só depois de revisão humana.</span>
+                      </div>
+                    </div>
+                    <div className={styles.approvalDiff}>
+                      <div>
+                        <span className={styles.metaLabel}>Antes</span>
+                        <p className={styles.detailText}>{diff.before}</p>
+                      </div>
+                      <div>
+                        <span className={styles.metaLabel}>Depois</span>
+                        <p className={styles.detailText}>{diff.after}</p>
+                      </div>
+                    </div>
+                    <p className={styles.detailText}>
+                      Confiança: a ação só usa o payload aprovado, respeita permissões, cria auditoria e pode ser rejeitada sem efeito colateral.
+                    </p>
+                  </div>
                   <div className={styles.detailGrid}>
                     <div className={styles.detailCell}>
                       <span className={styles.metaLabel}>Solicitado por</span>
@@ -116,7 +201,8 @@ export default async function AgentApprovalsPage() {
                     <AgentApprovalReviewForm action={reviewAgentApprovalAction} approvalRequestId={approval.id} compact />
                   </div>
                 </div>
-              ))
+                );
+              })
             ) : (
               <div className={styles.emptyWrap}>
                 <p className={styles.emptyState}>Nenhuma aprovação pendente no momento.</p>

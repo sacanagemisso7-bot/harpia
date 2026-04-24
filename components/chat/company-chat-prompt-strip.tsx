@@ -85,6 +85,11 @@ export function CompanyChatPromptStrip({
 
   return (
     <div className={className}>
+      {state.error ? (
+        <p className="basis-full text-xs text-destructive" aria-live="polite">
+          {state.error}
+        </p>
+      ) : null}
       {prompts.map((prompt) => (
         <button
           key={prompt}

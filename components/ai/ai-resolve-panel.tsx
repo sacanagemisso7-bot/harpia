@@ -131,6 +131,21 @@ export function AiResolvePanel({
             </ul>
           </div>
 
+          <div className={styles.contextAssistantGrid}>
+            <div>
+              <span className={styles.metaLabel}>O que a IA viu</span>
+              <p>{summary}</p>
+            </div>
+            <div>
+              <span className={styles.metaLabel}>O que vai mudar</span>
+              <p>{suggestedAction} com registro visível no histórico.</p>
+            </div>
+            <div>
+              <span className={styles.metaLabel}>Controle</span>
+              <p>Você pode editar, aplicar direto ou pedir aprovação antes de executar.</p>
+            </div>
+          </div>
+
           {isEditing ? (
             <div className={styles.aiResolveEditor}>
               <div className={styles.formGrid2}>

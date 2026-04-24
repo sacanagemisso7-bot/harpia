@@ -1,4 +1,6 @@
 import { PeopleWorkflowKind, PeopleWorkflowStepStatus } from "@prisma/client";
+import Link from "next/link";
+import { WandSparkles } from "lucide-react";
 
 import { startEmployeeWorkflowAction } from "@/app/(app)/employees/actions";
 import { updateWorkflowStepStatusAction } from "@/app/(app)/people/actions";
@@ -70,6 +72,25 @@ export default async function OnboardingPage() {
               <div className={styles.panelHeader}>
                 <h3 className={styles.panelTitle}>Iniciar onboarding</h3>
                 <p className={styles.panelDescription}>Gere um plano operacional a partir do cadastro do colaborador.</p>
+              </div>
+
+              <div className={styles.assistedCreate}>
+                <div className={styles.assistedCreateHeader}>
+                  <span className={styles.metaLabel}>Criação assistida</span>
+                  <Button asChild size="sm" variant="outline">
+                    <Link
+                      href={`/chat?prompt=${encodeURIComponent(
+                        "Quero abrir um onboarding. Encontre o colaborador, estruture o plano, mostre o que vai mudar e peça aprovação se houver risco."
+                      )}`}
+                    >
+                      <WandSparkles className="mr-2 h-4 w-4" />
+                      Estruturar no chat
+                    </Link>
+                  </Button>
+                </div>
+                <p className={styles.detailText}>
+                  Descreva o caso no Company Chat e ele transforma em plano de onboarding aplicável com revisão.
+                </p>
               </div>
 
               <form action={startEmployeeWorkflowAction} className="grid gap-4">

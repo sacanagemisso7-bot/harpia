@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 
 import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
 import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
+import { ContextualAssistantPanel } from "@/components/ai/contextual-assistant-panel";
 import { ApplicationStageForm } from "@/components/applications/application-stage-form";
 import { RecalculateScoreForm } from "@/components/applications/recalculate-score-form";
 import { SendTemplateEmailForm } from "@/components/communications/send-template-email-form";
@@ -146,6 +147,16 @@ export default async function ApplicationDetailPage({
     suggestedStageLabel: applicationResolveAssist.suggestedStageLabel,
     currentStageLabel: application.currentStage?.name ?? "Sem etapa"
   });
+  const applicationAssistantSignal = {
+    urgency: copilotDecision.recommendation === "HOLD" ? ("medium" as const) : ("high" as const),
+    risk: copilotDecision.recommendation === "REJECT" ? ("high" as const) : ("medium" as const),
+    ownerArea: "Hiring",
+    nextAction: applicationNextStep.actionLabel,
+    canAutoResolve: canManageApplication && Boolean(applicationResolveAssist.suggestedStageId),
+    reason: copilotDecision.summary,
+    knowledgeHint: playbook ? playbook.title : "Playbook de contratação",
+    automationPrompt: `Prepare uma automação para candidaturas como ${application.candidate.fullName} em ${application.job.title}: revisar score, sugerir etapa e pedir aprovação quando o risco for alto.`
+  };
 
   return (
     <div className={styles.workspace}>
@@ -229,23 +240,25 @@ export default async function ApplicationDetailPage({
               )}
             </div>
             {canManageApplication ? (
-              <AiResolvePanel
-                entityId={application.id}
-                entityFieldName="applicationId"
-                selectionFieldName="stageId"
-                summary={applicationResolveAssist.summary}
-                suggestedAction={applicationResolveAssist.suggestedAction}
-                expectedImpact={applicationResolveAssist.expectedImpact}
-                confidence={applicationResolveAssist.confidence}
-                sources={applicationResolveAssist.sources}
-                suggestedStatus={applicationResolveAssist.suggestedStageId}
-                statusOptions={stages.map((stage) => ({
-                  value: stage.id,
-                  label: stage.name
-                }))}
-                draftNote={applicationResolveAssist.draftNote}
-                action={resolveApplicationWithAiAction}
-              />
+              <div id="application-ai-resolve">
+                <AiResolvePanel
+                  entityId={application.id}
+                  entityFieldName="applicationId"
+                  selectionFieldName="stageId"
+                  summary={applicationResolveAssist.summary}
+                  suggestedAction={applicationResolveAssist.suggestedAction}
+                  expectedImpact={applicationResolveAssist.expectedImpact}
+                  confidence={applicationResolveAssist.confidence}
+                  sources={applicationResolveAssist.sources}
+                  suggestedStatus={applicationResolveAssist.suggestedStageId}
+                  statusOptions={stages.map((stage) => ({
+                    value: stage.id,
+                    label: stage.name
+                  }))}
+                  draftNote={applicationResolveAssist.draftNote}
+                  action={resolveApplicationWithAiAction}
+                />
+              </div>
             ) : null}
           </section>
 
@@ -370,6 +383,20 @@ export default async function ApplicationDetailPage({
               </Button>
             )}
           </AiNextStepCard>
+
+          <ContextualAssistantPanel
+            summary={`O Harpia comparou score, etapa, entrevistas, playbook e sinais do copiloto para sugerir ${applicationNextStep.actionLabel.toLowerCase()}.`}
+            signal={applicationAssistantSignal}
+            itemLabel="candidatura"
+            primaryHref={
+              applicationAssistantSignal.canAutoResolve
+                ? "#application-ai-resolve"
+                : applicationNextStep.actionKey === "schedule_interview"
+                  ? "#application-interviews"
+                  : "#application-notes"
+            }
+            primaryLabel={applicationAssistantSignal.canAutoResolve ? "Resolver com IA" : applicationNextStep.actionLabel}
+          />
 
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>

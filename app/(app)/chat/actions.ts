@@ -30,7 +30,7 @@ export async function sendCompanyChatMessage(
 
     if (!parsed.success) {
       return {
-        error: parsed.error.errors[0]?.message ?? "Não foi possível validar a mensagem.",
+        error: parsed.error.errors[0]?.message ?? "N\u00e3o foi poss\u00edvel validar a mensagem.",
         submissionId
       };
     }
@@ -65,7 +65,7 @@ export async function sendCompanyChatMessage(
   } catch (error) {
     console.error("chat.send-message-failed", error);
     return {
-      error: "Não foi possível concluir a resposta agora. Tente novamente em instantes.",
+      error: "N\u00e3o foi poss\u00edvel concluir a resposta agora. Tente novamente em instantes.",
       submissionId
     };
   }
@@ -82,7 +82,7 @@ export async function applyCompanyChatAction(
 
   if (!threadId || !actionType) {
     return {
-      error: "Ação do chat inválida."
+      error: "A\u00e7\u00e3o do chat inv\u00e1lida."
     };
   }
 
@@ -92,7 +92,7 @@ export async function applyCompanyChatAction(
     payload = JSON.parse(payloadRaw) as Record<string, unknown>;
   } catch {
     return {
-      error: "Não foi possível interpretar a ação proposta."
+      error: "N\u00e3o foi poss\u00edvel interpretar a a\u00e7\u00e3o proposta."
     };
   }
 
@@ -126,7 +126,7 @@ export async function applyCompanyChatAction(
   } catch (error) {
     console.error("chat.apply-action-failed", error);
     return {
-      error: "Não foi possível aplicar essa ação agora. Tente novamente em instantes."
+      error: "N\u00e3o foi poss\u00edvel aplicar essa a\u00e7\u00e3o agora. Tente novamente em instantes."
     };
   }
 }
@@ -143,7 +143,7 @@ export async function reviewCompanyChatApproval(
 
   if (!threadId || !approvalRequestId || (decisionValue !== "APPROVE" && decisionValue !== "REJECT")) {
     return {
-      error: "Solicitação de aprovação inválida."
+      error: "Solicita\u00e7\u00e3o de aprova\u00e7\u00e3o inv\u00e1lida."
     };
   }
 
@@ -180,7 +180,7 @@ export async function reviewCompanyChatApproval(
   } catch (error) {
     console.error("chat.review-approval-failed", error);
     return {
-      error: "Não foi possível registrar essa revisão agora. Tente novamente em instantes."
+      error: "N\u00e3o foi poss\u00edvel registrar essa revis\u00e3o agora. Tente novamente em instantes."
     };
   }
 }

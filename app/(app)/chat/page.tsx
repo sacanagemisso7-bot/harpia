@@ -115,6 +115,7 @@ export default async function CompanyChatPage({
   const user = await requirePermission("view_chat");
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const threadId = typeof resolvedSearchParams?.threadId === "string" ? resolvedSearchParams.threadId : undefined;
+  const initialPrompt = typeof resolvedSearchParams?.prompt === "string" ? resolvedSearchParams.prompt : "";
   const workspace = await getCompanyChatWorkspace({
     organizationId: user.organizationId,
     userId: user.id,
@@ -136,9 +137,9 @@ export default async function CompanyChatPage({
       ? [resolverPrompt, ...latestAssistantMetadata.suggestedPrompts.filter((prompt) => prompt !== resolverPrompt)].slice(0, 4)
       : [
           resolverPrompt,
-          "Quais pendências do RH exigem atenção hoje?",
+          "Quais pend\u00eancias do RH exigem aten\u00e7\u00e3o hoje?",
           "Resuma os onboardings ativos.",
-          "O que está em risco no service desk?"
+          "O que est\u00e1 em risco no service desk?"
         ];
 
   return (
@@ -187,7 +188,7 @@ export default async function CompanyChatPage({
                 );
               })
             ) : (
-              <div className={styles.emptyRailState}>Sua primeira pergunta já abre a conversa.</div>
+              <div className={styles.emptyRailState}>{"Sua primeira pergunta j\u00e1 abre a conversa."}</div>
             )}
           </div>
         </>
@@ -196,7 +197,7 @@ export default async function CompanyChatPage({
         <>
           <div className={styles.chatTopbarCopy}>
             <h2>{activeThread?.title ?? "Nova conversa"}</h2>
-            <span>{activeThread ? `${formatMessageCount(messageCount)} · Enter envia` : "Pergunte de forma direta"}</span>
+            <span>{activeThread ? `${formatMessageCount(messageCount)} \u00b7 Enter envia` : "Pergunte de forma direta"}</span>
           </div>
 
           <div className={styles.chatTopbarMeta}>
@@ -215,7 +216,7 @@ export default async function CompanyChatPage({
                 const metadata = parseMessageMetadata(message.metadata);
                 const isAssistant = message.role === "ASSISTANT";
                 const isUser = message.role === "USER";
-                const roleLabel = isAssistant ? "Harpia" : isUser ? "Você" : "Sistema";
+                const roleLabel = isAssistant ? "Harpia" : isUser ? "Voc\u00ea" : "Sistema";
                 const showActionProposals = Boolean(activeThreadId && metadata.actionProposals.length > 0);
                 const hasContext = Boolean(metadata.agentExecution || metadata.citations.length || showActionProposals);
 
@@ -260,7 +261,7 @@ export default async function CompanyChatPage({
                             <div className={styles.detailsBody}>
                               {metadata.agentExecution ? (
                                 <section className={styles.detailSection}>
-                                  <strong className={styles.detailsLabel}>Execução</strong>
+                                  <strong className={styles.detailsLabel}>{"Execu\u00e7\u00e3o"}</strong>
                                   <p className={styles.messageSupportingText}>{metadata.agentExecution.summary}</p>
                                   {metadata.agentExecution.status === "WAITING_APPROVAL" &&
                                   canReviewApprovals &&
@@ -294,7 +295,7 @@ export default async function CompanyChatPage({
 
                               {showActionProposals ? (
                                 <section className={styles.detailSection}>
-                                  <strong className={styles.detailsLabel}>Ações sugeridas</strong>
+                                  <strong className={styles.detailsLabel}>{"A\u00e7\u00f5es sugeridas"}</strong>
                                   <div className={styles.proposalList}>
                                     {metadata.actionProposals.map((proposal, index) => (
                                       <CompanyChatProposalForm
@@ -320,7 +321,7 @@ export default async function CompanyChatPage({
           emptyState={
             <div className={styles.emptyConversation}>
               <div className={styles.emptyConversationCopy}>
-                <p className={styles.railEyebrow}>Pronto para começar</p>
+                <p className={styles.railEyebrow}>{"Pronto para come\u00e7ar"}</p>
                 <h2>Pergunte com clareza.</h2>
                 <p>O Harpia responde com contexto real do workspace.</p>
               </div>
@@ -335,7 +336,20 @@ export default async function CompanyChatPage({
           }
         />
       }
-      composer={<CompanyChatComposer action={sendCompanyChatMessage} threadId={activeThreadId} />}
+      composer={
+        <div className={styles.composerStack}>
+          {activeThreadId && activeMessages.length ? (
+            <CompanyChatPromptStrip
+              action={sendCompanyChatMessage}
+              prompts={prompts}
+              threadId={activeThreadId}
+              className={styles.composerPromptStrip}
+              buttonClassName={styles.composerPromptButton}
+            />
+          ) : null}
+          <CompanyChatComposer action={sendCompanyChatMessage} threadId={activeThreadId} initialDraft={initialPrompt} />
+        </div>
+      }
     />
   );
 }

@@ -586,3 +586,225 @@
     width: 100%;
   }
 }
+
+.shell {
+  --sidebar-width: 232px;
+  background: #f3f2ec;
+  color: #171917;
+}
+
+:global(html.dark) .shell {
+  background: #101211;
+  color: #f4f1ea;
+}
+
+.shellCollapsed {
+  --sidebar-width: 72px;
+}
+
+.sidebar {
+  padding: 0.7rem;
+  border-right: 0;
+  background: #123f2b;
+  color: #f4f1ea;
+}
+
+:global(html.dark) .sidebar {
+  background: #0f2f22;
+}
+
+.sidebarInner {
+  gap: 0.58rem;
+}
+
+.brandCard {
+  min-height: 2.85rem;
+  padding: 0 0.55rem;
+  color: #f4f1ea;
+}
+
+.sidebarToggle,
+.compactUtilityButton {
+  min-height: 2.15rem;
+  border: 1px solid rgba(244, 241, 234, 0.14);
+  border-radius: 0.32rem;
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f1ea;
+}
+
+.sidebarToggle:hover,
+.compactUtilityButton:hover,
+.workspaceAction:hover,
+.signOutButton:hover {
+  background: rgba(255, 255, 255, 0.11);
+}
+
+.sidebarHelper {
+  color: rgba(244, 241, 234, 0.56);
+}
+
+.navGroups {
+  gap: 0.72rem;
+}
+
+.navGroupLabel {
+  color: rgba(244, 241, 234, 0.48);
+  font-size: 0.58rem;
+  letter-spacing: 0.13em;
+}
+
+.navList {
+  gap: 0.08rem;
+}
+
+.navLink {
+  min-height: 2.42rem;
+  border-left: 0;
+  border-radius: 0.28rem;
+  padding: 0.42rem 0.48rem;
+  color: rgba(244, 241, 234, 0.72);
+}
+
+.navLink:hover {
+  background: rgba(244, 241, 234, 0.08);
+  color: #fffaf0;
+}
+
+.navLinkActive {
+  background: rgba(244, 241, 234, 0.14);
+  color: #fffaf0;
+  box-shadow: inset 3px 0 0 #d7c6a3;
+}
+
+.navIconWrap {
+  width: 1.72rem;
+  height: 1.72rem;
+  border-radius: 0.24rem;
+}
+
+.navLinkActive .navIconWrap {
+  border-color: rgba(215, 198, 163, 0.28);
+  background: rgba(215, 198, 163, 0.13);
+}
+
+.navLabel {
+  font-size: 0.82rem;
+  font-weight: 650;
+}
+
+.navDescription {
+  color: rgba(244, 241, 234, 0.48);
+  font-size: 0.66rem;
+}
+
+.sidebarFooter {
+  border-top: 1px solid rgba(244, 241, 234, 0.14);
+}
+
+.workspaceCard {
+  border: 1px solid rgba(244, 241, 234, 0.14);
+  border-radius: 0.34rem;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.workspaceLabel,
+.workspaceMeta {
+  color: rgba(244, 241, 234, 0.56);
+}
+
+.workspaceTitle {
+  color: #fffaf0;
+}
+
+.workspaceSelect {
+  border-color: rgba(244, 241, 234, 0.16);
+  border-radius: 0.28rem;
+  background: rgba(12, 36, 26, 0.72);
+  color: #f4f1ea;
+}
+
+.workspaceAction,
+.signOutButton {
+  border-color: rgba(244, 241, 234, 0.16);
+  border-radius: 0.28rem;
+  color: #f4f1ea;
+}
+
+.main {
+  gap: 0;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  margin: -1rem -1.25rem 0;
+  padding: 0.95rem 1.25rem 0.82rem;
+  border-bottom: 1px solid #dfdbd0;
+  background: rgba(243, 242, 236, 0.92);
+  backdrop-filter: blur(16px);
+}
+
+:global(html.dark) .topbar {
+  border-bottom-color: rgba(244, 241, 234, 0.1);
+  background: rgba(16, 18, 17, 0.9);
+}
+
+.topbarEyebrow {
+  color: #6b6d66;
+  font-size: 0.6rem;
+  letter-spacing: 0.13em;
+}
+
+:global(html.dark) .topbarEyebrow {
+  color: rgba(244, 241, 234, 0.52);
+}
+
+.topbarTitle {
+  font-size: clamp(1.18rem, 1.5vw, 1.55rem);
+  letter-spacing: -0.035em;
+}
+
+.topbarSubtitle {
+  max-width: 42rem;
+  color: #646760;
+}
+
+:global(html.dark) .topbarSubtitle {
+  color: rgba(244, 241, 234, 0.58);
+}
+
+.billingChip,
+.accountChip,
+.mobileMenuButton {
+  border: 1px solid #ded9cd;
+  border-radius: 0.28rem;
+  background: #faf9f4;
+  color: #62655e;
+}
+
+:global(html.dark) .billingChip,
+:global(html.dark) .accountChip,
+:global(html.dark) .mobileMenuButton {
+  border-color: rgba(244, 241, 234, 0.12);
+  background: rgba(244, 241, 234, 0.055);
+  color: rgba(244, 241, 234, 0.7);
+}
+
+.billingChip:hover,
+.mobileMenuButton:hover {
+  background: #efede5;
+}
+
+:global(html.dark) .billingChip:hover,
+:global(html.dark) .mobileMenuButton:hover {
+  background: rgba(244, 241, 234, 0.09);
+}
+
+.content {
+  padding: 1rem 0 0;
+}
+
+.shellCollapsed .navLinkActive {
+  box-shadow: inset 0 -3px 0 #d7c6a3;
+}

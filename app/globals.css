@@ -3,7 +3,51 @@
 @tailwind utilities;
 
 @layer base {
-  :root,
+  :root {
+    color-scheme: light;
+    --brand-forest: 157 56% 14%;
+    --brand-graphite: 220 12% 9%;
+    --brand-ivory: 42 28% 96%;
+    --brand-gold: 40 27% 58%;
+    --background: 42 24% 95%;
+    --foreground: 220 13% 10%;
+    --card: 42 23% 98%;
+    --card-foreground: 220 13% 10%;
+    --popover: 42 23% 98%;
+    --popover-foreground: 220 13% 10%;
+    --primary: 157 56% 14%;
+    --primary-foreground: 42 28% 96%;
+    --secondary: 42 17% 91%;
+    --secondary-foreground: 220 13% 10%;
+    --muted: 42 15% 89%;
+    --muted-foreground: 218 9% 42%;
+    --accent: 42 17% 91%;
+    --accent-foreground: 220 13% 10%;
+    --destructive: 4 56% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 42 13% 84%;
+    --input: 42 15% 90%;
+    --ring: 157 42% 20%;
+    --success: 151 35% 32%;
+    --warning: 35 61% 45%;
+    --info: 211 30% 40%;
+    --shell: 42 24% 95%;
+    --shell-foreground: 220 13% 10%;
+    --surface-1: 42 24% 95%;
+    --surface-2: 42 18% 92%;
+    --surface-3: 42 16% 88%;
+    --accent-secondary: 40 23% 50%;
+    --accent-tertiary: 218 9% 42%;
+    --accent-warm: 39 24% 58%;
+    --radius: 0.42rem;
+    --ease-fluid: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-snappy: cubic-bezier(0.2, 0.9, 0.3, 1);
+    --motion-fast: 120ms;
+    --motion-base: 180ms;
+    --motion-slow: 420ms;
+    --shadow-panel: 0 1px 2px rgba(18, 22, 28, 0.06);
+  }
+
   html.dark {
     color-scheme: dark;
     --brand-forest: 156 60% 15%;
@@ -55,40 +99,40 @@
 
   html.light {
     color-scheme: light;
-    --brand-forest: 156 44% 18%;
-    --brand-graphite: 240 4% 5%;
-    --brand-ivory: 36 29% 94%;
-    --brand-gold: 37 29% 64%;
-    --background: 36 24% 96%;
-    --foreground: 240 8% 10%;
-    --card: 36 20% 98%;
-    --card-foreground: 240 8% 10%;
-    --popover: 36 20% 98%;
-    --popover-foreground: 240 8% 10%;
-    --primary: 37 29% 64%;
-    --primary-foreground: 240 10% 12%;
-    --secondary: 34 18% 92%;
-    --secondary-foreground: 240 8% 10%;
-    --muted: 34 18% 92%;
-    --muted-foreground: 28 9% 38%;
-    --accent: 34 18% 92%;
-    --accent-foreground: 240 8% 10%;
-    --destructive: 8 44% 44%;
+    --brand-forest: 157 56% 14%;
+    --brand-graphite: 220 12% 9%;
+    --brand-ivory: 42 28% 96%;
+    --brand-gold: 40 27% 58%;
+    --background: 42 24% 95%;
+    --foreground: 220 13% 10%;
+    --card: 42 23% 98%;
+    --card-foreground: 220 13% 10%;
+    --popover: 42 23% 98%;
+    --popover-foreground: 220 13% 10%;
+    --primary: 157 56% 14%;
+    --primary-foreground: 42 28% 96%;
+    --secondary: 42 17% 91%;
+    --secondary-foreground: 220 13% 10%;
+    --muted: 42 15% 89%;
+    --muted-foreground: 218 9% 42%;
+    --accent: 42 17% 91%;
+    --accent-foreground: 220 13% 10%;
+    --destructive: 4 56% 46%;
     --destructive-foreground: 0 0% 100%;
-    --border: 34 14% 84%;
-    --input: 34 16% 92%;
-    --ring: 37 29% 64%;
-    --success: 150 17% 37%;
-    --warning: 37 58% 46%;
-    --info: 207 26% 42%;
-    --shell: 36 24% 96%;
-    --shell-foreground: 240 8% 10%;
-    --surface-1: 36 24% 96%;
-    --surface-2: 36 20% 98%;
-    --surface-3: 34 17% 94%;
-    --accent-secondary: 35 21% 54%;
-    --accent-tertiary: 28 9% 38%;
-    --accent-warm: 37 25% 63%;
+    --border: 42 13% 84%;
+    --input: 42 15% 90%;
+    --ring: 157 42% 20%;
+    --success: 151 35% 32%;
+    --warning: 35 61% 45%;
+    --info: 211 30% 40%;
+    --shell: 42 24% 95%;
+    --shell-foreground: 220 13% 10%;
+    --surface-1: 42 24% 95%;
+    --surface-2: 42 18% 92%;
+    --surface-3: 42 16% 88%;
+    --accent-secondary: 40 23% 50%;
+    --accent-tertiary: 218 9% 42%;
+    --accent-warm: 39 24% 58%;
     --shadow-panel:
       0 18px 42px rgba(22, 18, 12, 0.08),
       0 6px 18px rgba(22, 18, 12, 0.05),
@@ -113,8 +157,7 @@
     font-feature-settings: "cv11", "ss01", "rlig" 1, "calt" 1;
   }
 
-  html.dark body,
-  :root body {
+  html.dark body {
     background:
       radial-gradient(circle at 15% -4%, rgba(214, 198, 165, 0.045), transparent 22%),
       radial-gradient(circle at 88% 8%, rgba(255, 255, 255, 0.028), transparent 24%),
@@ -136,8 +179,7 @@
     z-index: -2;
   }
 
-  html.dark body::before,
-  :root body::before {
+  html.dark body::before {
     background:
       linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 14%),
       linear-gradient(180deg, rgba(255, 255, 255, 0.012), transparent 34%);
@@ -160,8 +202,7 @@
     z-index: -3;
   }
 
-  html.dark body::after,
-  :root body::after {
+  html.dark body::after {
     background:
       radial-gradient(circle at 50% 0%, rgba(214, 198, 165, 0.06), transparent 18%),
       radial-gradient(circle at 78% 12%, rgba(255, 255, 255, 0.035), transparent 16%);
@@ -175,8 +216,7 @@
     color: inherit;
   }
 
-  html.dark ::selection,
-  :root ::selection {
+  html.dark ::selection {
     background: rgba(214, 198, 165, 0.2);
   }
 
@@ -1332,13 +1372,12 @@
 }
 
 @layer base {
-  html.dark body,
-  :root body {
+  html.dark body {
     background: #0f1113;
   }
 
   html.light body {
-    background: #f4f5f7;
+    background: #f3f2ec;
   }
 
   body::before,

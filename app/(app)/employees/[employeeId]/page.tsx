@@ -10,6 +10,7 @@ import {
 } from "@/app/(app)/employees/actions";
 import { acknowledgePolicyAction } from "@/app/(app)/people/compliance/actions";
 import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
+import { ContextualAssistantPanel } from "@/components/ai/contextual-assistant-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -107,6 +108,28 @@ export default async function EmployeeProfilePage({
     openRequestCount,
     openTaskCount
   });
+  const employeeAssistantSignal = {
+    urgency: openComplianceCount > 0 || openTaskCount > 0 ? ("high" as const) : ("medium" as const),
+    risk: openComplianceCount > 0 ? ("high" as const) : ("low" as const),
+    ownerArea: employee.status === EmployeeStatus.ONBOARDING ? "Onboarding" : "People Ops",
+    nextAction:
+      employeeNextStep.actionKey === "start_onboarding"
+        ? "Iniciar onboarding"
+        : employeeNextStep.actionKey === "follow_up"
+          ? "Registrar follow-up"
+          : employeeNextStep.actionKey === "open_request"
+            ? "Abrir request"
+            : "Atualizar contexto",
+    canAutoResolve: false,
+    reason:
+      openComplianceCount > 0
+        ? "Há itens de compliance ou aceite pendentes neste perfil."
+        : openTaskCount > 0
+          ? "Existem tarefas abertas ligadas ao colaborador."
+          : "O perfil está estável, mas um registro de acompanhamento mantém o histórico vivo.",
+    knowledgeHint: openComplianceCount > 0 ? "Políticas e aceites pendentes" : "Guia de acompanhamento de colaboradores",
+    automationPrompt: `Prepare uma automação para acompanhar ${employee.fullName}: detectar tarefas atrasadas, sugerir follow-up e avisar quando houver compliance pendente.`
+  };
   const now = Date.now();
 
   const stats = [
@@ -303,6 +326,20 @@ export default async function EmployeeProfilePage({
               </Button>
             )}
           </AiNextStepCard>
+
+          <ContextualAssistantPanel
+            summary={`O Harpia leu ${openRequestCount} solicitação(ões), ${openTaskCount} tarefa(s) abertas e ${openComplianceCount} pendência(s) de compliance para este colaborador.`}
+            signal={employeeAssistantSignal}
+            itemLabel="colaborador"
+            primaryHref={
+              employeeAssistantSignal.nextAction === "Registrar follow-up"
+                ? "#employee-checkin-compose"
+                : employeeAssistantSignal.nextAction === "Abrir request"
+                  ? "/requests"
+                  : undefined
+            }
+            primaryLabel={employeeAssistantSignal.nextAction}
+          />
 
           {canManageEmployees ? (
             <section className={styles.formPanel}>

@@ -8,7 +8,7 @@ type AppThemeProviderProps = {
 
 export function AppThemeProvider({ children }: AppThemeProviderProps) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
       {children}
     </ThemeProvider>
   );

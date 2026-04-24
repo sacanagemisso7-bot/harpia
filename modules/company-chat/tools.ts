@@ -355,9 +355,25 @@ export async function draftEmail(organizationId: string, query: string) {
     return null;
   }
 
-  return {
+  return normalizeDraftEmail({
     to: application.candidate.email,
     subject: `Próximos passos no processo para ${application.job.title}`,
     body: `Oi ${application.candidate.fullName},\n\nSeu perfil segue bem posicionado para a vaga ${application.job.title}. Queremos avancar você para a próxima etapa${application.currentStage?.name ? ` a partir de ${application.currentStage.name}` : ""}.\n\nPode me confirmar sua disponibilidade?\n\nTime Harpia`
+  });
+}
+
+function normalizeDraftEmail<T extends { subject: string; body: string }>(draft: T): T {
+  return {
+    ...draft,
+    body: normalizePortugueseDraft(draft.body),
+    subject: normalizePortugueseDraft(draft.subject)
   };
+}
+
+function normalizePortugueseDraft(value: string) {
+  return value
+    .replaceAll("Pr\u00C3\u00B3ximos", "Pr\u00f3ximos")
+    .replaceAll("voc\u00C3\u00AA", "voc\u00ea")
+    .replaceAll("pr\u00C3\u00B3xima", "pr\u00f3xima")
+    .replaceAll("avancar", "avan\u00e7ar");
 }

@@ -30,9 +30,9 @@ export function AgentApprovalReviewForm({
     <form action={formAction} className={`workspace-form workspace-form-section ${compact ? "mt-3 px-4 py-4" : ""}`}>
       <input type="hidden" name="approvalRequestId" value={approvalRequestId} />
       <div className="space-y-2">
-        <p className="scene-label">Approval review</p>
+        <p className="scene-label">Revisão de aprovação</p>
         <label className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground" htmlFor={`approval-notes-${approvalRequestId}`}>
-          Observacoes
+          Observações
         </label>
         <Textarea
           id={`approval-notes-${approvalRequestId}`}

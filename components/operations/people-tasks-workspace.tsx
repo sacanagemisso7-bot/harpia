@@ -7,9 +7,13 @@ import { PeopleTaskPriority, PeopleTaskStatus, SavedViewType } from "@prisma/cli
 
 import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
 import { AiResolvePanel } from "@/components/ai/ai-resolve-panel";
+import { AiTriagePill } from "@/components/ai/ai-triage-pill";
+import { AssistedCreateBox } from "@/components/ai/assisted-create-box";
+import { ContextualAssistantPanel } from "@/components/ai/contextual-assistant-panel";
 import { WorkspaceSavedViews } from "@/components/operations/workspace-saved-views";
 import { buildPeopleTaskNextStep } from "@/lib/ai/next-step";
 import { buildPeopleTaskResolveAssist } from "@/lib/ai/resolve-assist";
+import { buildPeopleTaskTriage } from "@/lib/ai/triage";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -317,6 +321,19 @@ export function PeopleTasksWorkspace({
         commentCount: selectedTask.comments.length
       })
     : null;
+  const selectedTaskSignal = selectedTask
+    ? buildPeopleTaskTriage({
+        title: selectedTask.title,
+        description: selectedTask.description,
+        priority: selectedTask.priority,
+        status: selectedTask.status,
+        sourceType: selectedTask.sourceType,
+        isOverdue: selectedTask.isOverdue,
+        assigneeName: selectedTask.assigneeUser?.name ?? selectedTask.assigneeEmployee?.fullName ?? null,
+        relatedEmployeeName: selectedTask.relatedEmployee?.fullName ?? null,
+        commentCount: selectedTask.comments.length
+      })
+    : null;
   const stats = [
     { label: "Total", value: metrics.total },
     { label: "Vencidas", value: metrics.overdue },
@@ -481,37 +498,55 @@ export function PeopleTasksWorkspace({
 
           <div className={styles.list}>
             {filteredTasks.length ? (
-              filteredTasks.map((task) => (
-                <div
-                  key={task.id}
-                  className={`${styles.row} ${styles.rowSelectable} ${selectedTask?.id === task.id ? styles.rowActive : ""}`}
-                >
-                  <input
-                    type="checkbox"
-                    className={styles.rowCheck}
-                    checked={selectedIds.includes(task.id)}
-                    onChange={() => toggleSelected(task.id)}
-                    aria-label={`Selecionar ${task.title}`}
-                  />
+              filteredTasks.map((task) => {
+                const signal = buildPeopleTaskTriage({
+                  title: task.title,
+                  description: task.description,
+                  priority: task.priority,
+                  status: task.status,
+                  sourceType: task.sourceType,
+                  isOverdue: task.isOverdue,
+                  assigneeName: task.assigneeUser?.name ?? task.assigneeEmployee?.fullName ?? null,
+                  relatedEmployeeName: task.relatedEmployee?.fullName ?? null,
+                  commentCount: task.comments.length
+                });
 
-                  <button type="button" className={styles.rowContent} onClick={() => setSelectedId(task.id)}>
-                    <div className={styles.rowTop}>
-                      <div className={styles.rowLead}>
-                        <p className={styles.rowTitle}>{task.title}</p>
-                        <p className={styles.rowSubtitle}>{task.assigneeUser?.name ? `Responsável: ${task.assigneeUser.name}` : "Sem responsável"}</p>
+                return (
+                  <div
+                    key={task.id}
+                    className={`${styles.row} ${styles.rowSelectable} ${selectedTask?.id === task.id ? styles.rowActive : ""}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className={styles.rowCheck}
+                      checked={selectedIds.includes(task.id)}
+                      onChange={() => toggleSelected(task.id)}
+                      aria-label={`Selecionar ${task.title}`}
+                    />
+
+                    <button type="button" className={styles.rowContent} onClick={() => setSelectedId(task.id)}>
+                      <div className={styles.rowTop}>
+                        <div className={styles.rowLead}>
+                          <p className={styles.rowTitle}>{task.title}</p>
+                          <p className={styles.rowSubtitle}>
+                            {task.assigneeUser?.name ? `Responsável: ${task.assigneeUser.name}` : "Sem responsável"}
+                          </p>
+                        </div>
+                        <Badge variant={getStatusVariant(task)}>
+                          {task.isOverdue ? "Vencida" : formatEnumLabel(task.status)}
+                        </Badge>
                       </div>
-                      <Badge variant={getStatusVariant(task)}>
-                        {task.isOverdue ? "Vencida" : formatEnumLabel(task.status)}
-                      </Badge>
-                    </div>
 
-                    <div className={styles.rowMeta}>
-                      <span className={styles.metaValue}>{formatEnumLabel(task.priority)}</span>
-                      <span className={styles.metaValue}>{task.relatedEmployee?.fullName ?? "Sem colaborador"}</span>
-                    </div>
-                  </button>
-                </div>
-              ))
+                      <AiTriagePill signal={signal} />
+
+                      <div className={styles.rowMeta}>
+                        <span className={styles.metaValue}>{formatEnumLabel(task.priority)}</span>
+                        <span className={styles.metaValue}>{task.relatedEmployee?.fullName ?? "Sem colaborador"}</span>
+                      </div>
+                    </button>
+                  </div>
+                );
+              })
             ) : (
               <div className={styles.emptyWrap}>
                 <p className={styles.emptyTitle}>Nenhuma tarefa nesta visão.</p>
@@ -602,23 +637,35 @@ export function PeopleTasksWorkspace({
                   </AiNextStepCard>
                 ) : null}
 
-                {canManage && selectedTaskAssist ? (
-                  <AiResolvePanel
-                    entityId={selectedTask.id}
-                    entityFieldName="taskId"
-                    summary={selectedTaskAssist.summary}
-                    suggestedAction={selectedTaskAssist.suggestedAction}
-                    expectedImpact={selectedTaskAssist.expectedImpact}
-                    confidence={selectedTaskAssist.confidence}
-                    sources={selectedTaskAssist.sources}
-                    suggestedStatus={selectedTaskAssist.suggestedStatus}
-                    statusOptions={Object.values(PeopleTaskStatus).map((status) => ({
-                      value: status,
-                      label: formatEnumLabel(status)
-                    }))}
-                    draftNote={selectedTaskAssist.draftNote}
-                    action={resolvePeopleTaskWithAiAction}
+                {selectedTaskSignal ? (
+                  <ContextualAssistantPanel
+                    summary={`O Harpia classificou esta tarefa como ${selectedTaskSignal.ownerArea}, com urgência ${selectedTaskSignal.urgency} e risco ${selectedTaskSignal.risk}.`}
+                    signal={selectedTaskSignal}
+                    itemLabel="tarefa"
+                    primaryHref={selectedTaskSignal.canAutoResolve ? "#task-ai-resolve" : "#task-context"}
+                    primaryLabel={selectedTaskSignal.canAutoResolve ? "Resolver com IA" : "Ajustar contexto"}
                   />
+                ) : null}
+
+                {canManage && selectedTaskAssist ? (
+                  <div id="task-ai-resolve">
+                    <AiResolvePanel
+                      entityId={selectedTask.id}
+                      entityFieldName="taskId"
+                      summary={selectedTaskAssist.summary}
+                      suggestedAction={selectedTaskAssist.suggestedAction}
+                      expectedImpact={selectedTaskAssist.expectedImpact}
+                      confidence={selectedTaskAssist.confidence}
+                      sources={selectedTaskAssist.sources}
+                      suggestedStatus={selectedTaskAssist.suggestedStatus}
+                      statusOptions={Object.values(PeopleTaskStatus).map((status) => ({
+                        value: status,
+                        label: formatEnumLabel(status)
+                      }))}
+                      draftNote={selectedTaskAssist.draftNote}
+                      action={resolvePeopleTaskWithAiAction}
+                    />
+                  </div>
                 ) : null}
 
                 {canManage ? (
@@ -749,6 +796,15 @@ export function PeopleTasksWorkspace({
               </div>
 
               <form action={createPeopleTaskAction} className={styles.formGrid}>
+                <AssistedCreateBox
+                  mode="task"
+                  fieldNames={{
+                    title: "title",
+                    description: "description",
+                    priority: "priority",
+                    sourceType: "sourceType"
+                  }}
+                />
                 <div className={styles.formGrid2}>
                   <Input name="title" required placeholder="Título" className={styles.fieldCompact} />
                   <Select name="priority" defaultValue={PeopleTaskPriority.MEDIUM} className={styles.selectCompact}>

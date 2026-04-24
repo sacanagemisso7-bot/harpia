@@ -21,14 +21,19 @@ const initialState: CompanyChatComposerState = {};
 type CompanyChatComposerProps = {
   action: (state: CompanyChatComposerState, formData: FormData) => Promise<CompanyChatComposerState>;
   threadId?: string;
+  initialDraft?: string;
 };
 
-export function CompanyChatComposer({ action, threadId }: CompanyChatComposerProps) {
+export function CompanyChatComposer({ action, threadId, initialDraft = "" }: CompanyChatComposerProps) {
   const router = useRouter();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [state, setState] = useState(initialState);
-  const [draft, setDraft] = useState("");
+  const [draft, setDraft] = useState(initialDraft);
   const [pending, startTransition] = useTransition();
+
+  useEffect(() => {
+    setDraft((current) => current || initialDraft);
+  }, [initialDraft]);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -113,14 +118,14 @@ export function CompanyChatComposer({ action, threadId }: CompanyChatComposerPro
           }
         }}
         className="min-h-[62px] max-h-[220px] resize-none border-0 bg-transparent px-0 py-0 text-[0.95rem] leading-7 shadow-none focus-visible:ring-0"
-        placeholder="Pergunte sobre pessoas, tarefas, políticas ou decisões do workspace..."
+        placeholder={"Pergunte sobre pessoas, tarefas, pol\u00edticas ou decis\u00f5es do workspace..."}
       />
 
       <FormMessage message={state.error} />
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border/55 pt-3">
         <p className="text-xs text-muted-foreground">
-          {pending ? "Harpia está respondendo..." : "Enter envia · Shift + Enter quebra a linha"}
+          {pending ? "Harpia est\u00e1 respondendo..." : "Enter envia \u00b7 Shift + Enter quebra a linha"}
         </p>
 
         <Button type="submit" disabled={pending || !draft.trim()} className="min-w-[8.5rem]">

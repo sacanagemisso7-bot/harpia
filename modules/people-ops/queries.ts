@@ -1,7 +1,6 @@
 import { unstable_cache } from "next/cache";
 import { PeopleWorkflowKind, PeopleWorkflowRunStatus, PeopleWorkflowStepStatus } from "@prisma/client";
 
-import { getDashboardMetrics } from "@/lib/dashboard/queries";
 import { prisma } from "@/lib/prisma/client";
 import { getComplianceDashboardSnapshot } from "@/modules/compliance/queries";
 import { getHrRequestDashboardSnapshot } from "@/modules/hr-requests/queries";
@@ -63,48 +62,153 @@ export async function listUpcomingPeopleEvents(organizationId: string, limit = 1
   });
 }
 
-async function loadPeopleDashboard(organizationId: string) {
-  const [employeeCount, onboardingActiveCount, offboardingActiveCount, events, watchtowerRuns] = await Promise.all([
-    prisma.employee.count({
-      where: {
-        organizationId
+async function listWorkflowRunsForDashboard(organizationId: string, kind: PeopleWorkflowKind) {
+  return prisma.peopleWorkflowRun.findMany({
+    where: {
+      organizationId,
+      kind,
+      status: PeopleWorkflowRunStatus.ACTIVE
+    },
+    select: {
+      id: true,
+      kind: true,
+      employee: {
+        select: {
+          id: true,
+          fullName: true,
+          title: true,
+          department: true,
+          status: true
+        }
+      },
+      steps: {
+        select: {
+          id: true,
+          status: true,
+          title: true
+        },
+        orderBy: {
+          order: "asc"
+        },
+        take: 8
       }
-    }),
-    prisma.peopleWorkflowRun.count({
-      where: {
-        organizationId,
-        kind: PeopleWorkflowKind.ONBOARDING,
-        status: PeopleWorkflowRunStatus.ACTIVE
-      }
-    }),
-    prisma.peopleWorkflowRun.count({
-      where: {
-        organizationId,
-        kind: PeopleWorkflowKind.OFFBOARDING,
-        status: PeopleWorkflowRunStatus.ACTIVE
-      }
-    }),
-    listUpcomingPeopleEvents(organizationId, 8),
-    listRecentWatchtowerRuns(organizationId, 2)
-  ]);
+    },
+    orderBy: {
+      startedAt: "desc"
+    },
+    take: 2
+  });
+}
 
-  const [onboardingRuns, offboardingRuns] = await Promise.all([
-    listWorkflowRunsByKind(organizationId, PeopleWorkflowKind.ONBOARDING, {
-      status: PeopleWorkflowRunStatus.ACTIVE,
-      take: 6
-    }),
-    listWorkflowRunsByKind(organizationId, PeopleWorkflowKind.OFFBOARDING, {
-      status: PeopleWorkflowRunStatus.ACTIVE,
-      take: 6
+async function getHiringDashboardLite(organizationId: string) {
+  const jobCount = await prisma.job.count({
+    where: {
+      organizationId
+    }
+  });
+
+  const applicationCount = await prisma.application.count({
+    where: {
+      organizationId
+    }
+  });
+
+  const applications = await prisma.application.findMany({
+    where: {
+      organizationId
+    },
+    select: {
+      id: true,
+      score: true,
+      appliedAt: true,
+      candidate: {
+        select: {
+          fullName: true
+        }
+      },
+      job: {
+        select: {
+          title: true
+        }
+      },
+      currentStage: {
+        select: {
+          name: true,
+          isTerminal: true
+        }
+      }
+    },
+    orderBy: [{ score: "desc" }, { updatedAt: "desc" }],
+    take: 8
+  });
+
+  const activeApplications = applications.filter((application) => !application.currentStage?.isTerminal);
+
+  const decisionNetwork = activeApplications
+    .map((application) => {
+      const stagnantHours = Math.max(1, Math.round((Date.now() - application.appliedAt.getTime()) / (1000 * 60 * 60)));
+
+      return {
+        id: application.id,
+        candidateName: application.candidate.fullName,
+        jobTitle: application.job.title,
+        score: application.score ?? 0,
+        stageName: application.currentStage?.name ?? "Sem etapa",
+        stagnantHours,
+        href: `/applications/${application.id}`
+      };
     })
-  ]);
+    .slice(0, 12);
 
-  const [tasks, requestSummary, complianceSummary, hiring] = await Promise.all([
-    getPeopleTaskDashboardSnapshot(organizationId, 6),
-    getHrRequestDashboardSnapshot(organizationId, 6),
-    getComplianceDashboardSnapshot(organizationId, 6),
-    getDashboardMetrics(organizationId)
-  ]);
+  return {
+    applicationCount,
+    decisionNetwork,
+    intelligenceHighlights: decisionNetwork
+      .filter((application) => application.score >= 80 || application.stagnantHours >= 72)
+      .slice(0, 4)
+      .map((application) => ({
+        id: application.id,
+        candidateName: application.candidateName,
+        jobTitle: application.jobTitle,
+        score: application.score,
+        stageName: application.stageName,
+        href: application.href
+      })),
+    jobCount,
+    slaAlerts: []
+  };
+}
+
+async function loadPeopleDashboard(organizationId: string) {
+  // Keep dashboard SSR gentle on small production pools. It is better to show a fast,
+  // useful cockpit than to fan out many Prisma queries and block the whole page.
+  const employeeCount = await prisma.employee.count({
+    where: {
+      organizationId
+    }
+  });
+  const onboardingActiveCount = await prisma.peopleWorkflowRun.count({
+    where: {
+      organizationId,
+      kind: PeopleWorkflowKind.ONBOARDING,
+      status: PeopleWorkflowRunStatus.ACTIVE
+    }
+  });
+  const offboardingActiveCount = await prisma.peopleWorkflowRun.count({
+    where: {
+      organizationId,
+      kind: PeopleWorkflowKind.OFFBOARDING,
+      status: PeopleWorkflowRunStatus.ACTIVE
+    }
+  });
+  const events = await listUpcomingPeopleEvents(organizationId, 6);
+  const watchtowerRuns = await listRecentWatchtowerRuns(organizationId, 2);
+  const onboardingRuns = await listWorkflowRunsForDashboard(organizationId, PeopleWorkflowKind.ONBOARDING);
+  const offboardingRuns = await listWorkflowRunsForDashboard(organizationId, PeopleWorkflowKind.OFFBOARDING);
+  const tasks = await getPeopleTaskDashboardSnapshot(organizationId, 4);
+  const requestSummary = await getHrRequestDashboardSnapshot(organizationId, 4);
+  const complianceSummary = await getComplianceDashboardSnapshot(organizationId, 4);
+  const hiring = await getHiringDashboardLite(organizationId);
 
   const todaysEvents = events.filter((event) => {
     const startsAt = event.startsAt;
@@ -197,6 +301,57 @@ const getPeopleDashboardCached = unstable_cache(loadPeopleDashboard, ["people-da
   revalidate: 15
 });
 
+function getEmptyPeopleDashboard() {
+  return {
+    metrics: {
+      employees: 0,
+      onboardingActive: 0,
+      offboardingActive: 0,
+      openRequests: 0,
+      overdueTasks: 0,
+      pendingCompliance: 0,
+      eventsToday: 0,
+      requestsAtRisk: 0
+    },
+    alerts: [
+      {
+        type: "watchtower" as const,
+        title: "Dashboard em modo rapido",
+        description: "Os dados detalhados ainda estao carregando. Use os modulos laterais para operar normalmente.",
+        href: "/people/command-center",
+        severity: "medium" as const
+      }
+    ],
+    requests: [],
+    overdueTasks: [],
+    onboarding: [],
+    offboarding: [],
+    events: [],
+    compliance: [],
+    hiring: {
+      jobCount: 0,
+      applicationCount: 0,
+      slaAlerts: 0,
+      intelligenceHighlights: [],
+      decisionNetwork: []
+    }
+  };
+}
+
+function withDashboardTimeout<T>(promise: Promise<T>, timeoutMs: number, fallback: T) {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => {
+      setTimeout(() => resolve(fallback), timeoutMs);
+    })
+  ]);
+}
+
 export async function getPeopleDashboard(organizationId: string) {
-  return getPeopleDashboardCached(organizationId);
+  try {
+    return await withDashboardTimeout(getPeopleDashboardCached(organizationId), 2500, getEmptyPeopleDashboard());
+  } catch (error) {
+    console.error("[dashboard] failed to load people dashboard", error);
+    return getEmptyPeopleDashboard();
+  }
 }

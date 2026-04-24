@@ -4,6 +4,7 @@ import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { NotebookPen } from "lucide-react";
 
+import { AssistedCreateBox } from "@/components/ai/assisted-create-box";
 import { Button } from "@/components/ui/button";
 import { FormMessage } from "@/components/ui/form-message";
 import { Label } from "@/components/ui/label";
@@ -35,6 +36,12 @@ export function NoteForm({ title, action, placeholder, compact = false }: NoteFo
 
   return (
     <form action={formAction} className={compact ? "grid gap-3" : "grid gap-4"}>
+      <AssistedCreateBox
+        mode="note"
+        fieldNames={{
+          description: "content"
+        }}
+      />
       <div className="grid gap-2">
         {!compact ? <Label htmlFor="content">{title}</Label> : <span className="text-xs text-muted-foreground">{title}</span>}
         <Textarea

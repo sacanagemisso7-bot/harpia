@@ -12,6 +12,7 @@ type CompanyChatScrollAreaProps = {
 export function CompanyChatScrollArea({ children, className, threadId, messageCount }: CompanyChatScrollAreaProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const shouldStickToBottomRef = useRef(true);
+  const previousThreadIdRef = useRef<string | undefined>(threadId);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -44,10 +45,17 @@ export function CompanyChatScrollArea({ children, className, threadId, messageCo
       return;
     }
 
+    const threadChanged = previousThreadIdRef.current !== threadId;
+    previousThreadIdRef.current = threadId;
+
+    if (!threadChanged && !shouldStickToBottomRef.current) {
+      return;
+    }
+
     const frame = window.requestAnimationFrame(() => {
       container.scrollTo({
         top: container.scrollHeight,
-        behavior: messageCount > 1 ? "smooth" : "auto"
+        behavior: threadChanged || messageCount <= 1 ? "auto" : "smooth"
       });
     });
 

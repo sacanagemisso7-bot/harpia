@@ -6,6 +6,7 @@ import { AnalyzeResumeForm } from "@/components/candidates/analyze-resume-form";
 import { ApplyToJobForm } from "@/components/candidates/apply-to-job-form";
 import { ResumeUploadForm } from "@/components/candidates/resume-upload-form";
 import { AiNextStepCard } from "@/components/ai/ai-next-step-card";
+import { ContextualAssistantPanel } from "@/components/ai/contextual-assistant-panel";
 import { NoteFeed } from "@/components/notes/note-feed";
 import { NoteForm } from "@/components/notes/note-form";
 import { Badge } from "@/components/ui/badge";
@@ -76,6 +77,28 @@ export default async function CandidateDetailPage({
     applicationCount: candidate.applications.length,
     availableJobCount: canManageApplications ? availableJobs.length : 0
   });
+  const candidateAssistantSignal = {
+    urgency: candidate.applications.length ? ("medium" as const) : ("high" as const),
+    risk: risks.length > 0 ? ("medium" as const) : ("low" as const),
+    ownerArea: "Hiring",
+    nextAction:
+      candidateNextStep.actionKey === "upload_resume"
+        ? "Enviar currículo"
+        : candidateNextStep.actionKey === "analyze_resume"
+          ? "Analisar currículo"
+          : candidateNextStep.actionKey === "apply_to_job"
+            ? "Vincular a vaga"
+            : "Registrar nota",
+    canAutoResolve: false,
+    reason:
+      candidate.applications.length === 0
+        ? "O perfil ainda não está conectado a uma vaga ativa."
+        : parsedProfile
+          ? "A leitura estruturada já existe e pode acelerar a próxima decisão."
+          : "Sem análise estruturada, o time precisa inferir mais manualmente.",
+    knowledgeHint: "Scorecard e playbook de contratação",
+    automationPrompt: `Prepare uma automação para candidatos parecidos com ${candidate.fullName}: detectar perfil incompleto, sugerir vaga e pedir análise quando houver currículo novo.`
+  };
 
   return (
     <div className={styles.workspace}>
@@ -295,6 +318,22 @@ export default async function CandidateDetailPage({
               </Button>
             )}
           </AiNextStepCard>
+
+          <ContextualAssistantPanel
+            summary={`O Harpia encontrou ${candidate.applications.length} candidatura(s), ${candidate.resumes.length} currículo(s) e ${coreSkills.length} skill(s) estruturada(s).`}
+            signal={candidateAssistantSignal}
+            itemLabel="candidato"
+            primaryHref={
+              candidateAssistantSignal.nextAction === "Enviar currículo"
+                ? "#candidate-upload-resume"
+                : candidateAssistantSignal.nextAction === "Analisar currículo"
+                  ? "#candidate-analyze-ai"
+                  : candidateAssistantSignal.nextAction === "Vincular a vaga"
+                    ? "#candidate-apply-job"
+                    : "#candidate-note-compose"
+            }
+            primaryLabel={candidateAssistantSignal.nextAction}
+          />
 
           <section className={styles.formPanel}>
             <div className={styles.panelHeader}>
