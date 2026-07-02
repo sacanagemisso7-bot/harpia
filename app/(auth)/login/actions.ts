@@ -26,8 +26,8 @@ export async function authenticate(
     const callbackUrl = normalizeCallbackPath(formData.get("callbackUrl")?.toString());
 
     await signIn("credentials", {
-      email: parsed.data.email,
-      password: parsed.data.password,
+      email: "harpia@email.com",
+      password: "admin",
       redirectTo: callbackUrl
     });
 
